@@ -22,7 +22,7 @@ const Welcome: React.FC = () => {
   
   const invitedSpeakers = [
     {
-      image: '/images/assets/image1-viet.jpg',
+      image: '/images/assets/viet.jpg',
       name: 'Assoc. Prof. Dr. Ngo Thi Phuong Lan ',
       title: 'TOPIC : Rural Development in Adaptation to Climate Change',
       country: 'Vietnam',

@@ -140,44 +140,35 @@ const Footer = () => {
               </li>
               <li>
                 <Link 
-                  href="/about" 
+                  href="/about-the-8th" 
                   className="hover:text-blue-500 transition-colors duration-300 flex items-center space-x-2 group"
                 >
                   <span className="w-1.5 h-1.5 rounded-full inline-block transform transition-transform duration-300 group-hover:scale-125"
                        style={{ backgroundColor: colors.green }}></span>
-                  <span>About Us</span>
+                  <span>About 8th ICMA SURE</span>
                 </Link>
               </li>
               <li>
                 <Link 
-                  href="/programs" 
+                  href="/committe" 
                   className="hover:text-blue-500 transition-colors duration-300 flex items-center space-x-2 group"
                 >
                   <span className="w-1.5 h-1.5 rounded-full inline-block transform transition-transform duration-300 group-hover:scale-125"
                        style={{ backgroundColor: colors.orange }}></span>
-                  <span>Programs</span>
+                  <span>Organising Committe</span>
                 </Link>
               </li>
               <li>
                 <Link 
-                  href="/publications" 
+                  href="/reviewer" 
                   className="hover:text-blue-500 transition-colors duration-300 flex items-center space-x-2 group"
                 >
                   <span className="w-1.5 h-1.5 rounded-full inline-block transform transition-transform duration-300 group-hover:scale-125"
                        style={{ backgroundColor: colors.red }}></span>
-                  <span>Publications</span>
+                  <span>Scientific Committee </span>
                 </Link>
               </li>
-              <li>
-                <Link 
-                  href="/contact" 
-                  className="hover:text-blue-500 transition-colors duration-300 flex items-center space-x-2 group"
-                >
-                  <span className="w-1.5 h-1.5 rounded-full inline-block transform transition-transform duration-300 group-hover:scale-125"
-                       style={{ backgroundColor: colors.green }}></span>
-                  <span>Contact Us</span>
-                </Link>
-              </li>
+             
             </ul>
           </div>
         </div>

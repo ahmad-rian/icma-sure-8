@@ -4,6 +4,7 @@ import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createRoot } from 'react-dom/client';
 import { initializeTheme } from './hooks/use-appearance';
+import ScrollToTop from './components/ScrollToTop';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -13,7 +14,13 @@ createInertiaApp({
     setup({ el, App, props }) {
         const root = createRoot(el);
 
-        root.render(<App {...props} />);
+        // Wrap the App component with a fragment containing the ScrollToTop component
+        root.render(
+            <>
+                <App {...props} />
+                <ScrollToTop />
+            </>
+        );
     },
     progress: {
         color: '#4B5563',
