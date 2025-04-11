@@ -19,6 +19,9 @@ return new class extends Migration
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();
+            $table->string('google_id')->nullable();
+            $table->string('avatar')->nullable();
+            $table->boolean('is_allowed')->default(false);
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
@@ -42,6 +45,9 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn(['google_id', 'avatar', 'is_allowed']);
+        });
         Schema::dropIfExists('users');
         Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');

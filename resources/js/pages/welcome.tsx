@@ -11,7 +11,7 @@ const Welcome: React.FC = () => {
  
     const keynoteSpeakers = [
         {
-          image: 'https://akcdn.detik.net.id/visual/2024/10/21/momen-pelantikan-wamen-kabinet-merah-putih-prabowo-gibran-6_11.jpeg?w=720&q=90',
+          image: '/images/assets/prof-stella.webp',
           name: 'Prof. Stella Christie, A.B., Ph.D.',
           title: 'Deputy Minister of Higher Education, Science and Technology of the Republic of Indonesia',
           country: 'Indonesia',
@@ -22,26 +22,49 @@ const Welcome: React.FC = () => {
   
   const invitedSpeakers = [
     {
-      image: '/storage/speakers/invited-speaker-1.jpg', // Replace with your actual image path
-      name: 'Assoc. Prof. Dr. Ngo Thi Phuong Lan',
-      title: 'University of Social Sciences and Humanities',
+      image: '/images/assets/image1-viet.jpg',
+      name: 'Assoc. Prof. Dr. Ngo Thi Phuong Lan ',
+      title: 'TOPIC : Rural Development in Adaptation to Climate Change',
       country: 'Vietnam',
-      status: ''
+      status: 'Sciences and Humanities Ho Chi Minh City Vietnam'
     },
+    
     {
-      image: '/storage/speakers/invited-speaker-2.jpg', // Replace with your actual image path
-      name: 'Prof. Dr. Zexun Wei',
-      title: 'Guangdong Ocean University',
+      image: '/images/assets/zexun.jpg', 
+      name: 'Prof. Dr. Zexun Wei ',
+      title: 'TOPIC : China-Indonesia Joint Observation in Indonesian Seas during the Past Decades and New Scientific Understandings',
       country: 'China',
-      status: ''
+      status: 'Deputy Director, Ministry of Natural Resources, P.R. China'
     },
     {
-      image: '/storage/speakers/invited-speaker-3.jpg', // Replace with your actual image path
+      image: '/images/assets/totok.jpeg', 
       name: 'Prof. Ir. Totok Agung Dwi Haryanto, M.P., Ph.D.',
       title: 'Faculty of Agriculture',
       country: 'Indonesia',
-      status: ''
-    }
+      status: 'Universitas Jenderal Soedirman'
+    },
+    {
+        image: '/images/assets/maiko.webp',
+        name: 'Dr. Maiko Nishi',
+        title: 'TOPIC : Climate Resilience in Globally Important Agricultural Heritage System (GIAHS)',
+        country: 'Japan',
+        status: 'United Nations University Tokyo, Japan'
+      },
+      
+      {
+        image: '/images/assets/sebastion.jpg', 
+        name: 'Dr. Sebastian C. A Ferse',
+        title: 'TOPIC : Sustainability of Island Livelihood in the Face of Social-Ecological and Climatic Change',
+        country: 'Germany',
+        status: 'Leibniz Centre for Tropical Marine Research, Germany'
+      },
+      {
+        image: '/images/assets/chyan.webp', 
+        name: 'Prof. Chyan-Deng Jan',
+        title: 'Methods used for Debris-flow Disaster Mitigation in Taiwan',
+        country: 'Taiwan',
+        status: 'Dean of the College of Engineering (NCKU) Tainan, Taiwan'
+      }
   ];
 
   return (

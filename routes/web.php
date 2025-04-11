@@ -10,7 +10,9 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\CommitteeController;
 use App\Http\Controllers\ReviewerController;
-
+use App\Http\Controllers\Auth\GoogleController;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Middleware\CheckAllowedEmail;
 
 Route::get('/', function () {
     return Inertia::render('welcome');
@@ -22,39 +24,42 @@ Route::get('/about-the-8th', function () {
     ]);
 })->name('about.us');
 
-// Route untuk download file
 Route::get('/download/{file}', [DownloadController::class, 'downloadFile'])->name('download.file');
 
 Route::get('/committee', [CommitteeController::class, 'index'])->name('committee.index');
 
-
 Route::get('/reviewer', [ReviewerController::class, 'index'])->name('reviewer.index');
 
-Route::middleware(['auth', 'verified'])->group(function () {
-    // Use the DashboardController instead of directly rendering
+// Rute untuk guest (non-authenticated users)
+Route::middleware('guest')->group(function () {
+    Route::get('login', [AuthenticatedSessionController::class, 'create'])->name('login');
+    Route::get('login/google', [GoogleController::class, 'redirect'])->name('login.google');
+    Route::get('login/google/callback', [GoogleController::class, 'callback'])->name('login.google.callback');
+});
+
+Route::get('/access-denied', function () {
+    return Inertia::render('Auth/AccessDenied');
+})->name('access.denied');
+
+
+Route::middleware(['auth', 'verified', CheckAllowedEmail::class])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    // Routes for Organizing Committee
-    Route::resource('organizing-committees', OrganizingCommitteeController::class)
-        ->names([
-            'index' => 'organizing-committees.index',
-            'create' => 'organizing-committees.create',
-            'store' => 'organizing-committees.store',
-            'show' => 'organizing-committees.show',
-            'edit' => 'organizing-committees.edit',
-            'update' => 'organizing-committees.update',
-            'destroy' => 'organizing-committees.destroy',
-        ]);
+    Route::resource('organizing-committees', OrganizingCommitteeController::class)->names([
+        'index' => 'organizing-committees.index',
+        'create' => 'organizing-committees.create',
+        'store' => 'organizing-committees.store',
+        'show' => 'organizing-committees.show',
+        'edit' => 'organizing-committees.edit',
+        'update' => 'organizing-committees.update',
+        'destroy' => 'organizing-committees.destroy',
+    ]);
 
-    // Scientific Committee routes
     Route::resource('scientific-committees', ScientificCommitteeController::class);
-
-    // Articles routes
     Route::resource('articles', ArticleController::class);
-
-    // Events routes
     Route::resource('events', EventController::class);
 });
 
+Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout')->middleware('auth');
+
 require __DIR__ . '/settings.php';
-require __DIR__ . '/auth.php';
