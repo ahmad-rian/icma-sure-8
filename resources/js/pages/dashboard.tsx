@@ -4,22 +4,7 @@ import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { 
-  CalendarDays, 
-  FileText, 
-  GraduationCap, 
-  TrendingUp, 
-  User, 
-  Users, 
-  Calendar, 
-  ArrowUpRight,
-  ChevronUp,
-  ChevronDown,
-  BarChart3,
-  PieChart as PieChartIcon,
-  LineChart as LineChartIcon,
-  Zap
-} from 'lucide-react';
+import { CalendarDays, FileText, GraduationCap, TrendingUp, User, Users, Calendar, ArrowUpRight, ChevronUp, ChevronDown, BarChart3, PieChartIcon, LineChartIcon, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
@@ -92,21 +77,19 @@ interface DashboardProps {
 
 // Chart colors - consistent palette for better visual design
 const COLORS = {
-  primary: '#4361ee',
-  secondary: '#3f37c9',
-  success: '#4CC9F0',
-  warning: '#f72585',
-  info: '#4895ef',
-  danger: '#e63946',
-  light: '#f8f9fa',
-  dark: '#212529',
-  published: '#4cc9f0',
-  draft: '#f72585',
-  organizing: '#4361ee',
-  scientific: '#10b981',
-  events: '#4895ef',
-  positive: '#10b981',
-  negative: '#ef4444'
+  primary: 'hsl(var(--primary))',
+  secondary: 'hsl(var(--secondary))',
+  success: 'hsl(var(--success))',
+  warning: 'hsl(var(--warning))',
+  info: 'hsl(var(--info))',
+  danger: 'hsl(var(--danger))',
+  published: 'hsl(var(--info))',
+  draft: 'hsl(var(--warning))',
+  organizing: 'hsl(var(--primary))',
+  scientific: 'hsl(var(--success))',
+  events: 'hsl(var(--info))',
+  positive: 'hsl(var(--success))',
+  negative: 'hsl(var(--danger))'
 };
 
 interface StatsCardProps {
@@ -122,27 +105,26 @@ interface StatsCardProps {
 }
 
 const StatsCard = ({ title, value, description, icon, trend, color = COLORS.primary }: StatsCardProps) => (
-  <Card className="overflow-hidden border-0 shadow-md hover:shadow-lg transition-all duration-300">
-    <div className="absolute top-0 left-0 w-1 h-full" style={{ backgroundColor: color }}></div>
+  <Card className="overflow-hidden shadow-sm hover:shadow-md transition-all duration-300">
     <CardHeader className="flex flex-row items-center justify-between pb-2">
       <CardTitle className="text-sm font-medium">{title}</CardTitle>
-      <div className="h-10 w-10 rounded-full flex items-center justify-center" style={{ backgroundColor: `${color}15` }}>
-        {React.cloneElement(icon as React.ReactElement, { className: "h-5 w-5", style: { color } })}
+      <div className="h-10 w-10 rounded-full flex items-center justify-center bg-primary/10 dark:bg-primary/20">
+        {React.cloneElement(icon as React.ReactElement, { className: "h-5 w-5 text-primary" })}
       </div>
     </CardHeader>
     <CardContent>
-      <div className="text-3xl font-bold" style={{ color }}>{value.toLocaleString()}</div>
+      <div className="text-3xl font-bold text-primary">{value.toLocaleString()}</div>
       <p className="text-xs text-muted-foreground pt-1">{description}</p>
     </CardContent>
     {trend && (
       <CardFooter className="p-2 pt-0">
         <div className="flex items-center">
           <div 
-            className="flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium" 
-            style={{ 
-              backgroundColor: trend.isPositive ? `${COLORS.positive}15` : `${COLORS.negative}15`,
-              color: trend.isPositive ? COLORS.positive : COLORS.negative
-            }}
+            className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
+              trend.isPositive 
+                ? "bg-success/10 text-success dark:bg-success/20" 
+                : "bg-danger/10 text-danger dark:bg-danger/20"
+            }`}
           >
             {trend.isPositive ? (
               <ChevronUp className="h-3 w-3" />
@@ -161,7 +143,7 @@ const StatsCard = ({ title, value, description, icon, trend, color = COLORS.prim
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-white p-3 border shadow-lg rounded-md">
+      <div className="bg-background border shadow-lg rounded-md p-3">
         <p className="font-semibold text-sm">{`${label}`}</p>
         {payload.map((entry: any, index: number) => (
           <p key={`item-${index}`} className="text-sm flex items-center gap-2 mt-1">
@@ -207,14 +189,13 @@ export default function Dashboard(props: DashboardProps) {
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
       <Head title="Dashboard" />
-      <div className="flex flex-col gap-6 p-4 md:p-6 bg-gray-50 min-h-screen">
+      <div className="flex flex-col gap-6 p-4 md:p-6 bg-background min-h-screen">
         {/* Title Section */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
           <div>
             <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Dashboard</h1>
             <p className="text-muted-foreground mt-1">Welcome to your ICMA SURE control panel</p>
           </div>
-         
         </div>
       
         {/* Stats Cards */}
@@ -225,7 +206,6 @@ export default function Dashboard(props: DashboardProps) {
             description={`${stats.organizing_committees} organizing, ${stats.scientific_committees} scientific`}
             icon={<Users />}
             trend={trends.committees}
-            color={COLORS.primary}
           />
           
           <StatsCard 
@@ -234,7 +214,6 @@ export default function Dashboard(props: DashboardProps) {
             description={`${stats.published_articles} published, ${stats.draft_articles} draft`}
             icon={<FileText />}
             trend={trends.articles}
-            color={COLORS.info}
           />
           
           <StatsCard 
@@ -243,7 +222,6 @@ export default function Dashboard(props: DashboardProps) {
             description={`Out of ${stats.total_events} total events`}
             icon={<Calendar />}
             trend={trends.events}
-            color={COLORS.success}
           />
           
           <StatsCard 
@@ -252,35 +230,34 @@ export default function Dashboard(props: DashboardProps) {
             description="Registered system users"
             icon={<User />}
             trend={trends.users}
-            color={COLORS.warning}
           />
         </div>
 
         {/* Charts Section */}
         <div className="grid gap-4 md:gap-6 md:grid-cols-2 lg:grid-cols-3">
-          <Card className="col-span-1 lg:col-span-2 border-0 shadow-md overflow-hidden">
-            <CardHeader className="bg-gray-50 border-b pb-3">
+          <Card className="col-span-1 lg:col-span-2 shadow-sm overflow-hidden">
+            <CardHeader className="border-b pb-3">
               <div className="flex items-center justify-between">
                 <div>
                   <CardTitle className="flex items-center">
-                    <BarChart3 className="h-5 w-5 mr-2 text-blue-500" />
+                    <BarChart3 className="h-5 w-5 mr-2 text-primary" />
                     Articles Overview
                   </CardTitle>
                   <CardDescription>Publishing activity over the last 6 months</CardDescription>
                 </div>
-                <Badge variant="outline" className="bg-blue-50 text-blue-600 border-blue-200">
+                <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20">
                   Monthly
                 </Badge>
               </div>
             </CardHeader>
-            <CardContent className="pt-6">
+            <CardContent className="pt-6 bg-card">
               <div className="h-[320px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
                     data={monthly_articles}
                     margin={{ top: 20, right: 30, left: 0, bottom: 5 }}
                   >
-                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
                     <XAxis dataKey="month" tick={{ fontSize: 12 }} />
                     <YAxis tick={{ fontSize: 12 }} />
                     <Tooltip content={<CustomTooltip />} />
@@ -309,19 +286,19 @@ export default function Dashboard(props: DashboardProps) {
             </CardContent>
           </Card>
 
-          <Card className="col-span-1 border-0 shadow-md overflow-hidden">
-            <CardHeader className="bg-gray-50 border-b pb-3">
+          <Card className="col-span-1 shadow-sm overflow-hidden">
+            <CardHeader className="border-b pb-3">
               <div className="flex items-center justify-between">
                 <div>
                   <CardTitle className="flex items-center">
-                    <PieChartIcon className="h-5 w-5 mr-2 text-indigo-500" />
+                    <PieChartIcon className="h-5 w-5 mr-2 text-primary" />
                     Committee Distribution
                   </CardTitle>
                   <CardDescription>Organizing vs. Scientific</CardDescription>
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="flex justify-center pt-6">
+            <CardContent className="flex justify-center pt-6 bg-card">
               <div className="h-[280px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
@@ -359,26 +336,26 @@ export default function Dashboard(props: DashboardProps) {
         </div>
 
         <div className="grid gap-4 md:gap-6 md:grid-cols-2">
-          <Card className="border-0 shadow-md overflow-hidden">
-            <CardHeader className="bg-gray-50 border-b pb-3">
+          <Card className="shadow-sm overflow-hidden">
+            <CardHeader className="border-b pb-3">
               <div className="flex items-center justify-between">
                 <div>
                   <CardTitle className="flex items-center">
-                    <LineChartIcon className="h-5 w-5 mr-2 text-blue-500" />
+                    <LineChartIcon className="h-5 w-5 mr-2 text-primary" />
                     Events Timeline
                   </CardTitle>
                   <CardDescription>Monthly event scheduling</CardDescription>
                 </div>
-                <Badge variant="outline" className="bg-green-50 text-green-600 border-green-200">
+                <Badge variant="outline" className="bg-success/5 text-success border-success/20">
                   Trending
                 </Badge>
               </div>
             </CardHeader>
-            <CardContent className="pt-6">
+            <CardContent className="pt-6 bg-card">
               <div className="h-[250px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={monthly_events}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
                     <XAxis dataKey="month" tick={{ fontSize: 12 }} />
                     <YAxis tick={{ fontSize: 12 }} />
                     <Tooltip content={<CustomTooltip />} />
@@ -396,19 +373,19 @@ export default function Dashboard(props: DashboardProps) {
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-md overflow-hidden">
-            <CardHeader className="bg-gray-50 border-b pb-3">
+          <Card className="shadow-sm overflow-hidden">
+            <CardHeader className="border-b pb-3">
               <div className="flex items-center justify-between">
                 <div>
                   <CardTitle className="flex items-center">
-                    <Zap className="h-5 w-5 mr-2 text-amber-500" />
+                    <Zap className="h-5 w-5 mr-2 text-primary" />
                     Quick Actions
                   </CardTitle>
                   <CardDescription>Manage your content efficiently</CardDescription>
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="pt-4">
+            <CardContent className="pt-4 bg-card">
               <Tabs defaultValue="events" className="w-full">
                 <TabsList className="grid w-full grid-cols-3 mb-2">
                   <TabsTrigger value="events" className="text-sm">Events</TabsTrigger>
@@ -420,7 +397,7 @@ export default function Dashboard(props: DashboardProps) {
                     <Button 
                       asChild 
                       variant="outline" 
-                      className="justify-between hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors"
+                      className="justify-between hover:bg-primary/5 hover:text-primary hover:border-primary/20 transition-colors"
                     >
                       <a href="/events/create">
                         Create New Event
@@ -430,7 +407,7 @@ export default function Dashboard(props: DashboardProps) {
                     <Button 
                       asChild 
                       variant="outline" 
-                      className="justify-between hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors"
+                      className="justify-between hover:bg-primary/5 hover:text-primary hover:border-primary/20 transition-colors"
                     >
                       <a href="/events">
                         View All Events
@@ -444,7 +421,7 @@ export default function Dashboard(props: DashboardProps) {
                     <Button 
                       asChild 
                       variant="outline" 
-                      className="justify-between hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors"
+                      className="justify-between hover:bg-primary/5 hover:text-primary hover:border-primary/20 transition-colors"
                     >
                       <a href="/articles/create">
                         Write New Article
@@ -454,7 +431,7 @@ export default function Dashboard(props: DashboardProps) {
                     <Button 
                       asChild 
                       variant="outline" 
-                      className="justify-between hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors"
+                      className="justify-between hover:bg-primary/5 hover:text-primary hover:border-primary/20 transition-colors"
                     >
                       <a href="/articles">
                         Manage Articles
@@ -468,7 +445,7 @@ export default function Dashboard(props: DashboardProps) {
                     <Button 
                       asChild 
                       variant="outline" 
-                      className="justify-between hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors"
+                      className="justify-between hover:bg-primary/5 hover:text-primary hover:border-primary/20 transition-colors"
                     >
                       <a href="/organizing-committees/create">
                         Add Organizing Member
@@ -478,7 +455,7 @@ export default function Dashboard(props: DashboardProps) {
                     <Button 
                       asChild 
                       variant="outline" 
-                      className="justify-between hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors"
+                      className="justify-between hover:bg-primary/5 hover:text-primary hover:border-primary/20 transition-colors"
                     >
                       <a href="/scientific-committees/create">
                         Add Scientific Member
@@ -492,37 +469,31 @@ export default function Dashboard(props: DashboardProps) {
           </Card>
         </div>
 
-        <Card className="border-0 shadow-md overflow-hidden">
-          <CardHeader className="bg-gray-50 border-b pb-3">
+        <Card className="shadow-sm overflow-hidden">
+          <CardHeader className="border-b pb-3">
             <div className="flex items-center justify-between">
               <div>
                 <CardTitle className="flex items-center">
-                  <TrendingUp className="h-5 w-5 mr-2 text-emerald-500" />
+                  <TrendingUp className="h-5 w-5 mr-2 text-primary" />
                   Recent Activity
                 </CardTitle>
                 <CardDescription>Latest updates across the system</CardDescription>
               </div>
-              <Badge variant="outline" className="bg-purple-50 text-purple-600 border-purple-200">
+              <Badge variant="outline" className="bg-secondary/5 text-secondary border-secondary/20">
                 Live Feed
               </Badge>
             </div>
           </CardHeader>
-          <CardContent className="pt-4">
+          <CardContent className="pt-4 bg-card">
             <div className="space-y-4">
               {recent_activities && recent_activities.length > 0 ? (
                 recent_activities.map((activity, index) => (
-                  <div key={index} className="flex items-center p-2 hover:bg-gray-50 rounded-lg transition-colors">
-                    <div className="mr-4 flex h-10 w-10 items-center justify-center rounded-full" 
-                      style={{ 
-                        backgroundColor: activity.type === 'event' ? `${COLORS.events}15` : 
-                                        activity.type === 'article' ? `${COLORS.info}15` :
-                                        activity.type === 'committee' ? `${COLORS.primary}15` : `${COLORS.warning}15`
-                      }}
-                    >
-                      {activity.type === 'event' && <Calendar className="h-5 w-5" style={{ color: COLORS.events }} />}
-                      {activity.type === 'article' && <FileText className="h-5 w-5" style={{ color: COLORS.info }} />}
-                      {activity.type === 'committee' && <Users className="h-5 w-5" style={{ color: COLORS.primary }} />}
-                      {activity.type === 'user' && <User className="h-5 w-5" style={{ color: COLORS.warning }} />}
+                  <div key={index} className="flex items-center p-2 hover:bg-muted/50 rounded-lg transition-colors">
+                    <div className="mr-4 flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 dark:bg-primary/20">
+                      {activity.type === 'event' && <Calendar className="h-5 w-5 text-primary" />}
+                      {activity.type === 'article' && <FileText className="h-5 w-5 text-primary" />}
+                      {activity.type === 'committee' && <Users className="h-5 w-5 text-primary" />}
+                      {activity.type === 'user' && <User className="h-5 w-5 text-primary" />}
                     </div>
                     <div className="space-y-1 flex-1">
                       <p className="text-sm font-medium leading-none">{activity.title}</p>
@@ -535,15 +506,15 @@ export default function Dashboard(props: DashboardProps) {
                 ))
               ) : (
                 <div className="text-center py-8">
-                  <Calendar className="h-12 w-12 mx-auto text-gray-300 mb-3" />
+                  <Calendar className="h-12 w-12 mx-auto text-muted-foreground/30 mb-3" />
                   <p className="text-muted-foreground">No recent activities found</p>
                   <p className="text-xs text-muted-foreground">New activities will appear here as they happen</p>
                 </div>
               )}
             </div>
           </CardContent>
-          <CardFooter className="border-t p-4 bg-gray-50">
-            <Button variant="outline" className="w-full hover:bg-white">View All Activity</Button>
+          <CardFooter className="border-t p-4">
+            <Button variant="outline" className="w-full hover:bg-primary/5">View All Activity</Button>
           </CardFooter>
         </Card>
       </div>
