@@ -13,29 +13,26 @@ class CommitteeController extends Controller
      */
     public function index()
     {
-        // Tentukan urutan hierarki posisi (dari tertinggi ke terendah)
         $positionOrder = [
             'Director' => 1,
-            'Chairman' => 2,
-            'Vice Chairman' => 3,
-            'Secretary' => 4,
-            'Treasurer' => 5,
-            'Vice Rector for Academic' => 6,
-            'Head of LPPM Unsoed' => 7,
+            'Vice Rector for Academic' => 2,
+            'Head of LPPM Unsoed' => 3,
+            'Chairman' => 4,
+            'Vice Chairman' => 5,
+            'Secretary' => 6,
+            'Treasurer' => 7,
             'Reviewer Coordinator' => 8,
-            'Publication Team' => 9,
+            'Event Coordinator ' => 9,
             'Oral Presentation Session Team' => 10,
-            'Website Team Coordinator' => 11
-            // Tambahkan posisi lain sesuai kebutuhan dengan nilai prioritas yang tepat
+            'Website Team Coordinator' => 11,
+            'Publication Team' => 12,
+            'Public Relationship Team' => 13,
+            'Catereting Team' => 14,
         ];
 
-        // Ambil semua data komite
         $committeesData = OrganizingCommittee::all();
 
-        // Urutkan data berdasarkan hierarki posisi
         $committees = $committeesData->sortBy(function ($committee) use ($positionOrder) {
-            // Jika posisi ada dalam array urutan, gunakan nilai prioritasnya
-            // Jika tidak, berikan nilai tinggi (999) agar berada di akhir
             return $positionOrder[$committee->position] ?? 999;
         })->values()->all();
 
