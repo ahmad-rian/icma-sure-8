@@ -150,7 +150,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link 
-                  href="/committe" 
+                  href="/committee" 
                   className="hover:text-blue-500 transition-colors duration-300 flex items-center space-x-2 group"
                 >
                   <span className="w-1.5 h-1.5 rounded-full inline-block transform transition-transform duration-300 group-hover:scale-125"
