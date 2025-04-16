@@ -14,7 +14,7 @@ const COLORS = {
 
 // Navigation items with dropdowns
 const NAVIGATION = [
-  { name: 'Home', href: '/' },
+  { name: 'IPUl', href: '/' },
   { name: 'About 8th ICMA SURE', href: '/about-the-8th'},
   { 
     name: 'Committee', 
