@@ -8,20 +8,13 @@ use Inertia\Inertia;
 
 class ReviewerController extends Controller
 {
-    /**
-     * Display the scientific committee page.
-     */
     public function index()
     {
-        // Ambil data dari database dan urutkan berdasarkan posisi dan nama
-        $committees = ScientificCommittee::orderBy('position')
-            ->orderBy('name')
-            ->get();
+        $committees = ScientificCommittee::get();
 
-        // Render halaman Reviewer dengan data yang sudah diambil
         return Inertia::render('Reviewer', [
             'committees' => $committees,
-            'darkMode' => false // Default dark mode setting
+            'darkMode' => false
         ]);
     }
 }

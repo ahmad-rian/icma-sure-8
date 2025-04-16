@@ -13,15 +13,11 @@ class CommitteeController extends Controller
      */
     public function index()
     {
-        // Ambil data dari database dan urutkan berdasarkan posisi dan nama
-        $committees = OrganizingCommittee::orderBy('position')
-            ->orderBy('name')
-            ->get();
+        $committees = OrganizingCommittee::get();
 
-        // Render halaman Committee dengan data yang sudah diambil
         return Inertia::render('Committee', [
             'committees' => $committees,
-            'darkMode' => false // Default dark mode setting
+            'darkMode' => false
         ]);
     }
 }
