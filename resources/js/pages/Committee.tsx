@@ -176,9 +176,34 @@ const Committee: React.FC<CommitteeProps> = ({ committees }) => {
               <Paragraph className="max-w-3xl text-lg sm:text-xl dark:text-gray-200 text-gray-700 font-medium">
                 Meet the dedicated team of professionals behind the 8th ICMA SURE Conference working tirelessly to make this event a success
               </Paragraph>
+              
+              {/* Modern Search Bar - Moved here in hero section */}
+              <motion.div 
+                variants={itemVariants}
+                className="w-full max-w-xl mt-8"
+              >
+                <div className="relative">
+                  <Search
+                    placeholder="Search committee members..."
+                    size="large"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full rounded-full committee-search shadow-lg"
+                    style={{ 
+                      borderRadius: '9999px', 
+                      boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1)',
+                      backgroundColor: isDarkMode ? 'rgba(55, 65, 81, 0.9)' : 'rgba(255, 255, 255, 0.9)',
+                      borderColor: isDarkMode ? '#4B5563' : '#e5e7eb',
+                    }}
+                  />
+                  
+                  {/* Background blur effect for search bar */}
+                  <div className="absolute inset-0 -z-10 backdrop-blur-sm rounded-full pointer-events-none"></div>
+                </div>
+              </motion.div>
             </motion.div>
 
-            {/* Search and Filter Section */}
+            {/* Filter Section - Now separate from search */}
             <motion.div 
               variants={itemVariants}
               className="mb-12"
@@ -187,39 +212,26 @@ const Committee: React.FC<CommitteeProps> = ({ committees }) => {
                 className="shadow-lg rounded-2xl overflow-hidden backdrop-blur-sm dark:bg-gray-800/95 dark:border-gray-700 bg-white/95 border-gray-100 border-0"
                 bordered={false}
               >
-                <div className="flex flex-col md:flex-row gap-6 items-center p-1 md:p-4">
-                  <div className="flex-1 w-full">
-                    <Search
-                      placeholder="Search committee members..."
-                      size="large"
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full rounded-lg committee-search"
-                      style={{ borderRadius: '0.75rem', boxShadow: '0 2px 6px rgba(0,0,0,0.05)' }}
-                    />
-                  </div>
-                  
-                  <div className="flex flex-wrap gap-2 justify-center">
+                <div className="flex flex-wrap gap-2 justify-center p-4">
+                  <Button 
+                    onClick={() => setSelectedPosition(null)} 
+                    type={selectedPosition === null ? 'primary' : 'default'}
+                    className={selectedPosition === null ? 'bg-gradient-to-r from-[#4CB050] to-[#E52531] text-white border-0' : 'dark:text-white dark:bg-gray-700 dark:border-gray-600'}
+                    shape="round"
+                  >
+                    All
+                  </Button>
+                  {positions.map((position, index) => (
                     <Button 
-                      onClick={() => setSelectedPosition(null)} 
-                      type={selectedPosition === null ? 'primary' : 'default'}
-                      className={selectedPosition === null ? 'bg-gradient-to-r from-[#4CB050] to-[#E52531] text-white border-0' : 'dark:text-white dark:bg-gray-700 dark:border-gray-600'}
+                      key={index} 
+                      onClick={() => setSelectedPosition(position)}
+                      type={selectedPosition === position ? 'primary' : 'default'}
+                      className={selectedPosition === position ? 'bg-gradient-to-r from-[#4CB050] to-[#E52531] text-white border-0' : 'dark:text-white dark:bg-gray-700 dark:border-gray-600'}
                       shape="round"
                     >
-                      All
+                      {position}
                     </Button>
-                    {positions.map((position, index) => (
-                      <Button 
-                        key={index} 
-                        onClick={() => setSelectedPosition(position)}
-                        type={selectedPosition === position ? 'primary' : 'default'}
-                        className={selectedPosition === position ? 'bg-gradient-to-r from-[#4CB050] to-[#E52531] text-white border-0' : 'dark:text-white dark:bg-gray-700 dark:border-gray-600'}
-                        shape="round"
-                      >
-                        {position}
-                      </Button>
-                    ))}
-                  </div>
+                  ))}
                 </div>
               </Card>
             </motion.div>
