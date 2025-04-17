@@ -1,107 +1,137 @@
-import React from 'react';
-import { Head } from '@inertiajs/react';
-import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem } from '@/types';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { CalendarDays, FileText, GraduationCap, TrendingUp, User, Users, Calendar, ArrowUpRight, ChevronUp, ChevronDown, BarChart3, PieChartIcon, LineChartIcon, Zap } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer, 
-  PieChart, 
-  Pie, 
-  Cell, 
-  LineChart, 
+import React from "react"
+import { Head } from "@inertiajs/react"
+import AppLayout from "@/layouts/app-layout"
+import type { BreadcrumbItem } from "@/types"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import {
+  FileText,
+  TrendingUp,
+  User,
+  Users,
+  Calendar,
+  ArrowUpRight,
+  ChevronUp,
+  ChevronDown,
+  BarChart3,
+  PieChartIcon,
+  LineChartIcon,
+  Zap,
+} from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  LineChart,
   Line,
-  Legend 
-} from 'recharts';
+  Legend,
+} from "recharts"
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
-    title: 'Dashboard',
-    href: '/dashboard',
+    title: "Dashboard",
+    href: "/dashboard",
   },
-];
+]
 
 interface DashboardProps {
   stats?: {
-    organizing_committees: number;
-    scientific_committees: number;
-    total_articles: number;
-    published_articles: number;
-    draft_articles: number;
-    total_events: number;
-    active_events: number;
-    users: number;
-  };
+    organizing_committees: number
+    scientific_committees: number
+    total_articles: number
+    published_articles: number
+    draft_articles: number
+    total_events: number
+    active_events: number
+    users: number
+  }
   monthly_articles?: {
-    month: string;
-    published: number;
-    draft: number;
-  }[];
+    month: string
+    published: number
+    draft: number
+  }[]
   monthly_events?: {
-    month: string;
-    events: number;
-  }[];
+    month: string
+    events: number
+  }[]
   recent_activities?: {
-    type: 'event' | 'article' | 'committee' | 'user';
-    title: string;
-    time: string;
-  }[];
+    type: "event" | "article" | "committee" | "user"
+    title: string
+    time: string
+  }[]
   trends?: {
     committees: {
-      value: number;
-      isPositive: boolean;
-    };
+      value: number
+      isPositive: boolean
+    }
     articles: {
-      value: number;
-      isPositive: boolean;
-    };
+      value: number
+      isPositive: boolean
+    }
     events: {
-      value: number;
-      isPositive: boolean;
-    };
+      value: number
+      isPositive: boolean
+    }
     users: {
-      value: number;
-      isPositive: boolean;
-    };
-  };
+      value: number
+      isPositive: boolean
+    }
+  }
 }
 
 // Chart colors - consistent palette for better visual design
+// const COLORS = {
+//   primary: 'hsl(var(--primary))',
+//   secondary: 'hsl(var(--secondary))',
+//   success: 'hsl(var(--success))',
+//   warning: 'hsl(var(--warning))',
+//   info: 'hsl(var(--info))',
+//   danger: 'hsl(var(--danger))',
+//   published: 'hsl(var(--info))',
+//   draft: 'hsl(var(--warning))',
+//   organizing: 'hsl(var(--primary))',
+//   scientific: 'hsl(var(--success))',
+//   events: 'hsl(var(--info))',
+//   positive: 'hsl(var(--success))',
+//   negative: 'hsl(var(--danger))'
+// };
+
+// Replace with explicit colors that work in both light and dark modes
 const COLORS = {
-  primary: 'hsl(var(--primary))',
-  secondary: 'hsl(var(--secondary))',
-  success: 'hsl(var(--success))',
-  warning: 'hsl(var(--warning))',
-  info: 'hsl(var(--info))',
-  danger: 'hsl(var(--danger))',
-  published: 'hsl(var(--info))',
-  draft: 'hsl(var(--warning))',
-  organizing: 'hsl(var(--primary))',
-  scientific: 'hsl(var(--success))',
-  events: 'hsl(var(--info))',
-  positive: 'hsl(var(--success))',
-  negative: 'hsl(var(--danger))'
-};
+  primary: "#3b82f6",
+  secondary: "#6b7280",
+  success: "#10b981",
+  warning: "#f59e0b",
+  info: "#3b82f6",
+  danger: "#ef4444",
+  published: "#3b82f6",
+  draft: "#f59e0b",
+  organizing: "#8b5cf6",
+  scientific: "#10b981",
+  events: "#3b82f6",
+  positive: "#10b981",
+  negative: "#ef4444",
+}
 
 interface StatsCardProps {
-  title: string;
-  value: number;
-  description: string;
-  icon: React.ReactNode;
+  title: string
+  value: number
+  description: string
+  icon: React.ReactNode
   trend?: {
-    value: number;
-    isPositive: boolean;
-  };
-  color?: string;
+    value: number
+    isPositive: boolean
+  }
+  color?: string
 }
 
 const StatsCard = ({ title, value, description, icon, trend, color = COLORS.primary }: StatsCardProps) => (
@@ -119,18 +149,14 @@ const StatsCard = ({ title, value, description, icon, trend, color = COLORS.prim
     {trend && (
       <CardFooter className="p-2 pt-0">
         <div className="flex items-center">
-          <div 
+          <div
             className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
-              trend.isPositive 
-                ? "bg-success/10 text-success dark:bg-success/20" 
+              trend.isPositive
+                ? "bg-success/10 text-success dark:bg-success/20"
                 : "bg-danger/10 text-danger dark:bg-danger/20"
             }`}
           >
-            {trend.isPositive ? (
-              <ChevronUp className="h-3 w-3" />
-            ) : (
-              <ChevronDown className="h-3 w-3" />
-            )}
+            {trend.isPositive ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
             {trend.value}%
           </div>
           <span className="text-xs text-muted-foreground ml-2">from last month</span>
@@ -138,7 +164,7 @@ const StatsCard = ({ title, value, description, icon, trend, color = COLORS.prim
       </CardFooter>
     )}
   </Card>
-);
+)
 
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
@@ -152,10 +178,10 @@ const CustomTooltip = ({ active, payload, label }: any) => {
           </p>
         ))}
       </div>
-    );
+    )
   }
-  return null;
-};
+  return null
+}
 
 export default function Dashboard(props: DashboardProps) {
   // Default values for props
@@ -167,24 +193,24 @@ export default function Dashboard(props: DashboardProps) {
     draft_articles: 0,
     total_events: 1,
     active_events: 1,
-    users: 2
-  };
-  
-  const monthly_articles = props.monthly_articles || [];
-  const monthly_events = props.monthly_events || [];
-  const recent_activities = props.recent_activities || [];
+    users: 2,
+  }
+
+  const monthly_articles = props.monthly_articles || []
+  const monthly_events = props.monthly_events || []
+  const recent_activities = props.recent_activities || []
   const trends = props.trends || {
     committees: { value: 100, isPositive: true },
     articles: { value: 0, isPositive: true },
     events: { value: 100, isPositive: true },
-    users: { value: 100, isPositive: true }
-  };
+    users: { value: 100, isPositive: true },
+  }
 
   // Prepare committee data for pie chart
   const committeesData = [
-    { name: 'Organizing', count: stats.organizing_committees, color: COLORS.organizing },
-    { name: 'Scientific', count: stats.scientific_committees, color: COLORS.scientific },
-  ];
+    { name: "Organizing", count: stats.organizing_committees, color: COLORS.organizing },
+    { name: "Scientific", count: stats.scientific_committees, color: COLORS.scientific },
+  ]
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
@@ -197,35 +223,35 @@ export default function Dashboard(props: DashboardProps) {
             <p className="text-muted-foreground mt-1">Welcome to your ICMA SURE control panel</p>
           </div>
         </div>
-      
+
         {/* Stats Cards */}
         <div className="grid gap-4 md:gap-6 md:grid-cols-2 lg:grid-cols-4">
-          <StatsCard 
-            title="Committee Members" 
+          <StatsCard
+            title="Committee Members"
             value={stats.organizing_committees + stats.scientific_committees}
             description={`${stats.organizing_committees} organizing, ${stats.scientific_committees} scientific`}
             icon={<Users />}
             trend={trends.committees}
           />
-          
-          <StatsCard 
-            title="Articles" 
+
+          <StatsCard
+            title="Articles"
             value={stats.total_articles}
             description={`${stats.published_articles} published, ${stats.draft_articles} draft`}
             icon={<FileText />}
             trend={trends.articles}
           />
-          
-          <StatsCard 
-            title="Active Events" 
+
+          <StatsCard
+            title="Active Events"
             value={stats.active_events}
             description={`Out of ${stats.total_events} total events`}
             icon={<Calendar />}
             trend={trends.events}
           />
-          
-          <StatsCard 
-            title="Users" 
+
+          <StatsCard
+            title="Users"
             value={stats.users}
             description="Registered system users"
             icon={<User />}
@@ -253,33 +279,20 @@ export default function Dashboard(props: DashboardProps) {
             <CardContent className="pt-6 bg-card">
               <div className="h-[320px]">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart
-                    data={monthly_articles}
-                    margin={{ top: 20, right: 30, left: 0, bottom: 5 }}
-                  >
+                  <BarChart data={monthly_articles} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
                     <XAxis dataKey="month" tick={{ fontSize: 12 }} />
                     <YAxis tick={{ fontSize: 12 }} />
                     <Tooltip content={<CustomTooltip />} />
-                    <Legend 
-                      wrapperStyle={{ paddingTop: 10 }}
-                      iconType="circle"
-                      iconSize={8}
-                    />
-                    <Bar 
-                      dataKey="published" 
-                      name="Published" 
-                      stackId="a" 
-                      fill={COLORS.published} 
+                    <Legend wrapperStyle={{ paddingTop: 10 }} iconType="circle" iconSize={8} />
+                    <Bar
+                      dataKey="published"
+                      name="Published"
+                      stackId="a"
+                      fill={COLORS.published}
                       radius={[4, 4, 0, 0]}
                     />
-                    <Bar 
-                      dataKey="draft" 
-                      name="Draft" 
-                      stackId="a" 
-                      fill={COLORS.draft}
-                      radius={[4, 4, 0, 0]} 
-                    />
+                    <Bar dataKey="draft" name="Draft" stackId="a" fill={COLORS.draft} radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -312,22 +325,23 @@ export default function Dashboard(props: DashboardProps) {
                       fill="#8884d8"
                       dataKey="count"
                       nameKey="name"
-                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                      label={({ name, percent }) => (
+                        <text x={0} y={0} textAnchor="middle" fill="#fff" fontWeight="bold" fontSize={12}>
+                          {`${name} ${(percent * 100).toFixed(0)}%`}
+                        </text>
+                      )}
                     >
                       {committeesData.map((entry, index) => (
-                        <Cell 
-                          key={`cell-${index}`} 
-                          fill={index === 0 ? COLORS.organizing : COLORS.scientific} 
-                          stroke="none"
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={index === 0 ? COLORS.organizing : COLORS.scientific}
+                          stroke="#fff"
+                          strokeWidth={1}
                         />
                       ))}
                     </Pie>
                     <Tooltip />
-                    <Legend 
-                      iconType="circle"
-                      iconSize={8}
-                      wrapperStyle={{ paddingTop: 20 }}
-                    />
+                    <Legend iconType="circle" iconSize={8} wrapperStyle={{ paddingTop: 20 }} />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
@@ -359,12 +373,12 @@ export default function Dashboard(props: DashboardProps) {
                     <XAxis dataKey="month" tick={{ fontSize: 12 }} />
                     <YAxis tick={{ fontSize: 12 }} />
                     <Tooltip content={<CustomTooltip />} />
-                    <Line 
-                      type="monotone" 
-                      dataKey="events" 
+                    <Line
+                      type="monotone"
+                      dataKey="events"
                       name="Events"
-                      stroke={COLORS.events} 
-                      activeDot={{ r: 8 }} 
+                      stroke={COLORS.events}
+                      activeDot={{ r: 8 }}
                       strokeWidth={2}
                     />
                   </LineChart>
@@ -388,15 +402,21 @@ export default function Dashboard(props: DashboardProps) {
             <CardContent className="pt-4 bg-card">
               <Tabs defaultValue="events" className="w-full">
                 <TabsList className="grid w-full grid-cols-3 mb-2">
-                  <TabsTrigger value="events" className="text-sm">Events</TabsTrigger>
-                  <TabsTrigger value="articles" className="text-sm">Articles</TabsTrigger>
-                  <TabsTrigger value="committees" className="text-sm">Committees</TabsTrigger>
+                  <TabsTrigger value="events" className="text-sm">
+                    Events
+                  </TabsTrigger>
+                  <TabsTrigger value="articles" className="text-sm">
+                    Articles
+                  </TabsTrigger>
+                  <TabsTrigger value="committees" className="text-sm">
+                    Committees
+                  </TabsTrigger>
                 </TabsList>
                 <TabsContent value="events" className="space-y-3 mt-2">
                   <div className="flex flex-col gap-2">
-                    <Button 
-                      asChild 
-                      variant="outline" 
+                    <Button
+                      asChild
+                      variant="outline"
                       className="justify-between hover:bg-primary/5 hover:text-primary hover:border-primary/20 transition-colors"
                     >
                       <a href="/events/create">
@@ -404,9 +424,9 @@ export default function Dashboard(props: DashboardProps) {
                         <ArrowUpRight className="h-4 w-4" />
                       </a>
                     </Button>
-                    <Button 
-                      asChild 
-                      variant="outline" 
+                    <Button
+                      asChild
+                      variant="outline"
                       className="justify-between hover:bg-primary/5 hover:text-primary hover:border-primary/20 transition-colors"
                     >
                       <a href="/events">
@@ -418,9 +438,9 @@ export default function Dashboard(props: DashboardProps) {
                 </TabsContent>
                 <TabsContent value="articles" className="space-y-3 mt-2">
                   <div className="flex flex-col gap-2">
-                    <Button 
-                      asChild 
-                      variant="outline" 
+                    <Button
+                      asChild
+                      variant="outline"
                       className="justify-between hover:bg-primary/5 hover:text-primary hover:border-primary/20 transition-colors"
                     >
                       <a href="/articles/create">
@@ -428,9 +448,9 @@ export default function Dashboard(props: DashboardProps) {
                         <ArrowUpRight className="h-4 w-4" />
                       </a>
                     </Button>
-                    <Button 
-                      asChild 
-                      variant="outline" 
+                    <Button
+                      asChild
+                      variant="outline"
                       className="justify-between hover:bg-primary/5 hover:text-primary hover:border-primary/20 transition-colors"
                     >
                       <a href="/articles">
@@ -442,9 +462,9 @@ export default function Dashboard(props: DashboardProps) {
                 </TabsContent>
                 <TabsContent value="committees" className="space-y-3 mt-2">
                   <div className="flex flex-col gap-2">
-                    <Button 
-                      asChild 
-                      variant="outline" 
+                    <Button
+                      asChild
+                      variant="outline"
                       className="justify-between hover:bg-primary/5 hover:text-primary hover:border-primary/20 transition-colors"
                     >
                       <a href="/organizing-committees/create">
@@ -452,9 +472,9 @@ export default function Dashboard(props: DashboardProps) {
                         <ArrowUpRight className="h-4 w-4" />
                       </a>
                     </Button>
-                    <Button 
-                      asChild 
-                      variant="outline" 
+                    <Button
+                      asChild
+                      variant="outline"
                       className="justify-between hover:bg-primary/5 hover:text-primary hover:border-primary/20 transition-colors"
                     >
                       <a href="/scientific-committees/create">
@@ -490,10 +510,10 @@ export default function Dashboard(props: DashboardProps) {
                 recent_activities.map((activity, index) => (
                   <div key={index} className="flex items-center p-2 hover:bg-muted/50 rounded-lg transition-colors">
                     <div className="mr-4 flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 dark:bg-primary/20">
-                      {activity.type === 'event' && <Calendar className="h-5 w-5 text-primary" />}
-                      {activity.type === 'article' && <FileText className="h-5 w-5 text-primary" />}
-                      {activity.type === 'committee' && <Users className="h-5 w-5 text-primary" />}
-                      {activity.type === 'user' && <User className="h-5 w-5 text-primary" />}
+                      {activity.type === "event" && <Calendar className="h-5 w-5 text-primary" />}
+                      {activity.type === "article" && <FileText className="h-5 w-5 text-primary" />}
+                      {activity.type === "committee" && <Users className="h-5 w-5 text-primary" />}
+                      {activity.type === "user" && <User className="h-5 w-5 text-primary" />}
                     </div>
                     <div className="space-y-1 flex-1">
                       <p className="text-sm font-medium leading-none">{activity.title}</p>
@@ -514,10 +534,12 @@ export default function Dashboard(props: DashboardProps) {
             </div>
           </CardContent>
           <CardFooter className="border-t p-4">
-            <Button variant="outline" className="w-full hover:bg-primary/5">View All Activity</Button>
+            <Button variant="outline" className="w-full hover:bg-primary/5">
+              View All Activity
+            </Button>
           </CardFooter>
         </Card>
       </div>
     </AppLayout>
-  );
+  )
 }
