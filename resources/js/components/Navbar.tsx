@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Link } from '@inertiajs/react';
 import { Disclosure, Transition } from '@headlessui/react';
 import { ChevronDownIcon } from '@heroicons/react/24/solid';
-import { Bars3Icon, XMarkIcon, SunIcon, MoonIcon } from '@heroicons/react/24/outline';
+import { Bars3Icon, XMarkIcon, SunIcon, MoonIcon, ComputerDesktopIcon } from '@heroicons/react/24/outline';
 
-// ICMA colors based on the logo
+
 const COLORS = {
   red: '#E52531',
   green: '#4CB050',
@@ -12,7 +12,14 @@ const COLORS = {
   orange: '#F0A023'
 };
 
-// Navigation items with dropdowns
+
+const THEMES = {
+  LIGHT: 'light',
+  DARK: 'dark',
+  SYSTEM: 'system'
+};
+
+
 const NAVIGATION = [
   { name: 'Home', href: '/' },
   { name: 'About 8th ICMA SURE', href: '/about-the-8th'},
@@ -37,11 +44,49 @@ const NAVIGATION = [
 ];
 
 const Navbar = () => {
+  const [theme, setTheme] = useState(THEMES.SYSTEM);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [mounted, setMounted] = useState(false);
   const [isTablet, setIsTablet] = useState(false);
+  
+  // Apply theme function
+  const applyTheme = (newTheme) => {
+    let isDark = false;
+    
+    if (newTheme === THEMES.SYSTEM) {
+      isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    } else {
+      isDark = newTheme === THEMES.DARK;
+    }
+    
+    // Apply dark mode
+    if (isDark) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    
+    setIsDarkMode(isDark);
+    
+    try {
+      localStorage.setItem('theme', newTheme);
+    } catch (error) {
+      console.error('Failed to save theme preference:', error);
+    }
+  };
+  
+  // Cycle through themes
+  const cycleTheme = () => {
+    const themeValues = Object.values(THEMES);
+    const currentIndex = themeValues.indexOf(theme);
+    const nextIndex = (currentIndex + 1) % themeValues.length;
+    const nextTheme = themeValues[nextIndex];
+    
+    setTheme(nextTheme);
+    applyTheme(nextTheme);
+  };
   
   // Handle initial setup after mount
   useEffect(() => {
@@ -54,33 +99,39 @@ const Navbar = () => {
     
     // Check theme preference
     try {
-      const savedTheme = localStorage.getItem('theme');
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      
-      if (savedTheme === 'dark' || (prefersDark && savedTheme !== 'light')) {
-        setIsDarkMode(true);
-        document.documentElement.classList.add('dark');
-      }
+      const savedTheme = localStorage.getItem('theme') || THEMES.SYSTEM;
+      setTheme(savedTheme);
+      applyTheme(savedTheme);
     } catch (error) {
       console.error('Failed to get theme preference:', error);
+      // Fallback to system preference
+      setTheme(THEMES.SYSTEM);
+      applyTheme(THEMES.SYSTEM);
     }
     
-    return () => window.removeEventListener('resize', checkTablet);
-  }, []);
-
-  // Toggle theme function
-  const toggleTheme = () => {
-    setIsDarkMode(prev => {
-      const newMode = !prev;
-      try {
-        document.documentElement.classList[newMode ? 'add' : 'remove']('dark');
-        localStorage.setItem('theme', newMode ? 'dark' : 'light');
-      } catch (error) {
-        console.error('Failed to update theme:', error);
+    // Listen for system theme changes
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    
+    // Initial check for system theme
+    if (theme === THEMES.SYSTEM) {
+      setIsDarkMode(mediaQuery.matches);
+    }
+    
+    // Add listener for system theme changes
+    const handleSystemThemeChange = (e) => {
+      if (theme === THEMES.SYSTEM) {
+        setIsDarkMode(e.matches);
+        applyTheme(THEMES.SYSTEM);
       }
-      return newMode;
-    });
-  };
+    };
+    
+    mediaQuery.addEventListener('change', handleSystemThemeChange);
+    
+    return () => {
+      window.removeEventListener('resize', checkTablet);
+      mediaQuery.removeEventListener('change', handleSystemThemeChange);
+    };
+  }, [theme]);
 
   // Handle scroll effect with debounce
   useEffect(() => {
@@ -128,6 +179,30 @@ const Navbar = () => {
     const colorKeys = Object.keys(COLORS);
     const borderColor = COLORS[colorKeys[index % colorKeys.length]];
     return { borderLeftColor: borderColor, backgroundColor: borderColor };
+  };
+  
+  // Get theme icon based on current theme
+  const getThemeIcon = () => {
+    if (!mounted) return null;
+    
+    switch (theme) {
+      case THEMES.LIGHT:
+        return <SunIcon className="h-4 w-4 sm:h-5 sm:w-5 text-amber-400" />;
+      case THEMES.DARK:
+        return <MoonIcon className="h-4 w-4 sm:h-5 sm:w-5 text-blue-300" />;
+      case THEMES.SYSTEM:
+        return <ComputerDesktopIcon className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400 dark:text-gray-300" />;
+      default:
+        return <SunIcon className="h-4 w-4 sm:h-5 sm:w-5 text-amber-400" />;
+    }
+  };
+  
+  // Get theme button background
+  const getThemeButtonBg = () => {
+    if (isDarkMode) {
+      return 'bg-gray-800/90 hover:bg-gray-700 shadow-inner hover:shadow';
+    }
+    return 'bg-gray-200/90 hover:bg-gray-300 shadow hover:shadow-md';
   };
 
   return (
@@ -285,12 +360,8 @@ const Navbar = () => {
                 {/* Theme Toggle Button */}
                 {mounted && (
                   <button
-                    onClick={toggleTheme}
-                    className={`rounded-full p-1.5 sm:p-2 focus:outline-none transition-all duration-300 ${
-                      isDarkMode 
-                        ? 'bg-gray-800/90 hover:bg-gray-700 shadow-inner hover:shadow' 
-                        : 'bg-gray-200/90 hover:bg-gray-300 shadow hover:shadow-md'
-                    } hover:scale-110`}
+                    onClick={cycleTheme}
+                    className={`rounded-full p-1.5 sm:p-2 focus:outline-none transition-all duration-300 ${getThemeButtonBg()} hover:scale-110`}
                     style={{
                       display: 'flex',
                       alignItems: 'center',
@@ -298,14 +369,11 @@ const Navbar = () => {
                       minWidth: '1.75rem',
                       minHeight: '1.75rem'
                     }}
-                    aria-label="Toggle dark mode"
+                    aria-label="Toggle theme"
+                    title={`Current theme: ${theme}`}
                   >
-                    {isDarkMode ? (
-                      <SunIcon className="h-4 w-4 sm:h-5 sm:w-5 text-amber-300" />
-                    ) : (
-                      <MoonIcon className="h-4 w-4 sm:h-5 sm:w-5 text-gray-600" />
-                    )}
-                    <span className="sr-only">Toggle theme</span>
+                    {getThemeIcon()}
+                    <span className="sr-only">Toggle theme ({theme})</span>
                   </button>
                 )}
 
@@ -464,6 +532,26 @@ const Navbar = () => {
                     )}
                   </div>
                 ))}
+                
+                {/* Mobile theme toggle */}
+                <div className="pt-2 sm:pt-3 pb-1">
+                  <button
+                    onClick={cycleTheme}
+                    className={`flex w-full items-center justify-center space-x-2 px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-medium rounded-lg transition-all duration-300 ${
+                      isDarkMode
+                        ? 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    <span>Theme:</span>
+                    <div className="flex items-center justify-center w-6 h-6">
+                      {getThemeIcon()}
+                    </div>
+                    <span className="capitalize">{theme}</span>
+                  </button>
+                </div>
+                
+                {/* Mobile sign in button */}
                 <div className="pt-2 sm:pt-3 pb-1">
                   <Link
                     href="/login"
