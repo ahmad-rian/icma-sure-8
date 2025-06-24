@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Head } from '@inertiajs/react';
 import { Typography, Card, Divider } from 'antd';
-import { EnvironmentOutlined } from '@ant-design/icons';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
@@ -14,24 +13,54 @@ const AboutUs: React.FC<AboutUsProps> = ({ darkMode = false }) => {
   const [isDarkMode, setIsDarkMode] = useState(darkMode);
   const [typedText, setTypedText] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
-  const textToType = "International Conference on Multidiscipline Approaches for Sustainable Rural Development";
+  const [timeLeft, setTimeLeft] = useState({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0
+  });
   
-  // Typing animation effect with continuous loop
+  const textToType = "International Conference on Multidisciplinary Approaches for Sustainable Rural Development";
+  
+  // Conference date: Tuesday, 7 October 2025
+  const conferenceDate = new Date('2025-10-07T00:00:00');
+  
+  // Calculate countdown
+  useEffect(() => {
+    const calculateTimeLeft = () => {
+      const now = new Date();
+      const difference = conferenceDate - now;
+      
+      if (difference > 0) {
+        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+        
+        setTimeLeft({ days, hours, minutes, seconds });
+      } else {
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+      }
+    };
+    
+    calculateTimeLeft();
+    const timer = setInterval(calculateTimeLeft, 1000);
+    
+    return () => clearInterval(timer);
+  }, []);
+  
   useEffect(() => {
     if (currentIndex < textToType.length) {
       const timeout = setTimeout(() => {
         setTypedText(prev => prev + textToType[currentIndex]);
         setCurrentIndex(prevIndex => prevIndex + 1);
       }, 100);
-      
       return () => clearTimeout(timeout);
     } else {
-      // Reset after a short pause when complete
       const resetTimeout = setTimeout(() => {
         setTypedText("");
         setCurrentIndex(0);
       }, 1500);
-      
       return () => clearTimeout(resetTimeout);
     }
   }, [currentIndex]);
@@ -63,38 +92,25 @@ const AboutUs: React.FC<AboutUsProps> = ({ darkMode = false }) => {
     }
   };
 
-  const fadeInUp = {
-    initial: { y: 20, opacity: 0 },
-    animate: { y: 0, opacity: 1 },
-    transition: { duration: 0.6 }
-  };
-
   const toggleTheme = () => {
     setIsDarkMode(!isDarkMode);
   };
 
   return (
     <>
-      <Head title="About the 8th " />
-      
+      <Head title="About the 8th ICMA SURE" />
       <div className={`min-h-screen ${isDarkMode ? 'dark bg-gray-900 text-white' : 'bg-white text-gray-900'}`}>
         <Navbar isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
-        
-        {/* Hero Section with Parallax Effect */}
         <div className="relative overflow-hidden">
-          {/* Background - changed to white with subtle patterns */}
           <div className="absolute inset-0 bg-white dark:bg-gray-900">
             <div className="absolute top-20 right-20 w-64 h-64 rounded-full bg-gradient-to-tr from-[#4CB050]/10 to-transparent"></div>
             <div className="absolute bottom-20 left-20 w-64 h-64 rounded-full bg-gradient-to-bl from-[#E52531]/10 to-transparent"></div>
-            
-            {/* Abstract geometric shapes */}
             <svg className="absolute top-0 left-0 w-full h-full opacity-5" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg">
               <path d="M0,0 L1000,0 L1000,1000 L0,1000 Z" fill="none" stroke={colors.blue} strokeWidth="2" />
               <circle cx="500" cy="500" r="300" fill="none" stroke={colors.green} strokeWidth="2" />
               <polygon points="500,200 800,500 500,800 200,500" fill="none" stroke={colors.red} strokeWidth="2" />
             </svg>
           </div>
-          
           <motion.div 
             className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 sm:py-36 relative z-10"
             initial="hidden"
@@ -115,8 +131,6 @@ const AboutUs: React.FC<AboutUsProps> = ({ darkMode = false }) => {
                   <sup className="text-xl">th</sup>
                   <span className="bg-gradient-to-r from-[#4CB050] via-[#F0A023] to-[#E52531] text-transparent bg-clip-text"> ICMA SURE</span>
                 </Typography.Title>
-                
-                {/* Typing text animation */}
                 <div className="h-16 mt-4 overflow-hidden">
                   <motion.p 
                     className="text-lg sm:text-xl font-medium text-gray-700 dark:text-gray-200"
@@ -131,16 +145,89 @@ const AboutUs: React.FC<AboutUsProps> = ({ darkMode = false }) => {
               <div className="h-1 w-40 mt-6 rounded-full bg-gradient-to-r from-[#4CB050] via-[#F0A023] to-[#E52531]"></div>
             </motion.div>
 
+            {/* Countdown Timer Section */}
+            <motion.div variants={itemVariants} className="mb-16">
+              <div className="text-center mb-8">
+                <Typography.Text className="text-base uppercase tracking-wider text-gray-500 dark:text-gray-400 font-semibold">
+                  Conference Starts In
+                </Typography.Text>
+                <Typography.Title level={2} className="mt-2 mb-3 text-gray-900 dark:text-white text-2xl sm:text-3xl">
+                  Tuesday, 7 October 2025
+                </Typography.Title>
+              </div>
+              
+              <div className="max-w-4xl mx-auto">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-8">
+                  {[
+                    { value: timeLeft.days, label: 'Days', color: 'from-[#4CB050] to-[#F0A023]' },
+                    { value: timeLeft.hours, label: 'Hours', color: 'from-[#F0A023] to-[#E52531]' },
+                    { value: timeLeft.minutes, label: 'Minutes', color: 'from-[#E52531] to-[#2a3b8f]' },
+                    { value: timeLeft.seconds, label: 'Seconds', color: 'from-[#2a3b8f] to-[#4CB050]' }
+                  ].map((item, index) => (
+                    <motion.div
+                      key={item.label}
+                      className="text-center p-6 sm:p-8 rounded-3xl bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl shadow-2xl border border-white/20 dark:border-gray-700/20"
+                      initial={{ scale: 0.8, opacity: 0, y: 50 }}
+                      animate={{ scale: 1, opacity: 1, y: 0 }}
+                      transition={{ 
+                        delay: index * 0.1, 
+                        type: "spring", 
+                        stiffness: 300,
+                        damping: 20
+                      }}
+                      whileHover={{ 
+                        scale: 1.05, 
+                        y: -10,
+                        boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)"
+                      }}
+                    >
+                      <motion.div 
+                        className={`text-4xl sm:text-5xl lg:text-6xl font-bold bg-gradient-to-r ${item.color} text-transparent bg-clip-text mb-2`}
+                        key={item.value}
+                        initial={{ scale: 1.2, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        {String(item.value).padStart(2, '0')}
+                      </motion.div>
+                      <div className="text-sm sm:text-base text-gray-600 dark:text-gray-400 font-semibold uppercase tracking-wider">
+                        {item.label}
+                      </div>
+                      {/* Animated bottom border */}
+                      <div className={`h-1 w-full mt-4 rounded-full bg-gradient-to-r ${item.color} opacity-60`}></div>
+                    </motion.div>
+                  ))}
+                </div>
+                
+                <motion.div 
+                  className="text-center"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.6 }}
+                >
+                  <div className="inline-flex items-center px-6 py-3 rounded-full bg-gradient-to-r from-[#4CB050]/10 via-[#F0A023]/10 to-[#E52531]/10 border-2 border-[#4CB050]/20 backdrop-blur-sm">
+                   
+                    <Typography.Text className="text-base font-semibold text-gray-700 dark:text-gray-300">
+                      100% Online Conference
+                    </Typography.Text>
+                    <motion.div
+                      className="ml-3 w-2 h-2 bg-green-500 rounded-full"
+                      animate={{ scale: [1, 1.5, 1], opacity: [1, 0.5, 1] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    />
+                  </div>
+                </motion.div>
+              </div>
+            </motion.div>
+
             <motion.div variants={itemVariants}>
               <Card 
                 className="shadow-2xl rounded-3xl overflow-hidden backdrop-blur-sm bg-white/95 dark:bg-gray-800/95 border-0"
                 bordered={false}
               >
                 <div className="relative">
-                  {/* Glass morphism effect with gradient overlays */}
                   <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-[#4CB050]/10 via-[#E52531]/5 to-transparent rounded-bl-full"></div>
                   <div className="absolute bottom-0 left-0 w-64 h-64 bg-gradient-to-tr from-[#E52531]/10 via-[#F0A023]/5 to-transparent rounded-tr-full"></div>
-                  
                   <div className="relative z-10 p-8 sm:p-10">
                     <motion.div 
                       variants={itemVariants} 
@@ -150,12 +237,21 @@ const AboutUs: React.FC<AboutUsProps> = ({ darkMode = false }) => {
                       viewport={{ once: true }}
                       transition={{ duration: 0.5 }}
                     >
-                      <Typography.Paragraph className="text-lg sm:text-xl leading-relaxed mb-10 text-justify text-gray-700 dark:text-gray-200">
-                        ICMA Sure 2025 presents the theme <span className="font-semibold">"Sustainable Digital Transformation: Integrating Local Values in Downstream Development"</span> as a response to the pressing need to balance digital technological advancement with environmental preservation. Amid increasingly complex environmental challenges, this conference aims to explore how digital transformation can provide innovative solutions to environmental issues while respecting and integrating local wisdom and traditional knowledge systems, particularly in downstream development.
+                      <div className="text-center mb-12">
+                        <Typography.Text className="text-base uppercase tracking-wider text-gray-500 dark:text-gray-400 font-semibold">
+                          Conference Overview
+                        </Typography.Text>
+                        <Typography.Title level={2} className="mt-3 mb-8 text-gray-900 dark:text-white text-2xl sm:text-3xl">
+                          About ICMA SURE 2025
+                        </Typography.Title>
+                      </div>
+                      
+                      <Typography.Paragraph className="text-lg sm:text-xl leading-relaxed mb-8 text-center text-gray-700 dark:text-gray-200">
+                        The International Conference on Multidisciplinary Approaches for Sustainable Rural Development (ICMA SURE) 2025 addresses the convergence of digital transformation and environmental stewardship, which has become increasingly paramount in shaping the future of our planet.
                       </Typography.Paragraph>
 
-                      <Typography.Paragraph className="text-lg sm:text-xl leading-relaxed mb-10 text-justify text-gray-700 dark:text-gray-200">
-                        ICMA Sure 2025 establishes a critical framework for synthesizing sustainability principles, digital capabilities, and local knowledge systems, thereby creating a promising pathway for achieving environmental conservation objectives while promoting technological progress and economic development. The success of this integration will be measured not merely by technological achievements, but also by its contribution to environmental preservation and sustainable development for future generations.
+                      <Typography.Paragraph className="text-lg leading-relaxed mb-10 text-justify text-gray-700 dark:text-gray-200">
+                        In the face of escalating environmental challenges and the pressing need for sustainable development, the intricate relationship between technological advancement and environmental sustainability presents both unprecedented opportunities and complex challenges. As we stand at the crossroads of digital innovation and ecological preservation, the integration of local values in downstream development emerges as a crucial paradigm for achieving sustainable growth while maintaining environmental equilibrium.
                       </Typography.Paragraph>
                     </motion.div>
 
@@ -178,24 +274,151 @@ const AboutUs: React.FC<AboutUsProps> = ({ darkMode = false }) => {
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true }}
                       transition={{ duration: 0.5, delay: 0.2 }}
+                      className="mb-12"
                     >
-                      <div className="mb-6 text-center">
-                        <Typography.Text className="text-sm uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                          Conference Theme
+                      <div className="text-center mb-8">
+                        <Typography.Text className="text-sm uppercase tracking-widest text-gray-500 dark:text-gray-400 font-semibold">
+                          2025 Conference Theme
                         </Typography.Text>
-                        <Typography.Title level={2} className="mt-2 font-bold text-gray-900 dark:text-white">
-                          <span className="bg-gradient-to-r from-[#4CB050] via-[#F0A023] to-[#E52531] text-transparent bg-clip-text">
-                            SUSTAINABLE DIGITAL TRANSFORMATION
-                          </span>
-                        </Typography.Title>
-                        <Typography.Title level={3} className="mt-1 text-gray-700 dark:text-gray-200">
-                          INTEGRATING LOCAL VALUES IN DOWNSTREAM DEVELOPMENT
-                        </Typography.Title>
-                        <div className="mt-6">
-                          <Typography.Paragraph className="text-lg leading-relaxed text-justify text-gray-700 dark:text-gray-200">
-                            "Sustainable Digital Transformation: Integrating Local Values in Downstream Development" addresses the critical intersection of technological advancement and sustainability, emphasizing how downstream implementation processes can be enhanced by incorporating local knowledge systems. It promotes a purposeful approach to digital transformation that extends beyond efficiency to embrace environmental stewardship, while recognizing the importance of indigenous wisdom and cultural practices in creating contextually appropriate solutions. By focusing on the practical application stages where technologies directly impact communities and ecosystems, the theme advocates for a holistic sustainability framework that balances environmental preservation with cultural sustainability, economic viability, and social equity. Ultimately, it calls for meaningful dialogue between modern innovations and traditional practices to create more comprehensive and effective solutions that respect local environmental contexts while promoting technological progress.
-                          </Typography.Paragraph>
+                        <div className="mt-4 p-8 rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-700 border border-gray-200 dark:border-gray-600">
+                          <Typography.Title level={1} className="mb-4 text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white leading-tight">
+                            <span className="bg-gradient-to-r from-[#4CB050] via-[#F0A023] to-[#E52531] text-transparent bg-clip-text">
+                              Sustainable Digital Transformation
+                            </span>
+                          </Typography.Title>
+                          <Typography.Title level={2} className="text-xl sm:text-2xl lg:text-3xl font-semibold text-gray-700 dark:text-gray-200 mb-6">
+                            Integrating Local Values in Downstream Development
+                          </Typography.Title>
+                          <div className="h-1 w-32 mx-auto rounded-full bg-gradient-to-r from-[#4CB050] via-[#F0A023] to-[#E52531]"></div>
                         </div>
+                      </div>
+                      
+                      <div className="max-w-4xl mx-auto">
+                        <Typography.Paragraph className="text-lg leading-relaxed text-center text-gray-700 dark:text-gray-200 mb-8">
+                          This theme addresses the critical intersection of technological advancement and sustainability, emphasizing how downstream implementation processes can be enhanced by incorporating local knowledge systems. It promotes a purposeful approach to digital transformation that extends beyond efficiency to embrace environmental stewardship.
+                        </Typography.Paragraph>
+                        
+                        <div className="grid md:grid-cols-3 gap-6 mt-8">
+                          <div className="text-center p-6 rounded-xl bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
+                            <div className="w-12 h-12 mx-auto mb-4 bg-gradient-to-br from-[#4CB050] to-[#F0A023] rounded-full flex items-center justify-center">
+                              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                              </svg>
+                            </div>
+                            <Typography.Title level={4} className="text-green-700 dark:text-green-300 mb-2">Digital Innovation</Typography.Title>
+                            <Typography.Text className="text-sm text-green-600 dark:text-green-400">
+                              Cutting-edge technology solutions for sustainable development
+                            </Typography.Text>
+                          </div>
+                          
+                          <div className="text-center p-6 rounded-xl bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800">
+                            <div className="w-12 h-12 mx-auto mb-4 bg-gradient-to-br from-[#F0A023] to-[#E52531] rounded-full flex items-center justify-center">
+                              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
+                              </svg>
+                            </div>
+                            <Typography.Title level={4} className="text-orange-700 dark:text-orange-300 mb-2">Local Wisdom</Typography.Title>
+                            <Typography.Text className="text-sm text-orange-600 dark:text-orange-400">
+                              Indigenous knowledge and cultural practices integration
+                            </Typography.Text>
+                          </div>
+                          
+                          <div className="text-center p-6 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
+                            <div className="w-12 h-12 mx-auto mb-4 bg-gradient-to-br from-[#E52531] to-[#2a3b8f] rounded-full flex items-center justify-center">
+                              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              </svg>
+                            </div>
+                            <Typography.Title level={4} className="text-red-700 dark:text-red-300 mb-2">Sustainability</Typography.Title>
+                            <Typography.Text className="text-sm text-red-600 dark:text-red-400">
+                              Environmental preservation and future generations
+                            </Typography.Text>
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+
+                    <motion.div 
+                      variants={itemVariants}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.5, delay: 0.25 }}
+                      className="mb-12"
+                    >
+                      <div className="text-center mb-8">
+                        <Typography.Text className="text-sm uppercase tracking-widest text-gray-500 dark:text-gray-400 font-semibold">
+                          Research Focus Areas
+                        </Typography.Text>
+                        <Typography.Title level={2} className="mt-3 mb-8 text-gray-900 dark:text-white text-2xl sm:text-3xl">
+                          Conference Sub-Themes
+                        </Typography.Title>
+                      </div>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+                        {[
+                          {
+                            number: "01",
+                            title: "Arts and Humanities",
+                            description: "Cultural integration in digital transformation",
+                            gradient: "from-[#4CB050] to-[#F0A023]",
+                            bgColor: "bg-green-50 dark:bg-green-900/20",
+                            borderColor: "border-green-200 dark:border-green-800"
+                          },
+                          {
+                            number: "02", 
+                            title: "Life and Applied Science",
+                            description: "Scientific approaches to sustainable development",
+                            gradient: "from-[#F0A023] to-[#E52531]",
+                            bgColor: "bg-orange-50 dark:bg-orange-900/20",
+                            borderColor: "border-orange-200 dark:border-orange-800"
+                          },
+                          {
+                            number: "03",
+                            title: "Non-communicable Disease",
+                            description: "Health technology and community wellness",
+                            gradient: "from-[#E52531] to-[#2a3b8f]",
+                            bgColor: "bg-red-50 dark:bg-red-900/20",
+                            borderColor: "border-red-200 dark:border-red-800"
+                          },
+                          {
+                            number: "04",
+                            title: "Material Science and Engineering",
+                            description: "Sustainable materials and technology",
+                            gradient: "from-[#2a3b8f] to-[#4CB050]",
+                            bgColor: "bg-blue-50 dark:bg-blue-900/20",
+                            borderColor: "border-blue-200 dark:border-blue-800"
+                          },
+                          {
+                            number: "05",
+                            title: "Integrated Technology and Management",
+                            description: "Holistic digital transformation strategies",
+                            gradient: "from-[#4CB050] to-[#E52531]",
+                            bgColor: "bg-purple-50 dark:bg-purple-900/20",
+                            borderColor: "border-purple-200 dark:border-purple-800"
+                          }
+                        ].map((theme, index) => (
+                          <motion.div
+                            key={index}
+                            className={`p-6 rounded-2xl ${theme.bgColor} border ${theme.borderColor} hover:shadow-lg transition-all duration-300 hover:scale-105`}
+                            whileHover={{ y: -5 }}
+                            transition={{ type: "spring", stiffness: 300 }}
+                          >
+                            <div className="flex items-start space-x-4">
+                              <div className={`flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br ${theme.gradient} flex items-center justify-center shadow-lg`}>
+                                <span className="text-white font-bold text-lg">{theme.number}</span>
+                              </div>
+                              <div className="flex-1">
+                                <Typography.Title level={4} className="text-gray-900 dark:text-white mb-2 text-lg">
+                                  {theme.title}
+                                </Typography.Title>
+                                <Typography.Text className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                                  {theme.description}
+                                </Typography.Text>
+                              </div>
+                            </div>
+                          </motion.div>
+                        ))}
                       </div>
                     </motion.div>
                     
@@ -205,138 +428,120 @@ const AboutUs: React.FC<AboutUsProps> = ({ darkMode = false }) => {
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true }}
                       transition={{ duration: 0.5, delay: 0.3 }}
-                      className="mt-12 mb-8"
+                      className="mb-12"
                     >
-                      <div className="rounded-xl bg-gradient-to-r p-[1px] from-[#4CB050] via-[#F0A023] to-[#E52531]">
-                        <div className="bg-white dark:bg-gray-800 rounded-xl p-6">
-                          <Typography.Title level={4} className="text-center mb-6 text-gray-900 dark:text-white">
-                            <span className="bg-gradient-to-r from-[#4CB050] via-[#F0A023] to-[#E52531] text-transparent bg-clip-text">
-                              Timeline
-                            </span>
-                          </Typography.Title>
-                          
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="flex items-start space-x-3">
-                              <div className="flex-shrink-0">
-                                <div className="h-8 w-8 rounded-full bg-gradient-to-br from-[#4CB050] to-[#F0A023] flex items-center justify-center">
-                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                  </svg>
+                      <div className="text-center mb-8">
+                        <Typography.Text className="text-sm uppercase tracking-widest text-gray-500 dark:text-gray-400 font-semibold">
+                          Mark Your Calendar
+                        </Typography.Text>
+                        <Typography.Title level={2} className="mt-3 mb-8 text-gray-900 dark:text-white text-2xl sm:text-3xl">
+                          Important Dates & Deadlines
+                        </Typography.Title>
+                      </div>
+                      
+                      <div className="max-w-5xl mx-auto">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                          {[
+                            {
+                              icon: (
+                                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                              ),
+                              title: "Abstract Submission",
+                              date: "22 August 2025",
+                              gradient: "from-[#4CB050] to-[#F0A023]",
+                              bgColor: "bg-green-50 dark:bg-green-900/20",
+                              borderColor: "border-green-200 dark:border-green-800"
+                            },
+                            {
+                              icon: (
+                                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
+                                </svg>
+                              ),
+                              title: "Announcement",
+                              date: "4 September 2025",
+                              gradient: "from-[#F0A023] to-[#E52531]",
+                              bgColor: "bg-orange-50 dark:bg-orange-900/20",
+                              borderColor: "border-orange-200 dark:border-orange-800"
+                            },
+                            {
+                              icon: (
+                                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                                </svg>
+                              ),
+                              title: "Payment Due",
+                              date: "12 September 2025",
+                              gradient: "from-[#E52531] to-[#2a3b8f]",
+                              bgColor: "bg-red-50 dark:bg-red-900/20",
+                              borderColor: "border-red-200 dark:border-red-800"
+                            },
+                            {
+                              icon: (
+                                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                              ),
+                              title: "Full Paper Deadline",
+                              date: "1 October 2025",
+                              gradient: "from-[#2a3b8f] to-[#4CB050]",
+                              bgColor: "bg-blue-50 dark:bg-blue-900/20",
+                              borderColor: "border-blue-200 dark:border-blue-800"
+                            }
+                          ].map((item, index) => (
+                            <motion.div
+                              key={index}
+                              className={`p-6 rounded-2xl ${item.bgColor} border ${item.borderColor} hover:shadow-lg transition-all duration-300`}
+                              whileHover={{ scale: 1.02 }}
+                              transition={{ type: "spring", stiffness: 300 }}
+                            >
+                              <div className="flex items-center space-x-4">
+                                <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${item.gradient} flex items-center justify-center shadow-lg`}>
+                                  {item.icon}
+                                </div>
+                                <div className="flex-1">
+                                  <Typography.Title level={4} className="text-gray-900 dark:text-white mb-1 text-lg">
+                                    {item.title}
+                                  </Typography.Title>
+                                  <Typography.Text className="text-base font-semibold text-gray-600 dark:text-gray-400">
+                                    {item.date}
+                                  </Typography.Text>
                                 </div>
                               </div>
-                              <div>
-                                <Typography.Text className="font-medium text-gray-900 dark:text-white block">
-                                  Abstract Submission deadline:
-                                </Typography.Text>
-                                <Typography.Text className="text-gray-700 dark:text-gray-300">
-                                  Coming soon
-                                </Typography.Text>
-                              </div>
+                            </motion.div>
+                          ))}
+                        </div>
+                        
+                        {/* Conference Event Highlight */}
+                        <motion.div
+                          className="p-8 rounded-3xl bg-gradient-to-br from-[#4CB050]/10 via-[#F0A023]/10 to-[#E52531]/10 border-2 border-gradient-to-r from-[#4CB050] via-[#F0A023] to-[#E52531] shadow-xl"
+                          whileHover={{ scale: 1.02 }}
+                          transition={{ type: "spring", stiffness: 300 }}
+                        >
+                          <div className="text-center">
+                            <div className="w-20 h-20 mx-auto mb-4 rounded-3xl bg-gradient-to-br from-[#4CB050] via-[#F0A023] to-[#E52531] flex items-center justify-center shadow-xl">
+                              <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                              </svg>
                             </div>
-                            
-                            <div className="flex items-start space-x-3">
-                              <div className="flex-shrink-0">
-                                <div className="h-8 w-8 rounded-full bg-gradient-to-br from-[#F0A023] to-[#E52531] flex items-center justify-center">
-                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                  </svg>
-                                </div>
-                              </div>
-                              <div>
-                                <Typography.Text className="font-medium text-gray-900 dark:text-white block">
-                                  Payment due:
-                                </Typography.Text>
-                                <Typography.Text className="text-gray-700 dark:text-gray-300">
-                                  Coming soon
-                                </Typography.Text>
-                              </div>
-                            </div>
-                            
-                            <div className="flex items-start space-x-3">
-                              <div className="flex-shrink-0">
-                                <div className="h-8 w-8 rounded-full bg-gradient-to-br from-[#E52531] to-[#2a3b8f] flex items-center justify-center">
-                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                  </svg>
-                                </div>
-                              </div>
-                              <div>
-                                <Typography.Text className="font-medium text-gray-900 dark:text-white block">
-                                  Presentation Files:
-                                </Typography.Text>
-                                <Typography.Text className="text-gray-700 dark:text-gray-300">
-                                  Coming soon
-                                </Typography.Text>
-                              </div>
-                            </div>
-                            
-                            <div className="flex items-start space-x-3">
-                              <div className="flex-shrink-0">
-                                <div className="h-8 w-8 rounded-full bg-gradient-to-br from-[#2a3b8f] to-[#4CB050] flex items-center justify-center">
-                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                  </svg>
-                                </div>
-                              </div>
-                              <div>
-                                <Typography.Text className="font-medium text-gray-900 dark:text-white block">
-                                  Conference Event:
-                                </Typography.Text>
-                                <Typography.Text className="text-gray-700 dark:text-gray-300">
-                                  07 October 2025
-                                </Typography.Text>
-                              </div>
-                            </div>
-                            
-                            <div className="flex items-start space-x-3 md:col-span-2">
-                              <div className="flex-shrink-0">
-                                <div className="h-8 w-8 rounded-full bg-gradient-to-br from-[#4CB050] to-[#2a3b8f] flex items-center justify-center">
-                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                  </svg>
-                                </div>
-                              </div>
-                              <div>
-                                <Typography.Text className="font-medium text-gray-900 dark:text-white block">
-                                  Full Paper Due:
-                                </Typography.Text>
-                                <Typography.Text className="text-gray-700 dark:text-gray-300">
-                                  Coming soon
-                                </Typography.Text>
-                              </div>
+                            <Typography.Title level={3} className="text-gray-900 dark:text-white mb-2 text-xl sm:text-2xl">
+                              Conference Event
+                            </Typography.Title>
+                            <Typography.Title level={2} className="mb-3 text-2xl sm:text-3xl font-bold">
+                              <span className="bg-gradient-to-r from-[#4CB050] via-[#F0A023] to-[#E52531] text-transparent bg-clip-text">
+                                7 October 2025
+                              </span>
+                            </Typography.Title>
+                            <div className="inline-flex items-center px-6 py-3 rounded-full bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-600">
+                              
+                              <Typography.Text className="font-semibold text-gray-700 dark:text-gray-300">
+                                100% Online Conference
+                              </Typography.Text>
                             </div>
                           </div>
-                        </div>
-                      </div>
-                    </motion.div>
-
-                    <motion.div 
-                      variants={itemVariants} 
-                      className="mt-10 flex justify-center"
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.5, delay: 0.4 }}
-                    >
-                      <div className="group inline-flex items-center px-6 py-3 rounded-full transition-all duration-300 hover:scale-105 shadow-md bg-white/90 dark:bg-gray-700 hover:bg-white dark:hover:bg-gray-600">
-                        <div className="flex items-center">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-[#4CB050]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                          </svg>
-                          <Typography.Text className="font-medium text-gray-900 dark:text-white">
-                            07 October 2025
-                          </Typography.Text>
-                        </div>
-                        <div className="w-px h-6 mx-4 bg-gray-300 dark:bg-gray-600"></div>
-                        <div className="flex items-center">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-[#E52531]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                          </svg>
-                          <Typography.Text className="font-medium text-gray-900 dark:text-white">
-                            Universitas Jenderal Soedirman
-                          </Typography.Text>
-                        </div>
+                        </motion.div>
                       </div>
                     </motion.div>
                   </div>
@@ -345,90 +550,6 @@ const AboutUs: React.FC<AboutUsProps> = ({ darkMode = false }) => {
             </motion.div>
           </motion.div>
         </div>
-        
-        {/* Map Section - Added before Footer */}
-        {/* <div className="py-16 md:py-24 dark:bg-gray-900 bg-gray-50">
-          <div className="container mx-auto px-4">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7 }}
-              className="max-w-6xl mx-auto"
-            >
-              <div className="text-center mb-12">
-                <Typography.Title level={2} className="text-3xl md:text-4xl font-bold mb-3 dark:text-white text-gray-900">
-                  Conference Location
-                </Typography.Title>
-                <div className="h-1 w-24 mx-auto rounded-full bg-gradient-to-r from-[#4CB050] via-[#F0A023] to-[#E52531]"></div>
-              </div>
-              
-              <Card 
-                className="shadow-lg rounded-xl overflow-hidden backdrop-blur-sm dark:bg-gray-800/90 bg-white/95 border-0"
-                bordered={false}
-              >
-                <div className="relative">
-                  
-                  <div className="h-80 md:h-96 w-full overflow-hidden rounded-lg">
-                    <iframe 
-                      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3956.273760998035!2d109.24904007454352!3d-7.4339913742242545!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e655ea49d9f9885%3A0x62be0b6159700eab!2sUniversitas%20Jenderal%20Soedirman!5e0!3m2!1sen!2sid!4v1691562199867!5m2!1sen!2sid" 
-                      width="100%" 
-                      height="100%" 
-                      style={{ border: 0 }} 
-                      allowFullScreen 
-                      loading="lazy" 
-                      referrerPolicy="no-referrer-when-downgrade"
-                      title="ICMA SURE Conference Location"
-                    ></iframe>
-                  </div>
-                  
-                 
-                  <div className="absolute bottom-4 left-4 md:bottom-8 md:left-8 max-w-sm">
-                    <div className="rounded-lg overflow-hidden shadow-lg">
-                      <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm p-4">
-                        <div className="flex items-center mb-2">
-                          <EnvironmentOutlined className="text-[#E52531] mr-2" />
-                          <Typography.Text className="font-bold dark:text-white text-gray-900">
-                            Java Heritage Hotel
-                          </Typography.Text>
-                        </div>
-                        <Typography.Text className="dark:text-gray-300 text-gray-700">
-                          Dr Angka Street No. 71<br />
-                          Purwokerto 53122<br />
-                          Jawa Tengah, Indonesia
-                        </Typography.Text>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="px-6 py-8">
-                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-                    <div>
-                      <Typography.Title level={4} className="mb-2 dark:text-white text-gray-900">
-                        Venue Information
-                      </Typography.Title>
-                      <Typography.Paragraph className="dark:text-gray-300 text-gray-700">
-                        The 8th ICMA SURE will be held in a hybrid method at Java Heritage Hotel, a premium venue located in the heart of Purwokerto, offering excellent conference facilities and convenient access for all participants.
-                      </Typography.Paragraph>
-                    </div>
-                    
-                    <a 
-                      href="https://goo.gl/maps/JvTzJFqnZZwbg9sQ8"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center px-6 py-3 rounded-full transition-all duration-300 hover:scale-105 shadow-md bg-gradient-to-r from-[#4CB050] via-[#F0A023] to-[#E52531] text-white self-center md:self-end"
-                    >
-                      <EnvironmentOutlined className="mr-2" />
-                      Get Directions
-                    </a>
-                  </div>
-                </div>
-              </Card>
-            </motion.div>
-          </div>
-        </div> */}
-        
         <Footer isDarkMode={isDarkMode} />
       </div>
     </>

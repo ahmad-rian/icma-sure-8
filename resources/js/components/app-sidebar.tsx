@@ -1,10 +1,11 @@
+// AppSidebar.tsx
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid,Users , GraduationCap,FileText, Calendar} from 'lucide-react';
+import { BookOpen, Folder, LayoutGrid, Users, GraduationCap, FileText, Calendar, UserCog } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
@@ -15,7 +16,7 @@ const mainNavItems: NavItem[] = [
     },
     {
         title: 'Organizing Committee',
-        href: 'organizing-committees',
+        href: '/organizing-committees',
         icon: Users,
     },
     {
@@ -32,6 +33,11 @@ const mainNavItems: NavItem[] = [
         title: 'Events',
         href: '/events',
         icon: Calendar,
+    },
+    {
+        title: 'User Management',
+        href: '/users',
+        icon: UserCog,
     },
 ];
 
@@ -74,3 +80,4 @@ export function AppSidebar() {
         </Sidebar>
     );
 }
+

@@ -1,14 +1,7 @@
 import { Head } from '@inertiajs/react';
-import { FormEventHandler, useState, useEffect } from 'react';
-
-import InputError from '@/components/input-error';
-import TextLink from '@/components/text-link';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import AuthLayout from '@/layouts/auth-layout';
-import { Separator } from '@/components/ui/separator';
 
 interface LoginProps {
     status?: string;
@@ -66,13 +59,6 @@ export default function Login({ status, canResetPassword }: LoginProps) {
             </div>
 
             <div className="flex flex-col gap-8 max-w-md mx-auto w-full pt-8 relative z-10">
-                {/* Logo or Conference Branding */}
-                {/* <div className="text-center mb-2">
-                    <div className="inline-block p-3 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700">
-                        <h1 className="text-lg font-semibold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent dark:from-blue-400 dark:to-purple-400">ICMA SURE</h1>
-                    </div>
-                </div> */}
-                
                 {/* Login card with glassmorphism effect */}
                 <div className="backdrop-blur-sm bg-white/90 dark:bg-slate-800/90 p-8 rounded-2xl shadow-2xl border border-slate-200/50 dark:border-slate-700/50 relative z-10 transition-all duration-300 hover:shadow-blue-500/5">
                     <h2 className="text-2xl font-bold text-center mb-2 text-slate-800 dark:text-white">Welcome Back</h2>
@@ -96,31 +82,59 @@ export default function Login({ status, canResetPassword }: LoginProps) {
 
                     {/* Information text */}
                     <div className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
-                        By signing in, you agree to the conference's 
-                        <a href="#" className="text-blue-600 hover:text-blue-700 dark:text-blue-400 mx-1 hover:underline">terms</a>
-                        and
-                        <a href="#" className="text-blue-600 hover:text-blue-700 dark:text-blue-400 mx-1 hover:underline">privacy policy</a>
+                        Dengan masuk, Anda setuju dengan 
+                        <a href="#" className="text-blue-600 hover:text-blue-700 dark:text-blue-400 mx-1 hover:underline">syarat</a>
+                        dan
+                        <a href="#" className="text-blue-600 hover:text-blue-700 dark:text-blue-400 mx-1 hover:underline">kebijakan privasi</a>
+                        konferensi
                     </div>
 
                     {/* Status Message with improved styling */}
                     {status && (
-                        <div className="mt-4 p-4 bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 dark:border-red-400 rounded-r-lg text-sm font-medium text-red-600 dark:text-red-400 animate-fadeIn">
+                        <div className={`mt-4 p-4 border-l-4 rounded-r-lg text-sm font-medium animate-fadeIn ${
+                            status.includes('berhasil') || status.includes('success') || status.includes('Selamat')
+                                ? 'bg-green-50 dark:bg-green-900/20 border-green-500 dark:border-green-400 text-green-600 dark:text-green-400'
+                                : 'bg-red-50 dark:bg-red-900/20 border-red-500 dark:border-red-400 text-red-600 dark:text-red-400'
+                        }`}>
                             <div className="flex items-center">
-                                <svg className="w-5 h-5 mr-2 text-red-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd"></path>
-                                </svg>
+                                {status.includes('berhasil') || status.includes('success') || status.includes('Selamat') ? (
+                                    <svg className="w-5 h-5 mr-2 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                    </svg>
+                                ) : (
+                                    <svg className="w-5 h-5 mr-2 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                                    </svg>
+                                )}
                                 {status}
                             </div>
                         </div>
                     )}
+
+                    {/* Info untuk user baru */}
+                    <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                        <div className="flex items-start">
+                            <svg className="w-5 h-5 text-blue-500 dark:text-blue-400 mt-0.5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd"/>
+                            </svg>
+                            <div>
+                                <h4 className="text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">
+                                    Info Login
+                                </h4>
+                                <p className="text-xs text-blue-700 dark:text-blue-200">
+                                    Pengguna baru akan otomatis didaftarkan saat login pertama kali dengan Google.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Quote card with modern glassmorphism design */}
                 <div className="backdrop-blur-md bg-gradient-to-r from-slate-800/95 to-slate-900/95 p-7 rounded-xl shadow-xl border border-slate-700/50 mb-4 relative z-10 transform transition-all hover:scale-[1.01] duration-300">
                     <div className="absolute top-0 right-0 p-2 opacity-20">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-slate-400">
-                            <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"></path>
-                            <path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"></path>
+                            <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z" />
+                            <path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z" />
                         </svg>
                     </div>
                     <blockquote className="italic text-slate-200 mb-3 text-lg">"{quote.text}"</blockquote>
@@ -129,10 +143,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                 
                 {/* Footer with improved styling */}
                 <div className="text-center text-sm text-slate-500 dark:text-slate-400 mb-8 flex flex-col gap-2">
-                    <div>Need help? Contact <a href="mailto:icmasure.lppm@unsoed.com" className="text-blue-600 hover:underline dark:text-blue-400 font-medium">icmasure.lppm@unsoed.com</a></div>
-                    <div className="flex justify-center gap-4 mt-2">
-                        
-                    </div>
+                    <div>Butuh bantuan? Hubungi <a href="mailto:icmasure.lppm@unsoed.com" className="text-blue-600 hover:underline dark:text-blue-400 font-medium">icmasure.lppm@unsoed.com</a></div>
                 </div>
             </div>
         </AuthLayout>

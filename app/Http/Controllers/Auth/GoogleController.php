@@ -3,78 +3,109 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\AllowedEmail;
 use App\Models\User;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class GoogleController extends Controller
 {
     /**
-     * Redirect to Google OAuth
+     * Redirect to Google OAuth provider
      */
-    public function redirect(): RedirectResponse
+    public function redirect()
     {
-        return Socialite::driver('google')->stateless()->redirect();
+        Log::info('Google OAuth redirect initiated');
+        return Socialite::driver('google')->redirect();
     }
 
     /**
-     * Handle Google callback
+     * Handle callback from Google OAuth provider
      */
-    public function callback(): RedirectResponse
+    public function callback()
     {
         try {
-            $googleUser = Socialite::driver('google')->stateless()->user();
+            Log::info('Google callback started');
 
-            // Cek apakah email diizinkan
-            $isAllowed = AllowedEmail::where('email', $googleUser->getEmail())->exists();
+            $googleUser = Socialite::driver('google')->user();
 
-            if (!$isAllowed) {
-                return redirect()->route('login')->with('status', 'Akses ditolak. Email Anda tidak diizinkan untuk login.');
-            }
+            Log::info('Google user data received', [
+                'email' => $googleUser->email,
+                'name' => $googleUser->name,
+                'google_id' => $googleUser->id
+            ]);
 
-            // Cari user berdasarkan google_id
-            $user = User::where('google_id', $googleUser->getId())->first();
+            $user = DB::transaction(function () use ($googleUser) {
+                // Check if user already exists by email or google_id
+                $user = User::where('email', $googleUser->email)
+                    ->orWhere('google_id', $googleUser->id)
+                    ->first();
 
-            // Jika user tidak ada, cek berdasarkan email
-            if (!$user) {
-                $user = User::where('email', $googleUser->getEmail())->first();
+                if ($user) {
+                    Log::info('Existing user found, updating', [
+                        'user_id' => $user->id,
+                        'email' => $user->email
+                    ]);
 
-                // Jika masih tidak ada, buat user baru
-                if (!$user) {
-                    $user = User::create([
-                        'name' => $googleUser->getName(),
-                        'email' => $googleUser->getEmail(),
-                        'google_id' => $googleUser->getId(),
-                        'avatar' => $googleUser->getAvatar(),
-                        'is_allowed' => true,
-                        'password' => bcrypt(Str::random(16)), // Menggunakan Str::random() bukan str_random()
+                    // Update existing user
+                    $user->update([
+                        'google_id' => $googleUser->id,
+                        'avatar' => $googleUser->avatar,
                         'email_verified_at' => now(),
                     ]);
                 } else {
-                    // Update user yang sudah ada dengan informasi Google
-                    $user->update([
-                        'google_id' => $googleUser->getId(),
-                        'avatar' => $googleUser->getAvatar(),
-                        'is_allowed' => true,
+                    Log::info('Creating new user', ['email' => $googleUser->email]);
+
+                    // Create new user - semua user baru otomatis diizinkan dan bisa masuk
+                    $userData = [
+                        'name' => $googleUser->name,
+                        'email' => $googleUser->email,
+                        'google_id' => $googleUser->id,
+                        'avatar' => $googleUser->avatar,
+                        'email_verified_at' => now(),
+                        'role' => 'user', // Default role
+                        'is_allowed' => true, // Auto allow semua user baru
+                        'password' => null, // Set password null untuk Google users
+                    ];
+
+                    Log::info('User data to be created', $userData);
+
+                    $user = User::create($userData);
+
+                    Log::info('New user created successfully', [
+                        'user_id' => $user->id,
+                        'email' => $user->email
                     ]);
                 }
-            }
+
+                return $user;
+            });
 
             // Login user
             Auth::login($user);
 
-            // Regenerate session
-            request()->session()->regenerate();
+            Log::info('User logged in successfully', [
+                'user_id' => $user->id,
+                'role' => $user->role,
+                'email' => $user->email
+            ]);
 
-            return redirect()->intended(route('dashboard', absolute: false));
+            // Redirect based on user role
+            if ($user->role === 'admin') {
+                return redirect()->route('dashboard')->with('success', 'Selamat datang kembali, Admin!');
+            } else {
+                return redirect()->route('home')->with('success', 'Login berhasil! Selamat datang di ICMA SURE.');
+            }
         } catch (\Exception $e) {
-            // Log error untuk debugging
-            \Log::error('Google OAuth Error: ' . $e->getMessage());
+            Log::error('Google authentication error', [
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ]);
 
-            return redirect()->route('login')->with('status', 'Terjadi kesalahan dalam proses login: ' . $e->getMessage());
+            return redirect()->route('login')->with('error', 'Terjadi kesalahan saat login dengan Google: ' . $e->getMessage());
         }
     }
 }

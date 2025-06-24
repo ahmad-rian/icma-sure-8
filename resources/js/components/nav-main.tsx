@@ -6,16 +6,18 @@ export function NavMain({ items = [] }: { items: NavItem[] }) {
     const page = usePage();
     return (
         <SidebarGroup className="px-2 py-0">
-            <SidebarGroupLabel>Platform</SidebarGroupLabel>
+            <SidebarGroupLabel className="text-sm font-semibold">Platform</SidebarGroupLabel>
             <SidebarMenu>
                 {items.map((item) => (
                     <SidebarMenuItem key={item.title}>
                         <SidebarMenuButton  
-                            asChild isActive={item.href === page.url}
+                            asChild 
+                            isActive={item.href === page.url}
                             tooltip={{ children: item.title }}
+                            className="text-base font-medium py-3 h-12"
                         >
                             <Link href={item.href} prefetch>
-                                {item.icon && <item.icon />}
+                                {item.icon && <item.icon className="h-5 w-5" />}
                                 <span>{item.title}</span>
                             </Link>
                         </SidebarMenuButton>
