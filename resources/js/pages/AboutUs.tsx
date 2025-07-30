@@ -359,40 +359,40 @@ const AboutUs: React.FC<AboutUsProps> = ({ darkMode = false }) => {
                         {[
                           {
                             number: "01",
-                            title: "Arts and Humanities",
-                            description: "Cultural integration in digital transformation",
+                            title: "Life and Applied Sciences",
+                            description: "Scientific approaches to sustainable development and innovation",
                             gradient: "from-[#4CB050] to-[#F0A023]",
                             bgColor: "bg-green-50 dark:bg-green-900/20",
                             borderColor: "border-green-200 dark:border-green-800"
                           },
                           {
                             number: "02", 
-                            title: "Life and Applied Science",
-                            description: "Scientific approaches to sustainable development",
+                            title: "Health and Well-being",
+                            description: "Comprehensive health approaches for sustainable communities",
                             gradient: "from-[#F0A023] to-[#E52531]",
                             bgColor: "bg-orange-50 dark:bg-orange-900/20",
                             borderColor: "border-orange-200 dark:border-orange-800"
                           },
                           {
                             number: "03",
-                            title: "Non-communicable Disease",
-                            description: "Health technology and community wellness",
+                            title: "Resilience and Sustainable Infrastructure",
+                            description: "Building robust systems for long-term sustainability",
                             gradient: "from-[#E52531] to-[#2a3b8f]",
                             bgColor: "bg-red-50 dark:bg-red-900/20",
                             borderColor: "border-red-200 dark:border-red-800"
                           },
                           {
                             number: "04",
-                            title: "Material Science and Engineering",
-                            description: "Sustainable materials and technology",
+                            title: "Social, Economy and Justice",
+                            description: "Equitable development and social transformation",
                             gradient: "from-[#2a3b8f] to-[#4CB050]",
                             bgColor: "bg-blue-50 dark:bg-blue-900/20",
                             borderColor: "border-blue-200 dark:border-blue-800"
                           },
                           {
                             number: "05",
-                            title: "Integrated Technology and Management",
-                            description: "Holistic digital transformation strategies",
+                            title: "Sustainable Communities",
+                            description: "Building resilient and self-sufficient community systems",
                             gradient: "from-[#4CB050] to-[#E52531]",
                             bgColor: "bg-purple-50 dark:bg-purple-900/20",
                             borderColor: "border-purple-200 dark:border-purple-800"
@@ -448,11 +448,23 @@ const AboutUs: React.FC<AboutUsProps> = ({ darkMode = false }) => {
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                 </svg>
                               ),
-                              title: "Abstract Submission",
-                              date: "22 August 2025",
+                              title: "Abstract Submission Opens",
+                              date: "15 August 2025",
                               gradient: "from-[#4CB050] to-[#F0A023]",
                               bgColor: "bg-green-50 dark:bg-green-900/20",
                               borderColor: "border-green-200 dark:border-green-800"
+                            },
+                            {
+                              icon: (
+                                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                              ),
+                              title: "Abstract Submission Deadline",
+                              date: "4 September 2025",
+                              gradient: "from-[#F0A023] to-[#E52531]",
+                              bgColor: "bg-orange-50 dark:bg-orange-900/20",
+                              borderColor: "border-orange-200 dark:border-orange-800"
                             },
                             {
                               icon: (
@@ -462,9 +474,9 @@ const AboutUs: React.FC<AboutUsProps> = ({ darkMode = false }) => {
                               ),
                               title: "Announcement",
                               date: "4 September 2025",
-                              gradient: "from-[#F0A023] to-[#E52531]",
-                              bgColor: "bg-orange-50 dark:bg-orange-900/20",
-                              borderColor: "border-orange-200 dark:border-orange-800"
+                              gradient: "from-[#E52531] to-[#2a3b8f]",
+                              bgColor: "bg-red-50 dark:bg-red-900/20",
+                              borderColor: "border-red-200 dark:border-red-800"
                             },
                             {
                               icon: (
@@ -474,9 +486,9 @@ const AboutUs: React.FC<AboutUsProps> = ({ darkMode = false }) => {
                               ),
                               title: "Payment Due",
                               date: "12 September 2025",
-                              gradient: "from-[#E52531] to-[#2a3b8f]",
-                              bgColor: "bg-red-50 dark:bg-red-900/20",
-                              borderColor: "border-red-200 dark:border-red-800"
+                              gradient: "from-[#2a3b8f] to-[#4CB050]",
+                              bgColor: "bg-blue-50 dark:bg-blue-900/20",
+                              borderColor: "border-blue-200 dark:border-blue-800"
                             },
                             {
                               icon: (
@@ -486,9 +498,9 @@ const AboutUs: React.FC<AboutUsProps> = ({ darkMode = false }) => {
                               ),
                               title: "Full Paper Deadline",
                               date: "1 October 2025",
-                              gradient: "from-[#2a3b8f] to-[#4CB050]",
-                              bgColor: "bg-blue-50 dark:bg-blue-900/20",
-                              borderColor: "border-blue-200 dark:border-blue-800"
+                              gradient: "from-[#4CB050] to-[#F0A023]",
+                              bgColor: "bg-purple-50 dark:bg-purple-900/20",
+                              borderColor: "border-purple-200 dark:border-purple-800"
                             }
                           ].map((item, index) => (
                             <motion.div

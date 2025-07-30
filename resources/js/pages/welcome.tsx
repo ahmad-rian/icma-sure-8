@@ -2,6 +2,7 @@ import React from 'react';
 import AppLayout from '@/layouts/AppLayout';
 import HeroSection from '@/components/HeroSection';
 import CounterStatsSection from '@/components/CounterStatsSection';
+import ThemesSection from '@/components/ThemesSection';
 import SpeakersSection from '@/components/SpeakersSection';
 import ConferenceInfoSection from '@/components/ConferenceInfoSection';
 import ContactSection from '@/components/ContactSection';
@@ -131,6 +132,8 @@ const Welcome: React.FC = () => {
       <CounterStatsSection 
         stats={conferenceStats}
       />
+      
+      <ThemesSection />
       
       <SpeakersSection 
         keynoteSpeakers={keynoteSpeakers}

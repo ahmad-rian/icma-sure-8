@@ -46,6 +46,18 @@ const NAVIGATION = [
       { name: 'Registration Guide', href: 'https://www.youtube.com/watch?v=3QzvCgC0b2c', isExternal: true },
       { name: 'Program And Abstract Book', href: 'https://drive.google.com/drive/folders/19-c9h0Cx89bRUhAqFcCu2toGnMuSB1om', isExternal: true }
     ] 
+  },
+  { 
+    name: 'Previous Events', 
+    id: 'previous-events',
+    dropdown: [
+      { name: '7th ICMA SURE 2024', href: 'https://icma.lppm.unsoed.ac.id/', isExternal: true },
+      { name: '6th ICMA SURE 2023', href: 'https://conference.unsoed.ac.id/index.php/ICMASRD/ICMASURE2023', isExternal: true },
+      { name: '5th ICMA SURE 2022', href: 'https://conference.unsoed.ac.id/index.php/ICMASRD/ICMASURE2022', isExternal: true },
+      { name: '4th ICMA SURE 2021', href: 'https://conference.unsoed.ac.id/index.php/ICMASRD/ICMASURE2021', isExternal: true },
+      { name: '3rd ICMA SURE 2020', href: 'https://conference.unsoed.ac.id/index.php/icma/index/schedConfs/archive', isExternal: true },
+      { name: '2nd ICMA SURE 2019', href: 'https://conference.unsoed.ac.id/index.php/icma/ICMA2019', isExternal: true }
+    ] 
   }
 ];
 
