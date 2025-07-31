@@ -143,15 +143,18 @@ const SpeakersSection: React.FC<SpeakersSectionProps> = ({
           </section>
         )}
         
-        {/* Invited Speakers */}
+        {/* Invited Speakers - Updated layout for 2x2 grid */}
         {invitedSpeakers.length > 0 && (
           <section>
             <SectionHeading title="Invited Speakers" />
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {invitedSpeakers.map((speaker, index) => (
-                <InvitedSpeakerCard key={index} speaker={speaker} />
-              ))}
+            {/* Container dengan max-width untuk mengatur lebar grid */}
+            <div className="max-w-4xl mx-auto">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+                {invitedSpeakers.map((speaker, index) => (
+                  <InvitedSpeakerCard key={index} speaker={speaker} />
+                ))}
+              </div>
             </div>
           </section>
         )}

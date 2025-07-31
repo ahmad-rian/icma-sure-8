@@ -22,47 +22,34 @@ const Welcome: React.FC = () => {
 
   const invitedSpeakers = [
     {
-      image: '/images/assets/viet.jpg',
-      name: 'Assoc. Prof. Dr. Ngo Thi Phuong Lan',
-      title: 'Rural Development in Adaptation to Climate Change',
-      country: 'Vietnam',
-      status: 'University of Sciences and Humanities Ho Chi Minh City'
+      image: '/images/assets/janos.jpeg',
+      name: 'Dr. János Kovács',
+      title: ' full professor, deputy head of institute, head of the department',
+      country: 'Hungary',
+      status: 'University of Pecs',
     },
     {
-      image: '/images/assets/zexun.jpg', 
-      name: 'Prof. Dr. Zexun Wei',
-      title: 'China-Indonesia Joint Observation in Indonesian Seas during the Past Decades and New Scientific Understandings',
-      country: 'China',
-      status: 'Deputy Director, Ministry of Natural Resources, P.R. China'
+      image: '/images/assets/stephen.jpg',
+      name: 'Dr Stephen Parkes',
+      title: ' Senior Research Fellow, Centre for Regional Economic & Social Research (CRESR)',
+      country: 'Britania Raya, England',
+      status: 'Sheffield Hallam University',
     },
     {
-      image: '/images/assets/totok.jpeg', 
-      name: 'Prof. Ir. Totok Agung Dwi Haryanto, M.P., Ph.D.',
-      title: 'Digital Innovation in Agricultural Systems',
-      country: 'Indonesia',
-      status: 'Universitas Jenderal Soedirman'
+      image: '/images/assets/tuomo.jpeg', 
+      name: 'Dr. Tuomo Rautakivi',
+      title: 'Professor from Royal Pnom Penh University (Cambodia)',
+      country: 'Thailand',
+      status: 'Ministry of Labour and Vocational Training ',
     },
     {
-      image: '/images/assets/maiko.webp',
-      name: 'Dr. Maiko Nishi',
-      title: 'Climate Resilience in Globally Important Agricultural Heritage System (GIAHS)',
-      country: 'Japan',
-      status: 'United Nations University Tokyo'
+      image: '/images/assets/ritthikorn.jpeg', 
+      name: 'Dr. Ritthikorn Siriprasertchok',
+      title: 'Burapha University',
+      country: 'Thailand',
+      status: 'Politicy Speaker'
     },
-    {
-      image: '/images/assets/sebastion.jpg', 
-      name: 'Dr. Sebastian C. A Ferse',
-      title: 'Sustainability of Island Livelihood in the Face of Social-Ecological and Climatic Change',
-      country: 'Germany',
-      status: 'Leibniz Centre for Tropical Marine Research'
-    },
-    {
-      image: '/images/assets/chyan.webp', 
-      name: 'Prof. Chyan-Deng Jan',
-      title: 'Methods used for Debris-flow Disaster Mitigation in Taiwan',
-      country: 'Taiwan',
-      status: 'Dean of the College of Engineering (NCKU) Tainan'
-    }
+    
   ];
 
   // Updated stats based on TOR document
