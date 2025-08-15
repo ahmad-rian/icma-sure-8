@@ -145,6 +145,106 @@ const AboutUs: React.FC<AboutUsProps> = ({ darkMode = false }) => {
               <div className="h-1 w-40 mt-6 rounded-full bg-gradient-to-r from-[#4CB050] via-[#F0A023] to-[#E52531]"></div>
             </motion.div>
 
+            {/* Conference Poster Section */}
+            <motion.div
+              variants={itemVariants}
+              className="mb-16"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+            >
+              <div className="text-center mb-8">
+                <Typography.Text className="text-sm sm:text-base uppercase tracking-widest text-gray-500 dark:text-gray-400 font-bold">
+                  Official Conference
+                </Typography.Text>
+                <Typography.Title level={2} className="mt-3 text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white">
+                  <span className="bg-gradient-to-r from-[#4CB050] via-[#F0A023] to-[#E52531] text-transparent bg-clip-text">
+                    Conference Poster
+                  </span>
+                </Typography.Title>
+              </div>
+              
+              <div className="max-w-4xl mx-auto">
+                <motion.div
+                  className="relative group"
+                  whileHover={{ scale: 1.02 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                >
+                  {/* Poster container with enhanced styling */}
+                  <div className="relative overflow-hidden rounded-3xl shadow-2xl bg-gradient-to-br from-white/10 to-gray-100/10 dark:from-gray-800/10 dark:to-gray-700/10 backdrop-blur-xl border border-white/20 dark:border-gray-700/20">
+                    {/* Decorative gradient overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-[#4CB050]/5 via-transparent to-[#E52531]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    
+                    {/* Main poster image */}
+                    <motion.img
+                      src="/images/assets/poster.jpeg"
+                      alt="ICMA SURE 2025 Conference Poster"
+                      className="w-full h-auto object-contain"
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.8, ease: "easeOut" }}
+                    />
+                    
+                    {/* Floating action buttons */}
+                    <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <div className="flex space-x-2">
+                        <motion.button
+                          className="p-3 rounded-full bg-white/90 dark:bg-gray-800/90 shadow-lg backdrop-blur-sm border border-white/30 dark:border-gray-700/30 hover:bg-white dark:hover:bg-gray-700 transition-colors"
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => window.open('/images/assets/poster.jpeg', '_blank')}
+                        >
+                          <svg className="w-5 h-5 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                          </svg>
+                        </motion.button>
+                        <motion.button
+                          className="p-3 rounded-full bg-white/90 dark:bg-gray-800/90 shadow-lg backdrop-blur-sm border border-white/30 dark:border-gray-700/30 hover:bg-white dark:hover:bg-gray-700 transition-colors"
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => window.open('/images/assets/poster.jpeg', '_blank')}
+                        >
+                          <svg className="w-5 h-5 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                          </svg>
+                        </motion.button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Poster description */}
+                  <motion.div
+                    className="mt-6 text-center"
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6, delay: 0.2 }}
+                  >
+                    <Typography.Paragraph className="text-base text-gray-600 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed">
+                      Join us for the 8th International Conference featuring distinguished speakers from around the globe. 
+                      Explore sustainable digital transformation and its integration with local values in downstream development.
+                    </Typography.Paragraph>
+                    
+                    <div className="flex justify-center mt-6">
+                      <motion.button
+                        className="inline-flex items-center px-6 py-3 rounded-full bg-gradient-to-r from-[#4CB050] to-[#F0A023] text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                        whileHover={{ scale: 1.05, y: -2 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => window.open('/images/assets/poster.jpeg', '_blank')}
+                      >
+                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                        Download Poster
+                      </motion.button>
+                    </div>
+                  </motion.div>
+                </motion.div>
+              </div>
+            </motion.div>
+
             {/* Countdown Timer Section */}
             <motion.div variants={itemVariants} className="mb-16">
               <div className="text-center mb-8">
@@ -473,7 +573,7 @@ const AboutUs: React.FC<AboutUsProps> = ({ darkMode = false }) => {
                                 </svg>
                               ),
                               title: "Announcement",
-                              date: "4 September 2025",
+                              date: "6 September 2025",
                               gradient: "from-[#E52531] to-[#2a3b8f]",
                               bgColor: "bg-red-50 dark:bg-red-900/20",
                               borderColor: "border-red-200 dark:border-red-800"

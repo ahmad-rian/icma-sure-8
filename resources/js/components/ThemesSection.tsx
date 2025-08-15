@@ -177,6 +177,110 @@ const ThemesSection: React.FC = () => {
           ))}
         </motion.div>
 
+        {/* Aim and Scope Section */}
+        <motion.div
+          className="mt-20 mb-16"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+          variants={containerVariants}
+        >
+          <motion.div variants={itemVariants} className="text-center mb-12">
+            <Typography.Text className="text-sm sm:text-base uppercase tracking-widest text-gray-500 dark:text-gray-400 font-bold mb-4 block">
+              About ICMA SURE 2025
+            </Typography.Text>
+            <Typography.Title level={2} className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-6">
+              <span className="bg-gradient-to-r from-[#4CB050] via-[#F0A023] to-[#E52531] text-transparent bg-clip-text">
+                Aim & Scope
+              </span>
+            </Typography.Title>
+          </motion.div>
+
+          {/* Introduction */}
+          <motion.div variants={itemVariants} className="mb-12">
+            <div className="max-w-5xl mx-auto p-8 sm:p-10 rounded-3xl bg-gradient-to-br from-white/90 to-gray-50/90 dark:from-gray-800/90 dark:to-gray-700/90 backdrop-blur-xl shadow-xl border border-white/30 dark:border-gray-700/30">
+              <Typography.Paragraph className="text-base sm:text-lg leading-relaxed text-gray-700 dark:text-gray-300 mb-6">
+                The <strong>8th International Conference on Multidisciplinary Approaches for Sustainable Rural Development (ICMA SURE) 2025</strong> aims to address the convergence of digital transformation and environmental stewardship in shaping our planet's future.
+              </Typography.Paragraph>
+              <Typography.Paragraph className="text-base sm:text-lg leading-relaxed text-gray-700 dark:text-gray-300">
+                The conference focuses on developing digital solutions that are technically efficient, culturally appropriate, and environmentally sustainable, particularly in downstream development contexts where technological implementation must balance efficiency with environmental preservation and community values.
+              </Typography.Paragraph>
+            </div>
+          </motion.div>
+
+          {/* Conference Aims */}
+          <motion.div variants={itemVariants} className="mb-12">
+            <Typography.Title level={3} className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-8 text-center">
+              Conference Aims
+            </Typography.Title>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+              {[
+                {
+                  icon: "🤝",
+                  title: "Foster Interdisciplinary Collaboration",
+                  description: "Bring together researchers, practitioners, and stakeholders from various disciplines to exchange knowledge and experiences on sustainable digital transformation.",
+                  gradient: "from-[#4CB050] to-[#F0A023]"
+                },
+                {
+                  icon: "🌱",
+                  title: "Promote Integration of Local Wisdom",
+                  description: "Highlight innovative approaches that successfully incorporate indigenous knowledge, cultural practices, and local values into modern digital solutions.",
+                  gradient: "from-[#F0A023] to-[#E52531]"
+                },
+                {
+                  icon: "💡",
+                  title: "Showcase Sustainable Digital Solutions",
+                  description: "Present cutting-edge research, case studies, and practical implementations that demonstrate how digital technologies can enhance sustainability across environmental, social, and economic dimensions.",
+                  gradient: "from-[#E52531] to-[#2a3b8f]"
+                },
+                {
+                  icon: "📋",
+                  title: "Establish Policy Recommendations",
+                  description: "Develop comprehensive policy recommendations for policymakers, industry leaders, and academic institutions on implementing sustainable digital transformation strategies.",
+                  gradient: "from-[#2a3b8f] to-[#4CB050]"
+                }
+              ].map((aim, index) => (
+                <motion.div
+                  key={index}
+                  variants={itemVariants}
+                  className="group p-6 rounded-2xl bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 hover:shadow-xl transition-all duration-300 hover:scale-105"
+                >
+                  <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${aim.gradient} flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                    {aim.icon}
+                  </div>
+                  <Typography.Title level={4} className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
+                    {aim.title}
+                  </Typography.Title>
+                  <Typography.Paragraph className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                    {aim.description}
+                  </Typography.Paragraph>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Special Focus */}
+          <motion.div variants={itemVariants}>
+            <div className="max-w-4xl mx-auto p-8 rounded-3xl bg-gradient-to-br from-[#4CB050]/5 via-[#F0A023]/5 to-[#E52531]/5 border-2 border-[#4CB050]/20 dark:border-[#4CB050]/30">
+              <div className="text-center mb-6">
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-[#4CB050] to-[#F0A023] mb-4">
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                </div>
+                <Typography.Title level={3} className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+                  Special Emphasis on Indonesia
+                </Typography.Title>
+              </div>
+              <Typography.Paragraph className="text-base text-gray-700 dark:text-gray-300 leading-relaxed text-center">
+                Special emphasis is placed on <strong>Indonesia's diverse cultural and ecological landscape</strong> as a framework for sustainable development strategies, leveraging the country's rich biodiversity and cultural heritage as a model for integrated sustainable development approaches.
+              </Typography.Paragraph>
+            </div>
+          </motion.div>
+        </motion.div>
+
         {/* Call to Action */}
         <motion.div
           className="text-center mt-16"

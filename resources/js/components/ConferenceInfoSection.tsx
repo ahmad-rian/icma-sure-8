@@ -11,7 +11,13 @@ interface JournalInfo {
   indexed?: string;
 }
 
-const ConferenceInfoSection: React.FC = () => {
+interface ConferenceInfoSectionProps {
+  submitUrl?: string;
+}
+
+const ConferenceInfoSection: React.FC<ConferenceInfoSectionProps> = ({
+  submitUrl = "https://jos.unsoed.ac.id/index.php/eprocicma/index"
+}) => {
   const { isDarkMode } = useTheme();
   
   const colors = {
@@ -56,6 +62,10 @@ const ConferenceInfoSection: React.FC = () => {
     { name: "Jurnal Molekul", type: "Journal", indexed: "Scopus Q4" },
     { name: "Jurnal Keperawatan Soedirman", type: "Journal", indexed: "Scopus Q4" }
   ];
+
+  const handleSubmit = () => {
+    window.open(submitUrl, '_blank', 'noopener,noreferrer');
+  };
 
   return (
     <div className="py-10 sm:py-16 md:py-24 dark:bg-gray-900 bg-gray-50">
@@ -151,7 +161,7 @@ const ConferenceInfoSection: React.FC = () => {
                     </Paragraph>
                   </div>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                     <div className="rounded-xl bg-gradient-to-r p-[1px] from-[#4CB050] to-[#F0A023]">
                       <div className="h-full bg-white dark:bg-gray-800 rounded-xl p-6 text-center">
                         <div className="h-16 w-16 rounded-full bg-gradient-to-br from-[#4CB050] to-[#F0A023] flex items-center justify-center mx-auto mb-4">
@@ -160,7 +170,7 @@ const ConferenceInfoSection: React.FC = () => {
                           </svg>
                         </div>
                         <Title level={4} className="text-gray-900 dark:text-white mb-2">Abstract Submission</Title>
-                        <Text className="text-gray-600 dark:text-gray-400">Deadline: 22 August 2025</Text>
+                        <Text className="text-gray-600 dark:text-gray-400">Opens: 15 August 2025</Text>
                       </div>
                     </div>
                     
@@ -175,6 +185,25 @@ const ConferenceInfoSection: React.FC = () => {
                         <Text className="text-gray-600 dark:text-gray-400">Deadline: 1 October 2025</Text>
                       </div>
                     </div>
+                  </div>
+
+                  {/* Submit Button */}
+                  <div className="text-center">
+                    <motion.button
+                      onClick={handleSubmit}
+                      className="group inline-flex items-center px-8 py-4 rounded-full bg-gradient-to-r from-[#4CB050] via-[#F0A023] to-[#E52531] text-white font-bold text-lg shadow-xl hover:shadow-2xl transition-all duration-300 relative overflow-hidden"
+                      whileHover={{ scale: 1.05, y: -2 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-r from-[#E52531] via-[#F0A023] to-[#4CB050] opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                      <svg className="w-6 h-6 mr-3 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C20.168 18.477 18.582 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                      </svg>
+                      <span className="relative z-10">Submit Your Paper</span>
+                      <svg className="w-5 h-5 ml-2 relative z-10 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                      </svg>
+                    </motion.button>
                   </div>
                 </div>
               </div>
@@ -254,8 +283,9 @@ const ConferenceInfoSection: React.FC = () => {
                 <div className="relative z-10">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {[
-                      { date: '22 August 2025', event: 'Abstract Submission Deadline', icon: 'document' },
-                      { date: '4 September 2025', event: 'Announcement', icon: 'announcement' },
+                      { date: '15 August 2025', event: 'Abstract Submission Opens', icon: 'document' },
+                      { date: '4 September 2025', event: 'Abstract Submission Deadline', icon: 'deadline' },
+                      { date: '6 September 2025', event: 'Announcement', icon: 'announcement' },
                       { date: '12 September 2025', event: 'Payment Due', icon: 'payment' },
                       { date: '1 October 2025', event: 'Full Paper Deadline', icon: 'paper' },
                       { date: '7 October 2025', event: 'Conference Event', icon: 'event', highlight: true }
@@ -264,7 +294,7 @@ const ConferenceInfoSection: React.FC = () => {
                         item.highlight 
                           ? 'border-gradient-to-r from-[#4CB050] to-[#E52531] bg-gradient-to-r from-[#4CB050]/5 to-[#E52531]/5' 
                           : 'border-gray-200 dark:border-gray-700 hover:border-[#4CB050]'
-                      } ${index === 4 ? 'md:col-span-2' : ''}`}>
+                      } ${index === 5 ? 'md:col-span-2' : ''}`}>
                         <div className="flex items-center gap-4">
                           <div className={`h-12 w-12 rounded-full flex items-center justify-center ${
                             item.highlight 

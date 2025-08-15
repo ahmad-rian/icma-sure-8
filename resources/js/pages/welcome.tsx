@@ -29,16 +29,16 @@ const Welcome: React.FC = () => {
       status: 'University of Pecs',
     },
     {
-      image: '/images/assets/stephen.jpg',
-      name: 'Dr Stephen Parkes',
-      title: ' Senior Research Fellow, Centre for Regional Economic & Social Research (CRESR)',
-      country: 'Britania Raya, England',
-      status: 'Sheffield Hallam University',
+      image: '/images/assets/linma.webp',
+      name: 'Dr. Lin Ma',
+      title: 'FSE Head of International (Stud Recruit), FSE Research & Business Support Services',
+      country: 'Manchester, England',
+      status: 'Senior Lecturer, CE - Academic & Research ',
     },
     {
       image: '/images/assets/tuomo.jpeg', 
       name: 'Dr. Tuomo Rautakivi',
-      title: 'Professor from Royal Pnom Penh University (Cambodia)',
+      title: 'Centria University of Applied Science, Finlandia',
       country: 'Thailand',
       status: 'Ministry of Labour and Vocational Training ',
     },
@@ -46,8 +46,8 @@ const Welcome: React.FC = () => {
       image: '/images/assets/ritthikorn.jpeg', 
       name: 'Dr. Ritthikorn Siriprasertchok',
       title: 'Burapha University',
-      country: 'Thailand',
-      status: 'Politicy Speaker'
+      country: 'Finland',
+      status: 'Bhurapa University'
     },
     
   ];

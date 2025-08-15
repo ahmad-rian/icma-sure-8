@@ -12,6 +12,8 @@ interface StatItemProps {
 interface CounterStatsSectionProps {
   stats?: StatItemProps[];
   backgroundImage?: string;
+  showSubmitButton?: boolean;
+  submitUrl?: string;
 }
 
 // Counter component for animating numbers
@@ -86,7 +88,9 @@ const StatItem: React.FC<StatItemProps> = ({ icon, value, label, duration }) => 
 
 const CounterStatsSection: React.FC<CounterStatsSectionProps> = ({ 
   stats = [],
-  backgroundImage
+  backgroundImage,
+  showSubmitButton = true,
+  submitUrl = "https://jos.unsoed.ac.id/index.php/eprocicma/index"
 }) => {
   const { isDarkMode } = useTheme();
   const sectionRef = useRef(null);
@@ -163,6 +167,10 @@ const CounterStatsSection: React.FC<CounterStatsSectionProps> = ({
     ? `linear-gradient(90deg, ${colors.blue}CC 0%, ${colors.orange}99 50%, ${colors.red}CC 100%)`
     : `linear-gradient(90deg, ${colors.blue}BB 0%, ${colors.orange}88 50%, ${colors.red}BB 100%)`;
 
+  const handleSubmit = () => {
+    window.open(submitUrl, '_blank', 'noopener,noreferrer');
+  };
+
   return (
     <div ref={sectionRef} className="relative py-16 sm:py-20 overflow-hidden">
       {/* Background with brand color gradient */}
@@ -182,7 +190,8 @@ const CounterStatsSection: React.FC<CounterStatsSectionProps> = ({
         animate={isInView ? "visible" : "hidden"}
         variants={sectionVariants}
       >
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 sm:gap-6 md:gap-8 lg:gap-6">
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 sm:gap-6 md:gap-8 lg:gap-6 mb-12">
           {displayStats.map((stat, index) => (
             <StatItem 
               key={index} 
@@ -193,6 +202,65 @@ const CounterStatsSection: React.FC<CounterStatsSectionProps> = ({
             />
           ))}
         </div>
+
+        {/* Submit Button Section */}
+        {showSubmitButton && (
+          <motion.div
+            className="text-center"
+            initial={{ opacity: 0, y: 30 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+            transition={{ delay: 1, duration: 0.8 }}
+          >
+            <div className="mb-6">
+              <h3 className="text-2xl sm:text-3xl font-bold text-white mb-2">
+                Ready to Join?
+              </h3>
+              <p className="text-white/90 text-lg">
+                Submit your research and be part of sustainable development
+              </p>
+            </div>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <motion.button
+                onClick={handleSubmit}
+                className="group inline-flex items-center px-8 py-4 rounded-full bg-white text-gray-800 font-bold text-lg shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-105 relative overflow-hidden"
+                whileHover={{ y: -3 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-white to-gray-100 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <svg className="w-6 h-6 mr-3 relative z-10 text-[#4CB050]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C20.168 18.477 18.582 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+                <span className="relative z-10">Submit Your Paper</span>
+                <svg className="w-5 h-5 ml-3 relative z-10 group-hover:translate-x-1 transition-transform duration-300 text-[#E52531]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+              </motion.button>
+
+              <motion.button
+                onClick={() => window.open('mailto:icmasure.lppm@unsoed.ac.id', '_self')}
+                className="inline-flex items-center px-6 py-3 rounded-full bg-transparent border-2 border-white text-white font-semibold hover:bg-white hover:text-gray-800 transition-all duration-300"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                Contact Us
+              </motion.button>
+            </div>
+
+            {/* Additional info */}
+            <div className="mt-6 inline-flex items-center px-6 py-3 rounded-full bg-white/10 backdrop-blur-sm border border-white/20">
+              <svg className="w-5 h-5 text-white mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span className="text-white text-sm">
+                Abstract deadline: <strong>4 September 2025</strong>
+              </span>
+            </div>
+          </motion.div>
+        )}
       </motion.div>
       
       {/* Thin colorful divider line */}
