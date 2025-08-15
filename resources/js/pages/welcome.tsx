@@ -38,15 +38,15 @@ const Welcome: React.FC = () => {
     {
       image: '/images/assets/tuomo.jpeg', 
       name: 'Dr. Tuomo Rautakivi',
-      title: 'Centria University of Applied Science, Finlandia',
-      country: 'Thailand',
+      title: 'Centria University of Applied Science, Finland',
+      country: 'Finland',
       status: 'Ministry of Labour and Vocational Training ',
     },
     {
       image: '/images/assets/ritthikorn.jpeg', 
       name: 'Dr. Ritthikorn Siriprasertchok',
       title: 'Burapha University',
-      country: 'Finland',
+      country: 'Thailand',
       status: 'Bhurapa University'
     },
     
