@@ -43,7 +43,7 @@ const Welcome: React.FC = () => {
       status: 'Ministry of Labour and Vocational Training ',
     },
     {
-      image: '/images/assets/ritthikorn.jpeg', 
+      image: '/images/assets/ritthikorn2.jpeg', 
       name: 'Dr. Ritthikorn Siriprasertchok',
       title: 'Burapha University',
       country: 'Thailand',
