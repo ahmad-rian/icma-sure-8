@@ -190,18 +190,7 @@ const CounterStatsSection: React.FC<CounterStatsSectionProps> = ({
         animate={isInView ? "visible" : "hidden"}
         variants={sectionVariants}
       >
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 sm:gap-6 md:gap-8 lg:gap-6 mb-12">
-          {displayStats.map((stat, index) => (
-            <StatItem 
-              key={index} 
-              icon={stat.icon} 
-              value={stat.value} 
-              label={stat.label}
-              duration={stat.duration}
-            />
-          ))}
-        </div>
+        
 
         {/* Submit Button Section */}
         {showSubmitButton && (
