@@ -178,7 +178,7 @@ const AboutUs: React.FC<AboutUsProps> = ({ darkMode = false }) => {
                     
                     {/* Main poster image */}
                     <motion.img
-                      src="/images/assets/poster.jpeg"
+                      src="/images/assets/poster.webp"
                       alt="ICMA SURE 2025 Conference Poster"
                       className="w-full h-auto object-contain"
                       initial={{ opacity: 0, scale: 0.95 }}
