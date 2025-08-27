@@ -428,7 +428,7 @@ const Navbar = () => {
                                   </>
                                 );
                                 
-                                if (subItem.isExternal) {
+                                if (subItem.isExternal || subItem.isDownload) {
                                   return (
                                     <a
                                       key={subItem.href}
@@ -651,7 +651,7 @@ const Navbar = () => {
                                         </>
                                       );
                                       
-                                      if (subItem.isExternal) {
+                                      if (subItem.isExternal || subItem.isDownload) {
                                         return (
                                           <a
                                             key={subItem.href}
