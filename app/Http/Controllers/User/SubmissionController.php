@@ -61,6 +61,7 @@ class SubmissionController extends Controller
             'author.first_name' => 'required|string|max:255',
             'author.last_name' => 'required|string|max:255',
             'author.email' => 'required|email|max:255',
+            'author.phone_number' => 'required|string|max:20',
             'author.affiliation' => 'required|string|max:255',
             'author.country_id' => 'required|exists:countries,id',
             // Contributors validation (optional)
@@ -68,6 +69,7 @@ class SubmissionController extends Controller
             'contributors.*.first_name' => 'required|string|max:255',
             'contributors.*.last_name' => 'required|string|max:255',
             'contributors.*.email' => 'required|email|max:255',
+            'contributors.*.phone_number' => 'required|string|max:20',
             'contributors.*.affiliation' => 'required|string|max:255',
             'contributors.*.country_id' => 'required|exists:countries,id',
             'contributors.*.role' => 'required|in:author,co-author',
@@ -89,6 +91,7 @@ class SubmissionController extends Controller
                 'author_first_name' => $request->author['first_name'],
                 'author_last_name' => $request->author['last_name'],
                 'author_email' => $request->author['email'],
+                'author_phone_number' => $request->author['phone_number'],
                 'author_affiliation' => $request->author['affiliation'],
                 'title' => $request->title,
                 'abstract' => $request->abstract,

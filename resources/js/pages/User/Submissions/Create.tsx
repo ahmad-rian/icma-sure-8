@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus, Trash2, FileText, ArrowLeft } from 'lucide-react';
+import { Plus, Trash2, FileText, ArrowLeft, Phone } from 'lucide-react';
 import TinyMCEEditor from '@/components/ui/tinymce-editor';
 import { motion } from 'framer-motion';
 import Navbar from '@/components/Navbar';
@@ -16,6 +16,7 @@ interface Author {
     first_name: string;
     last_name: string;
     email: string;
+    phone_number: string;
     affiliation: string;
     country_id: string;
     is_primary_contact: boolean;
@@ -25,6 +26,7 @@ interface Contributor {
     first_name: string;
     last_name: string;
     email: string;
+    phone_number: string;
     affiliation: string;
     country_id: string;
     role: 'co-author' | 'contributor';
@@ -96,6 +98,7 @@ export default function Create({ auth, countries }: CreateProps) {
             first_name: firstName,
             last_name: lastName,
             email: auth.user?.email || '',
+            phone_number: '',
             affiliation: '',
             country_id: '',
             is_primary_contact: true,
@@ -110,6 +113,7 @@ export default function Create({ auth, countries }: CreateProps) {
                 first_name: '',
                 last_name: '',
                 email: '',
+                phone_number: '',
                 affiliation: '',
                 country_id: '',
                 role: 'co-author' as const,
@@ -349,6 +353,27 @@ export default function Create({ auth, countries }: CreateProps) {
                                                     </div>
 
                                                     <div className="space-y-2">
+                                                        <Label htmlFor="author-phone" className="text-sm font-semibold text-gray-700 dark:text-gray-300">Phone Number (WhatsApp) *</Label>
+                                                        <div className="relative">
+                                                            <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                                                            <Input
+                                                                id="author-phone"
+                                                                type="tel"
+                                                                value={data.author.phone_number}
+                                                                onChange={(e) => updateAuthor('phone_number', e.target.value)}
+                                                                className={`h-12 pl-11 rounded-xl border-2 transition-all duration-200 ${errors['author.phone_number'] ? 'border-red-500 focus:border-red-500' : 'border-gray-200 dark:border-gray-600 focus:border-[#4CB050]'}`}
+                                                                placeholder="Enter WhatsApp number (e.g., +62812345678)"
+                                                            />
+                                                        </div>
+                                                        {errors['author.phone_number'] && (
+                                                            <p className="text-sm text-red-600 mt-1 flex items-center">
+                                                                <span className="w-1 h-1 bg-red-600 rounded-full mr-2"></span>
+                                                                {errors['author.phone_number']}
+                                                            </p>
+                                                        )}
+                                                    </div>
+
+                                                    <div className="space-y-2">
                                                         <Label htmlFor="author-affiliation" className="text-sm font-semibold text-gray-700 dark:text-gray-300">Affiliation *</Label>
                                                         <Input
                                                             id="author-affiliation"
@@ -472,6 +497,27 @@ export default function Create({ auth, countries }: CreateProps) {
                                                                 {errors[`contributors.${index}.email` as keyof typeof errors] && (
                                                                     <p className="text-sm text-red-600 mt-1">
                                                                         {errors[`contributors.${index}.email` as keyof typeof errors]}
+                                                                    </p>
+                                                                )}
+                                                            </div>
+
+                                                            <div className="space-y-2">
+                                                                <Label htmlFor={`contributor-${index}-phone`} className="text-sm font-semibold text-gray-700 dark:text-gray-300">Phone Number (WhatsApp) *</Label>
+                                                                <div className="relative">
+                                                                    <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                                                                    <Input
+                                                                        id={`contributor-${index}-phone`}
+                                                                        type="tel"
+                                                                        value={contributor.phone_number}
+                                                                        onChange={(e) => updateContributor(index, 'phone_number', e.target.value)}
+                                                                        className={`h-12 pl-11 rounded-xl border-2 transition-all duration-200 ${errors[`contributors.${index}.phone_number` as keyof typeof errors] ? 'border-red-500 focus:border-red-500' : 'border-gray-200 dark:border-gray-600 focus:border-[#4CB050]'}`}
+                                                                        placeholder="Enter WhatsApp number (e.g., +62812345678)"
+                                                                    />
+                                                                </div>
+                                                                {errors[`contributors.${index}.phone_number` as keyof typeof errors] && (
+                                                                    <p className="text-sm text-red-600 mt-1 flex items-center">
+                                                                        <span className="w-1 h-1 bg-red-600 rounded-full mr-2"></span>
+                                                                        {errors[`contributors.${index}.phone_number` as keyof typeof errors]}
                                                                     </p>
                                                                 )}
                                                             </div>

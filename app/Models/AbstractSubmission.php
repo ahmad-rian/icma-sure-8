@@ -19,6 +19,7 @@ class AbstractSubmission extends Model
         'author_first_name',
         'author_last_name',
         'author_email',
+        'author_phone_number',
         'author_affiliation',
         'title',
         'abstract',

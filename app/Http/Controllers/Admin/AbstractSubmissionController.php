@@ -600,6 +600,9 @@ class AbstractSubmissionController extends Controller
                "After making the payment, please upload your payment proof (JPEG, JPG, PNG format) at:\n" .
                "{$uploadUrl}\n\n" .
                "Upon confirmation of your payment, we will issue the Letter of Acceptance (LoA) as proof of your participation in 8th International Conference on Multidisciplinary Approaches for Sustainable Rural Development (ICMA-SURE) 2025.\n\n" .
+               "📱 JOIN OUR WHATSAPP GROUP:\n" .
+               "For important updates and announcements, please join our WhatsApp group:\n" .
+               "https://chat.whatsapp.com/LQ6C4Z2xDwe4tQq072uJU1?mode=ems_wa_c\n\n" .
                "We greatly appreciate your prompt attention to this matter and look forward to your active participation in the conference.\n\n" .
                "Best regards,\n" .
                "ICMA-SURE 2025 Organizing Committee\n" .

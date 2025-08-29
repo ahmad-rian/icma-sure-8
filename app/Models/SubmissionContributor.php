@@ -17,6 +17,7 @@ class SubmissionContributor extends Model
         'middle_name',
         'last_name',
         'email',
+        'phone_number',
         'country_id',
         'affiliation',
         'role',

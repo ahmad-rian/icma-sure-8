@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
-import { ArrowLeft, Plus, Trash2, Upload, FileText, Download, RefreshCw, Calendar, User, FileCheck } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Upload, FileText, Download, RefreshCw, Calendar, User, FileCheck, Phone } from 'lucide-react';
 import { AbstractSubmission, Country, User as UserType } from '@/types/abstract-submission';
 import TinyMCEEditor from '@/components/ui/tinymce-editor';
 
@@ -23,12 +23,14 @@ interface SubmissionFormData {
     keywords: string;
     user_id: string;
     country_id: string;
+    author_phone_number: string;
     pdf_file: File | null;
     contributors: {
         id?: string;
         first_name: string;
         last_name: string;
         email: string;
+        phone_number: string;
         affiliation: string;
         country_id: string;
     }[];
@@ -49,12 +51,14 @@ export default function Edit({ submission, countries, users }: Props) {
         keywords: submission.keywords.join(', '),
         user_id: submission.user?.id.toString() || '',
         country_id: submission.country?.id.toString() || '',
+        author_phone_number: submission.author_phone_number || '',
         pdf_file: null,
         contributors: submission.contributors?.map(c => ({
             id: c.id?.toString() || '',
             first_name: c.first_name,
             last_name: c.last_name,
             email: c.email,
+            phone_number: c.phone_number || '',
             affiliation: c.affiliation,
             country_id: c.country_id.toString()
         })) || []
@@ -66,6 +70,7 @@ export default function Edit({ submission, countries, users }: Props) {
             first_name: c.first_name,
             last_name: c.last_name,
             email: c.email,
+            phone_number: c.phone_number || '',
             affiliation: c.affiliation,
             country_id: c.country_id.toString()
         })) || []
@@ -80,6 +85,7 @@ export default function Edit({ submission, countries, users }: Props) {
             first_name: '',
             last_name: '',
             email: '',
+            phone_number: '',
             affiliation: '',
             country_id: ''
         }]);
@@ -90,7 +96,7 @@ export default function Edit({ submission, countries, users }: Props) {
         setContributors(newContributors);
     };
 
-    const updateContributor = (index: number, field: 'first_name' | 'last_name' | 'email' | 'affiliation' | 'country_id', value: string) => {
+    const updateContributor = (index: number, field: 'first_name' | 'last_name' | 'email' | 'phone_number' | 'affiliation' | 'country_id', value: string) => {
         const newContributors = [...contributors];
         newContributors[index][field] = value;
         setContributors(newContributors);
@@ -213,6 +219,22 @@ export default function Edit({ submission, countries, users }: Props) {
                                     </Select>
                                     {errors.country_id && <p className="text-sm text-destructive">{errors.country_id}</p>}
                                 </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="author_phone_number" className="text-sm font-medium flex items-center gap-2">
+                                    <Phone className="h-4 w-4" />
+                                    Author WhatsApp Number
+                                </Label>
+                                <Input
+                                    id="author_phone_number"
+                                    type="tel"
+                                    value={data.author_phone_number}
+                                    onChange={(e) => setData('author_phone_number', e.target.value)}
+                                    placeholder="Enter author WhatsApp number (e.g., +62812345678)"
+                                    className="w-full"
+                                />
+                                {errors.author_phone_number && <p className="text-sm text-destructive">{errors.author_phone_number}</p>}
                             </div>
 
                             <div className="space-y-2">
@@ -383,6 +405,18 @@ export default function Edit({ submission, countries, users }: Props) {
                                                         value={contributor.email}
                                                         onChange={(e) => updateContributor(index, 'email', e.target.value)}
                                                         placeholder="Enter email address"
+                                                    />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label className="text-sm font-medium flex items-center gap-2">
+                                                        <Phone className="h-4 w-4" />
+                                                        WhatsApp Number
+                                                    </Label>
+                                                    <Input
+                                                        type="tel"
+                                                        value={contributor.phone_number}
+                                                        onChange={(e) => updateContributor(index, 'phone_number', e.target.value)}
+                                                        placeholder="Enter WhatsApp number (e.g., +62812345678)"
                                                     />
                                                 </div>
                                                 <div className="space-y-2">

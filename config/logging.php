@@ -127,6 +127,39 @@ return [
             'path' => storage_path('logs/laravel.log'),
         ],
 
+        // Email API specific logging channels
+        'email_api' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/email-api.log'),
+            'level' => env('LOG_LEVEL', 'info'),
+            'days' => 30,
+            'replace_placeholders' => true,
+        ],
+
+        'email_api_security' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/email-api-security.log'),
+            'level' => 'warning',
+            'days' => 90,
+            'replace_placeholders' => true,
+        ],
+
+        'email_api_performance' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/email-api-performance.log'),
+            'level' => 'info',
+            'days' => 7,
+            'replace_placeholders' => true,
+        ],
+
+        'email_api_audit' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/email-api-audit.log'),
+            'level' => 'info',
+            'days' => 365,
+            'replace_placeholders' => true,
+        ],
+
     ],
 
 ];

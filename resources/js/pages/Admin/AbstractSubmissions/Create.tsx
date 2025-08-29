@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, Plus, Trash2, FileText } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, FileText, Phone } from 'lucide-react';
 import TinyMCEEditor from '@/components/ui/tinymce-editor';
 import { Country, User } from '@/types/abstract-submission';
 
@@ -21,10 +21,12 @@ interface SubmissionFormData {
     keywords: string;
     user_id: string;
     country_id: string;
+    author_phone_number: string;
     contributors: {
         first_name: string;
         last_name: string;
         email: string;
+        phone_number: string;
         affiliation: string;
         country_id: string;
     }[];
@@ -38,6 +40,7 @@ export default function Create({ countries, users }: Props) {
         keywords: '',
         user_id: '',
         country_id: '',
+        author_phone_number: '',
         contributors: []
     });
 
@@ -54,6 +57,7 @@ export default function Create({ countries, users }: Props) {
             first_name: '',
             last_name: '',
             email: '',
+            phone_number: '',
             affiliation: '',
             country_id: ''
         }];
@@ -65,7 +69,7 @@ export default function Create({ countries, users }: Props) {
         setData('contributors', newContributors);
     };
 
-    const updateContributor = (index: number, field: 'first_name' | 'last_name' | 'email' | 'affiliation' | 'country_id', value: string) => {
+    const updateContributor = (index: number, field: 'first_name' | 'last_name' | 'email' | 'phone_number' | 'affiliation' | 'country_id', value: string) => {
         const newContributors = [...data.contributors];
         newContributors[index][field] = value;
         setData('contributors', newContributors);
@@ -142,6 +146,21 @@ export default function Create({ countries, users }: Props) {
                                     </Select>
                                     {errors.country_id && <p className="text-sm text-red-600">{errors.country_id}</p>}
                                 </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="author_phone_number" className="flex items-center gap-2">
+                                    <Phone className="h-4 w-4" />
+                                    Author Phone Number
+                                </Label>
+                                <Input
+                                    id="author_phone_number"
+                                    value={data.author_phone_number}
+                                    onChange={(e) => setData('author_phone_number', e.target.value)}
+                                    placeholder="Enter author phone number"
+                                    className="w-full"
+                                />
+                                {errors.author_phone_number && <p className="text-sm text-red-600">{errors.author_phone_number}</p>}
                             </div>
 
                             <div className="space-y-2">
@@ -273,6 +292,19 @@ export default function Create({ countries, users }: Props) {
                                                 value={contributor.affiliation}
                                                 onChange={(e) => updateContributor(index, 'affiliation', e.target.value)}
                                                 placeholder="Institution/Organization"
+                                                className="h-9"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor={`contributor-${index}-phone`} className="text-sm flex items-center gap-1">
+                                                <Phone className="h-3 w-3" />
+                                                Phone Number
+                                            </Label>
+                                            <Input
+                                                id={`contributor-${index}-phone`}
+                                                value={contributor.phone_number}
+                                                onChange={(e) => updateContributor(index, 'phone_number', e.target.value)}
+                                                placeholder="Phone number"
                                                 className="h-9"
                                             />
                                         </div>

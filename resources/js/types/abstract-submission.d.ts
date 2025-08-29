@@ -43,6 +43,7 @@ export interface SubmissionContributor {
     first_name: string;
     last_name: string;
     email: string;
+    phone_number?: string;
     affiliation: string;
     country_id: string;
     country?: Country;
@@ -91,6 +92,7 @@ export interface AbstractSubmission {
     abstract_pdf?: string;
     keywords: string[];
     submission_file?: string;
+    author_phone_number?: string;
     status: 'pending' | 'under_review' | 'approved' | 'rejected';
     reviewer_notes?: string;
     submitted_at: string;

@@ -7,12 +7,13 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, Save, User, Mail, Lock, Shield, Crown } from 'lucide-react';
+import { ArrowLeft, Save, User, Mail, Lock, Shield, Crown, Phone } from 'lucide-react';
 
 export default function Create() {
     const { data, setData, post, processing, errors } = useForm({
         name: '',
         email: '',
+        phone_number: '',
         password: '',
         password_confirmation: '',
         is_allowed: false,
@@ -99,6 +100,25 @@ export default function Create() {
                                 )}
                             </div>
 
+                            {/* Phone Number Field */}
+                            <div className="space-y-2">
+                                <Label htmlFor="phone_number">
+                                    <Phone className="inline mr-2 h-4 w-4" />
+                                    Phone Number (WhatsApp)
+                                </Label>
+                                <Input
+                                    id="phone_number"
+                                    type="tel"
+                                    value={data.phone_number}
+                                    onChange={(e) => setData('phone_number', e.target.value)}
+                                    placeholder="Enter phone number (e.g., +62812345678)"
+                                    className={errors.phone_number ? 'border-destructive' : ''}
+                                />
+                                {errors.phone_number && (
+                                    <p className="text-sm text-destructive">{errors.phone_number}</p>
+                                )}
+                            </div>
+
                             {/* Role Field */}
                             <div className="space-y-2">
                                 <Label htmlFor="role">
@@ -171,7 +191,7 @@ export default function Create() {
                                 <Switch
                                     id="is_allowed"
                                     checked={data.is_allowed}
-                                    onCheckedChange={(checked) => setData('is_allowed', checked)}
+                                    onCheckedChange={(checked) => setData('is_allowed', !!checked)}
                                 />
                             </div>
 

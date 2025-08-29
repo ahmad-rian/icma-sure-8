@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { ArrowLeft, Download, Edit, FileText, User, MapPin, Calendar, FileCheck, RefreshCw, Upload, CheckCircle, XCircle } from 'lucide-react';
+import { ArrowLeft, Download, Edit, FileText, User, MapPin, Calendar, FileCheck, RefreshCw, Upload, CheckCircle, XCircle, Phone } from 'lucide-react';
 import AppSidebarLayout from '@/layouts/app/app-sidebar-layout';
 import { AbstractSubmission } from '@/types/abstract-submission';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
@@ -301,6 +301,12 @@ export default function Show({ submission }: { submission: AbstractSubmission })
                                                         <MapPin className="h-4 w-4 flex-shrink-0" />
                                                         <span className="break-words">{contributor.country?.name || 'N/A'}</span>
                                                     </div>
+                                                    {contributor.phone_number && (
+                                                        <div className="flex items-center gap-2 text-muted-foreground">
+                                                            <Phone className="h-4 w-4 flex-shrink-0" />
+                                                            <span className="break-words">{contributor.phone_number}</span>
+                                                        </div>
+                                                    )}
                                                 </div>
                                                 <div className="flex items-start gap-2 text-sm text-muted-foreground">
                                                     <FileCheck className="h-4 w-4 flex-shrink-0 mt-0.5" />
@@ -469,6 +475,12 @@ export default function Show({ submission }: { submission: AbstractSubmission })
                                     <div className="space-y-1 min-w-0 flex-1">
                                         <p className="font-medium text-foreground break-words">{submission.user?.name}</p>
                                         <p className="text-sm text-muted-foreground break-all">{submission.user?.email}</p>
+                                        {submission.author_phone_number && (
+                                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                                <Phone className="h-4 w-4 flex-shrink-0" />
+                                                <span className="break-words">{submission.author_phone_number}</span>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                                 

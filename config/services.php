@@ -40,4 +40,29 @@ return [
         'redirect' => env('GOOGLE_REDIRECT_URI'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Email API Service Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Configuration for the Email API service including API keys for
+    | authentication and other service-specific settings.
+    |
+    */
+
+    'email_api' => [
+        'api_keys' => [
+            env('EMAIL_API_KEY_1'),
+            env('EMAIL_API_KEY_2'),
+            env('EMAIL_API_KEY_3'),
+        ],
+        'rate_limit' => [
+            'max_attempts' => env('EMAIL_API_RATE_LIMIT', 100),
+            'decay_minutes' => env('EMAIL_API_RATE_DECAY', 60),
+        ],
+        'allowed_domains' => explode(',', env('EMAIL_API_ALLOWED_DOMAINS', '')),
+        'max_recipients' => env('EMAIL_API_MAX_RECIPIENTS', 50),
+        'max_attachment_size' => env('EMAIL_API_MAX_ATTACHMENT_SIZE', 10485760), // 10MB
+    ],
+
 ];
