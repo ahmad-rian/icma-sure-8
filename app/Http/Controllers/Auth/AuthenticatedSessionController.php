@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Models\AbstractSubmission;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -33,7 +34,23 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        $user = Auth::user();
+        
+        // Redirect admin to dashboard
+        if ($user->role === 'admin') {
+            return redirect()->intended(route('dashboard', absolute: false));
+        }
+        
+        // For regular users, check if they have any abstract submissions
+        $hasSubmissions = AbstractSubmission::where('user_id', $user->id)->exists();
+        
+        if ($hasSubmissions) {
+            // User has submissions, redirect to submissions index
+            return redirect()->intended(route('user.submissions.index'));
+        } else {
+            // User has no submissions, redirect to create submission
+            return redirect()->intended(route('user.submissions.create'));
+        }
     }
 
     /**

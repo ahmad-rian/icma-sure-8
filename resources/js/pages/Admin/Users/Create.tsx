@@ -21,13 +21,13 @@ export default function Create() {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        post(route('users.store'));
+        post(route('admin.users.store'));
     };
 
     const breadcrumbs = [
-        { title: 'Dashboard', href: route('dashboard') },
-        { title: 'User Management', href: route('users.index') },
-        { title: 'Create User', href: route('users.create') },
+        { title: 'Dashboard', href: route('admin.dashboard') },
+        { title: 'User Management', href: route('admin.users.index') },
+        { title: 'Create User', href: route('admin.users.create') },
     ];
 
     return (
@@ -38,7 +38,7 @@ export default function Create() {
                 {/* Header */}
                 <div className="flex items-center gap-4 mb-6">
                     <Button variant="outline" size="sm" asChild>
-                        <Link href={route('users.index')}>
+                        <Link href={route('admin.users.index')}>
                             <ArrowLeft className="mr-2 h-4 w-4" />
                             Back to Users
                         </Link>
@@ -182,7 +182,7 @@ export default function Create() {
                                     {processing ? 'Creating...' : 'Create User'}
                                 </Button>
                                 <Button type="button" variant="outline" asChild>
-                                    <Link href={route('users.index')}>
+                                    <Link href={route('admin.users.index')}>
                                         Cancel
                                     </Link>
                                 </Button>

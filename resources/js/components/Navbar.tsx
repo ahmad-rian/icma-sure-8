@@ -13,6 +13,21 @@ import {
   ArrowRightOnRectangleIcon
 } from '@heroicons/react/24/outline';
 
+interface AuthUser {
+  id: number;
+  name: string;
+  email: string;
+  avatar?: string;
+}
+
+interface AuthProps {
+  user?: AuthUser;
+}
+
+interface PageProps {
+  auth?: AuthProps;
+}
+
 const COLORS = {
   red: '#E52531',
   green: '#4CB050',
@@ -26,50 +41,65 @@ const THEMES = {
   SYSTEM: 'system'
 };
 
-const NAVIGATION = [
-  { name: 'Home', href: '/' },
-  { name: 'About 8th ICMA SURE', href: '/about-the-8th'},
-  { 
-    name: 'Committee', 
-    id: 'committees',
-    dropdown: [
-      { name: 'Organising Committee', href: '/committee' },
-      { name: 'Scientific Committee', href: '/reviewer' },
-    ] 
-  },  
-  { 
-    name: 'Download', 
-    id: 'download',
-    dropdown: [
-      { name: 'Abstract Template', href: '/download/abstract-template', isDownload: true },
-      { name: 'Template For ICMA SURE Proceeding', href: '/download/icma-sure-proceeding', isDownload: true },
-      { name: 'Registration Guide', href: 'https://www.youtube.com/watch?v=3QzvCgC0b2c', isExternal: true },
-      { name: 'Program And Abstract Book', href: 'https://drive.google.com/drive/folders/19-c9h0Cx89bRUhAqFcCu2toGnMuSB1om', isExternal: true }
-    ] 
-  },
-  { 
-    name: 'Previous Events', 
-    id: 'previous-events',
-    dropdown: [
-      { name: '7th ICMA SURE 2024', href: 'https://icma.lppm.unsoed.ac.id/', isExternal: true },
-      { name: '6th ICMA SURE 2023', href: 'https://conference.unsoed.ac.id/index.php/ICMASRD/ICMASURE2023', isExternal: true },
-      { name: '5th ICMA SURE 2022', href: 'https://conference.unsoed.ac.id/index.php/ICMASRD/ICMASURE2022', isExternal: true },
-      { name: '4th ICMA SURE 2021', href: 'https://conference.unsoed.ac.id/index.php/ICMASRD/ICMASURE2021', isExternal: true },
-      { name: '3rd ICMA SURE 2020', href: 'https://conference.unsoed.ac.id/index.php/icma/index/schedConfs/archive', isExternal: true },
-      { name: '2nd ICMA SURE 2019', href: 'https://conference.unsoed.ac.id/index.php/icma/ICMA2019', isExternal: true }
-    ] 
+const getNavigation = (auth?: AuthProps) => {
+  const baseNavigation = [
+    { name: 'Home', href: '/' },
+    { name: 'About 8th ICMA SURE', href: '/about-the-8th'},
+    // { 
+    //   name: 'Committee', 
+    //   id: 'committees',
+    //   dropdown: [
+    //     { name: 'Organising Committee', href: '/committee' },
+    //     { name: 'Scientific Committee', href: '/reviewer' },
+    //   ] 
+    // },  
+    { 
+      name: 'Download', 
+      id: 'download',
+      dropdown: [
+        { name: 'Abstract Template', href: '/download/abstract-template', isDownload: true },
+        { name: 'Template For ICMA SURE Proceeding', href: '/download/icma-sure-proceeding', isDownload: true },
+        { name: 'Registration Guide', href: 'https://www.youtube.com/watch?v=3QzvCgC0b2c', isExternal: true },
+        { name: 'Program And Abstract Book', href: 'https://drive.google.com/drive/folders/19-c9h0Cx89bRUhAqFcCu2toGnMuSB1om', isExternal: true }
+      ] 
+    },
+    { 
+      name: 'Previous Events', 
+      id: 'previous-events',
+      dropdown: [
+        { name: '7th ICMA SURE 2024', href: 'https://icma.lppm.unsoed.ac.id/', isExternal: true },
+        { name: '6th ICMA SURE 2023', href: 'https://conference.unsoed.ac.id/index.php/ICMASRD/ICMASURE2023', isExternal: true },
+        { name: '5th ICMA SURE 2022', href: 'https://conference.unsoed.ac.id/index.php/ICMASRD/ICMASURE2022', isExternal: true },
+        { name: '4th ICMA SURE 2021', href: 'https://conference.unsoed.ac.id/index.php/ICMASRD/ICMASURE2021', isExternal: true },
+        { name: '3rd ICMA SURE 2020', href: 'https://conference.unsoed.ac.id/index.php/icma/index/schedConfs/archive', isExternal: true },
+        { name: '2nd ICMA SURE 2019', href: 'https://conference.unsoed.ac.id/index.php/icma/ICMA2019', isExternal: true }
+      ] 
+    }
+  ];
+
+  // Add Submit Abstract menu for authenticated users
+  if (auth?.user) {
+    baseNavigation.splice(2, 0, {
+      name: 'Submit Abstract',
+      href: '/user/submissions'
+    });
   }
-];
+
+  return baseNavigation;
+};
 
 const Navbar = () => {
-  const { auth } = usePage().props;
+  const { auth } = usePage<PageProps>().props;
   const [theme, setTheme] = useState(THEMES.SYSTEM);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [activeDropdown, setActiveDropdown] = useState(null);
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [screenSize, setScreenSize] = useState('lg');
+  
+  // Get navigation items based on auth status
+  const navigation = getNavigation(auth);
   
   // Screen size detection with better breakpoints
   const getScreenSize = () => {
@@ -82,7 +112,7 @@ const Navbar = () => {
   };
 
   // Apply theme function
-  const applyTheme = (newTheme) => {
+  const applyTheme = (newTheme: string) => {
     let isDark = false;
     
     if (newTheme === THEMES.SYSTEM) {
@@ -121,7 +151,7 @@ const Navbar = () => {
     setMounted(true);
     
     // Screen size detection with debounce
-    let resizeTimeout;
+    let resizeTimeout: NodeJS.Timeout;
     const handleResize = () => {
       clearTimeout(resizeTimeout);
       resizeTimeout = setTimeout(() => {
@@ -149,7 +179,7 @@ const Navbar = () => {
     
     // System theme listener
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    const handleSystemThemeChange = (e) => {
+    const handleSystemThemeChange = (e: MediaQueryListEvent) => {
       if (theme === THEMES.SYSTEM) {
         setIsDarkMode(e.matches);
         applyTheme(THEMES.SYSTEM);
@@ -183,7 +213,7 @@ const Navbar = () => {
   }, []);
 
   // Improved dropdown handlers
-  const toggleDropdown = (id) => {
+  const toggleDropdown = (id: string) => {
     setActiveDropdown(prev => prev === id ? null : id);
     setProfileDropdownOpen(false);
   };
@@ -195,7 +225,7 @@ const Navbar = () => {
 
   // Enhanced click away handler
   useEffect(() => {
-    const handleClickAway = (event) => {
+    const handleClickAway = (event: MouseEvent) => {
       if (!event.target.closest('.nav-dropdown') && 
           !event.target.closest('.profile-dropdown') &&
           !event.target.closest('[data-headlessui-state]')) {
@@ -247,8 +277,8 @@ const Navbar = () => {
       : 'bg-white/90 backdrop-blur-md';
   };
 
-  const getDropdownItemStyle = (index) => {
-    const colorKeys = Object.keys(COLORS);
+  const getDropdownItemStyle = (index: number) => {
+    const colorKeys = Object.keys(COLORS) as (keyof typeof COLORS)[];
     const borderColor = COLORS[colorKeys[index % colorKeys.length]];
     return { borderLeftColor: borderColor, backgroundColor: borderColor };
   };
@@ -362,8 +392,8 @@ const Navbar = () => {
               {/* Desktop Navigation */}
               {showDesktopMenu() && (
                 <div className="hidden lg:flex lg:justify-center lg:flex-1">
-                  <div className={getDesktopNavClasses()}>
-                    {NAVIGATION.map((item) => (
+                   <div className={getDesktopNavClasses()}>
+                     {navigation.map((item) => (
                       <div 
                         key={item.id || item.href} 
                         className="relative nav-dropdown" 
@@ -397,12 +427,13 @@ const Navbar = () => {
                             leave="transition ease-in duration-150"
                             leaveFrom="opacity-100 translate-y-0"
                             leaveTo="opacity-0 translate-y-1"
+                            as="div"
                             className="absolute left-0 mt-2 w-56 sm:w-60 lg:w-64 origin-top-left rounded-xl shadow-lg ring-1 z-50 overflow-hidden"
                             style={{
                               backgroundColor: isDarkMode ? 'rgb(31, 41, 55)' : 'white',
                               borderColor: isDarkMode ? 'rgb(55, 65, 81)' : 'rgba(0, 0, 0, 0.05)'
                             }}
-                            onClick={(e) => e.stopPropagation()}
+                            onClick={(e: React.MouseEvent) => e.stopPropagation()}
                           >
                             <div>
                               {item.dropdown.map((subItem, subIndex) => {
@@ -515,12 +546,13 @@ const Navbar = () => {
                           leave="transition ease-in duration-150"
                           leaveFrom="opacity-100 translate-y-0"
                           leaveTo="opacity-0 translate-y-1"
+                          as="div"
                           className="absolute right-0 mt-2 w-48 sm:w-52 origin-top-right rounded-xl shadow-lg ring-1 z-50 overflow-hidden"
                           style={{
                             backgroundColor: isDarkMode ? 'rgb(31, 41, 55)' : 'white',
                             borderColor: isDarkMode ? 'rgb(55, 65, 81)' : 'rgba(0, 0, 0, 0.05)'
                           }}
-                          onClick={(e) => e.stopPropagation()}
+                          onClick={(e: React.MouseEvent) => e.stopPropagation()}
                         >
                           <div className="py-1">
                             <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
@@ -596,7 +628,7 @@ const Navbar = () => {
                 <div className={`space-y-1 px-3 sm:px-4 py-3 mx-2 sm:mx-3 my-2 rounded-xl shadow-lg ${
                   isDarkMode ? 'bg-gray-900/95 backdrop-blur-md' : 'bg-white/95 backdrop-blur-md'
                 } max-h-[calc(100vh-5rem)] overflow-y-auto`}>
-                  {NAVIGATION.map((item) => (
+                  {navigation.map((item) => (
                     <div key={item.id || item.href} className="py-0.5">
                       {item.dropdown ? (
                         <Disclosure as="div">
@@ -635,11 +667,11 @@ const Navbar = () => {
                                       } ${isSmallScreen() ? 'text-xs' : 'text-sm'}`;
                                       
                                       const colorStyle = getDropdownItemStyle(i);
-                                      const borderStyle = {
-                                        borderLeftWidth: '2px',
-                                        borderLeftStyle: 'solid',
-                                        borderLeftColor: colorStyle.backgroundColor
-                                      };
+                                      const borderStyle: React.CSSProperties = {
+                                  borderLeftWidth: '2px',
+                                  borderLeftStyle: 'solid' as const,
+                                  borderLeftColor: colorStyle.backgroundColor
+                                };
                                       
                                       const linkContent = (
                                         <>

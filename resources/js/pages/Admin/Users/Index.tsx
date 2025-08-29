@@ -78,7 +78,7 @@ interface Props {
 }
 
 export default function Index({ users, filters, stats, flash = {} }: Props) {
-    const [selectedUsers, setSelectedUsers] = useState<number[]>([]);
+    const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
     const [searchTerm, setSearchTerm] = useState(filters.search || '');
     const [statusFilter, setStatusFilter] = useState(filters.status || 'all');
     const [roleFilter, setRoleFilter] = useState(filters.role || 'all');
@@ -91,7 +91,7 @@ export default function Index({ users, filters, stats, flash = {} }: Props) {
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
-        router.get(route('users.index'), { 
+        router.get(route('admin.users.index'), { 
             search: searchTerm,
             status: statusFilter === 'all' ? '' : statusFilter,
             role: roleFilter === 'all' ? '' : roleFilter
@@ -107,7 +107,7 @@ export default function Index({ users, filters, stats, flash = {} }: Props) {
             setRoleFilter(value);
         }
         
-        router.get(route('users.index'), { 
+        router.get(route('admin.users.index'), { 
             search: searchTerm,
             status: type === 'status' ? (value === 'all' ? '' : value) : (statusFilter === 'all' ? '' : statusFilter),
             role: type === 'role' ? (value === 'all' ? '' : value) : (roleFilter === 'all' ? '' : roleFilter)
@@ -118,13 +118,13 @@ export default function Index({ users, filters, stats, flash = {} }: Props) {
 
     const handleSelectAll = (checked: boolean) => {
         if (checked) {
-            setSelectedUsers(users.data.map(user => user.id));
+            setSelectedUsers(users.data.map(user => user.id.toString()));
         } else {
             setSelectedUsers([]);
         }
     };
 
-    const handleSelectUser = (userId: number, checked: boolean) => {
+    const handleSelectUser = (userId: string, checked: boolean) => {
         if (checked) {
             setSelectedUsers([...selectedUsers, userId]);
         } else {
@@ -150,7 +150,7 @@ export default function Index({ users, filters, stats, flash = {} }: Props) {
             };
 
             if (confirm(confirmMessage[action])) {
-                router.post(route('users.bulk-action'), {
+                router.post(route('admin.users.bulk-action'), {
                     action,
                     user_ids: selectedUsers
                 }, {
@@ -163,7 +163,7 @@ export default function Index({ users, filters, stats, flash = {} }: Props) {
     };
 
     const confirmBulkDelete = () => {
-        router.post(route('users.bulk-action'), {
+        router.post(route('admin.users.bulk-action'), {
             action: 'delete',
             user_ids: selectedUsers
         }, {
@@ -178,7 +178,7 @@ export default function Index({ users, filters, stats, flash = {} }: Props) {
     const toggleUserAccess = (user: User) => {
         const action = user.is_allowed ? 'block' : 'allow';
         if (confirm(`${action === 'allow' ? 'Allow' : 'Block'} access for ${user.name}?`)) {
-            router.post(route('users.toggle-access', user.id));
+            router.post(route('admin.users.toggle-access', user.id));
         }
     };
 
@@ -189,7 +189,7 @@ export default function Index({ users, filters, stats, flash = {} }: Props) {
 
     const confirmDelete = () => {
         if (userToDelete) {
-            router.delete(route('users.destroy', userToDelete.id), {
+            router.delete(route('admin.users.destroy', userToDelete.id), {
                 onSuccess: () => {
                     setDeleteDialogOpen(false);
                     setUserToDelete(null);
@@ -199,8 +199,8 @@ export default function Index({ users, filters, stats, flash = {} }: Props) {
     };
 
     const breadcrumbs = [
-        { title: 'Dashboard', href: route('dashboard') },
-        { title: 'User Management', href: route('users.index') },
+        { title: 'Dashboard', href: route('admin.dashboard') },
+        { title: 'User Management', href: route('admin.users.index') },
     ];
 
     return (
@@ -217,7 +217,7 @@ export default function Index({ users, filters, stats, flash = {} }: Props) {
                         </p>
                     </div>
                     <Button asChild>
-                        <Link href={route('users.create')}>
+                        <Link href={route('admin.users.create')}>
                             <Plus className="mr-2 h-4 w-4" />
                             Add User
                         </Link>
@@ -407,8 +407,8 @@ export default function Index({ users, filters, stats, flash = {} }: Props) {
                                     <TableRow key={user.id}>
                                         <TableCell>
                                             <Checkbox
-                                                checked={selectedUsers.includes(user.id)}
-                                                onCheckedChange={(checked) => handleSelectUser(user.id, checked as boolean)}
+                                                checked={selectedUsers.includes(user.id.toString())}
+                                                onCheckedChange={(checked) => handleSelectUser(user.id.toString(), checked as boolean)}
                                             />
                                         </TableCell>
                                         <TableCell>
@@ -459,12 +459,12 @@ export default function Index({ users, filters, stats, flash = {} }: Props) {
                                         <TableCell className="text-right">
                                             <div className="flex justify-end space-x-2">
                                                 <Button variant="ghost" size="sm" asChild>
-                                                    <Link href={route('users.show', user.id)}>
+                                                    <Link href={route('admin.users.show', user.id)}>
                                                         <Eye className="h-4 w-4" />
                                                     </Link>
                                                 </Button>
                                                 <Button variant="outline" size="sm" asChild>
-                                                    <Link href={route('users.edit', user.id)}>
+                                                    <Link href={route('admin.users.edit', user.id)}>
                                                         <Edit className="h-4 w-4" />
                                                     </Link>
                                                 </Button>

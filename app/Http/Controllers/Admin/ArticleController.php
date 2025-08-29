@@ -16,12 +16,26 @@ class ArticleController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $articles = Article::all();
+        $search = $request->get('search');
+        
+        $articles = Article::query()
+            ->when($search, function ($query, $search) {
+                return $query->where(function ($q) use ($search) {
+                    $q->where('title', 'like', "%{$search}%")
+                      ->orWhere('content', 'like', "%{$search}%")
+                      ->orWhere('author', 'like', "%{$search}%")
+                      ->orWhere('excerpt', 'like', "%{$search}%");
+                });
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate(10)
+            ->withQueryString();
 
         return Inertia::render('Admin/Article/Index', [
-            'articles' => $articles
+            'articles' => $articles,
+            'search' => $search,
         ]);
     }
 
@@ -171,14 +185,50 @@ class ArticleController extends Controller
      */
     public function destroy(Article $article)
     {
-        // Delete image if exists
-        if ($article->image && Storage::exists('public/' . $article->image)) {
-            Storage::delete('public/' . $article->image);
+        try {
+            // Delete image if exists
+            if ($article->image && Storage::exists('public/' . $article->image)) {
+                Storage::delete('public/' . $article->image);
+            }
+
+            $article->delete();
+
+            return redirect()->route('articles.index')
+                ->with('success', 'Article deleted successfully!');
+        } catch (\Exception $e) {
+            return redirect()->route('articles.index')
+                ->with('error', 'Failed to delete article: ' . $e->getMessage());
         }
+    }
 
-        $article->delete();
+    /**
+     * Remove multiple articles from storage.
+     */
+    public function bulkDelete(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'exists:articles,id'
+        ]);
 
-        return redirect()->route('articles.index')
-            ->with('success', 'Article deleted successfully!');
+        try {
+            $articles = Article::whereIn('id', $request->ids)->get();
+            
+            foreach ($articles as $article) {
+                // Delete image if exists
+                if ($article->image && Storage::exists('public/' . $article->image)) {
+                    Storage::delete('public/' . $article->image);
+                }
+            }
+            
+            Article::whereIn('id', $request->ids)->delete();
+            
+            $count = count($request->ids);
+            return redirect()->route('articles.index')
+                ->with('success', "Successfully deleted {$count} article(s).");
+        } catch (\Exception $e) {
+            return redirect()->route('articles.index')
+                ->with('error', 'Failed to delete articles: ' . $e->getMessage());
+        }
     }
 }

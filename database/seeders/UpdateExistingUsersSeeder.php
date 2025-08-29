@@ -28,7 +28,21 @@ class UpdateExistingUsersSeeder extends Seeder
                     AllowedEmail::firstOrCreate(['email' => $email]);
                     $this->command->info("✓ Updated {$email} to admin role");
                 } else {
-                    $this->command->warn("⚠ User with email {$email} not found");
+                    // Create admin user if not found
+                    $adminName = explode('@', $email)[0];
+                    $adminName = ucwords(str_replace('.', ' ', $adminName));
+                    
+                    $user = User::create([
+                        'name' => $adminName,
+                        'email' => $email,
+                        'password' => bcrypt('password'), // Default password
+                        'role' => 'admin',
+                        'is_allowed' => true,
+                        'email_verified_at' => now(),
+                    ]);
+
+                    AllowedEmail::firstOrCreate(['email' => $email]);
+                    $this->command->info("✓ Created admin user {$email} with ULID: {$user->id}");
                 }
             }
 

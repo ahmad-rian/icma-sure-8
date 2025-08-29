@@ -34,7 +34,7 @@ export default function Edit({ committee }: Props) {
 
   const handleSubmit: FormEventHandler = (e) => {
     e.preventDefault();
-    post(route('organizing-committees.update', committee.id));
+    post(route('admin.organizing-committees.update', committee.id));
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -51,9 +51,9 @@ export default function Edit({ committee }: Props) {
   };
 
   const breadcrumbs = [
-    { title: 'Dashboard', href: route('dashboard') },
-    { title: 'Organizing Committee', href: route('organizing-committees.index') },
-    { title: 'Edit Member', href: route('organizing-committees.edit', committee.id) },
+    { title: 'Dashboard', href: route('admin.dashboard') },
+        { title: 'Organizing Committee', href: route('admin.organizing-committees.index') },
+        { title: 'Edit Member', href: route('admin.organizing-committees.edit', committee.id) },
   ];
 
   return (
@@ -64,7 +64,7 @@ export default function Edit({ committee }: Props) {
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-semibold">Edit Committee Member</h1>
           <Button variant="outline" asChild>
-            <Link href={route('organizing-committees.index')}>
+            <Link href={route('admin.organizing-committees.index')}>
               <ArrowLeft className="mr-2 h-4 w-4" /> Back to List
             </Link>
           </Button>

@@ -30,7 +30,7 @@ export default function Create() {
 
   const handleSubmit: FormEventHandler = (e) => {
     e.preventDefault();
-    post(route('events.store'));
+    post(route('admin.events.store'));
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -58,9 +58,9 @@ export default function Create() {
   };
 
   const breadcrumbs = [
-    { title: 'Dashboard', href: route('dashboard') },
-    { title: 'Events', href: route('events.index') },
-    { title: 'Create New Event', href: route('events.create') },
+    { title: 'Dashboard', href: route('admin.dashboard') },
+        { title: 'Events', href: route('admin.events.index') },
+        { title: 'Create New Event', href: route('admin.events.create') },
   ];
 
   return (
@@ -71,7 +71,7 @@ export default function Create() {
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-semibold">Create New Event</h1>
           <Button variant="outline" asChild>
-            <Link href={route('events.index')}>
+            <Link href={route('admin.events.index')}>
               <ArrowLeft className="mr-2 h-4 w-4" /> Back to Events
             </Link>
           </Button>

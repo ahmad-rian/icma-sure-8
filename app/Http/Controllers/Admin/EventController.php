@@ -11,18 +11,34 @@ use Inertia\Inertia;
 use Buglinjo\LaravelWebp\Facades\Webp;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class EventController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $events = Event::all();
+        $query = Event::query();
+
+        // Search functionality
+        if ($request->filled('search')) {
+            $search = $request->get('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%")
+                  ->orWhere('location', 'like', "%{$search}%");
+            });
+        }
+
+        $events = $query->orderBy('created_at', 'desc')
+                       ->paginate(10)
+                       ->withQueryString();
 
         return Inertia::render('Admin/Event/Index', [
-            'events' => $events
+            'events' => $events,
+            'search' => $request->get('search', '')
         ]);
     }
 
@@ -210,15 +226,52 @@ class EventController extends Controller
      */
     public function destroy(Event $event)
     {
-        // Delete image from storage
-        if ($event->image && Storage::exists('public/' . $event->image)) {
-            Storage::delete('public/' . $event->image);
+        try {
+            // Delete image from storage
+            if ($event->image && Storage::exists('public/' . $event->image)) {
+                Storage::delete('public/' . $event->image);
+            }
+
+            $event->delete();
+
+            return redirect()->route('events.index')
+                ->with('success', 'Event deleted successfully!');
+        } catch (\Exception $e) {
+            return redirect()->route('events.index')
+                ->with('error', 'Failed to delete event. Please try again.');
         }
+    }
 
-        $event->delete();
+    /**
+     * Delete multiple events at once.
+     */
+    public function bulkDelete(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'exists:events,id'
+        ]);
 
-        return redirect()->route('events.index')
-            ->with('success', 'Event deleted successfully!');
+        try {
+            $events = Event::whereIn('id', $request->ids)->get();
+            
+            // Delete associated images
+            foreach ($events as $event) {
+                if ($event->image && Storage::exists('public/' . $event->image)) {
+                    Storage::delete('public/' . $event->image);
+                }
+            }
+            
+            // Delete events
+            Event::whereIn('id', $request->ids)->delete();
+            
+            $count = count($request->ids);
+            return redirect()->route('events.index')
+                ->with('success', "Successfully deleted {$count} event(s).");
+        } catch (\Exception $e) {
+            return redirect()->route('events.index')
+                ->with('error', 'Failed to delete events. Please try again.');
+        }
     }
 
     /**
@@ -248,7 +301,7 @@ class EventController extends Controller
             }
         } catch (\Exception $e) {
             // Log error but don't stop the process
-            \Log::error('Geocoding error: ' . $e->getMessage());
+            Log::error('Geocoding error: ' . $e->getMessage());
         }
     }
 }

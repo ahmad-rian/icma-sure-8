@@ -19,7 +19,7 @@ export default function Create() {
 
   const handleSubmit: FormEventHandler = (e) => {
     e.preventDefault();
-    post(route('organizing-committees.store'));
+    post(route('admin.organizing-committees.store'));
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -38,9 +38,9 @@ export default function Create() {
   };
 
   const breadcrumbs = [
-    { title: 'Dashboard', href: route('dashboard') },
-    { title: 'Organizing Committee', href: route('organizing-committees.index') },
-    { title: 'Add New Member', href: route('organizing-committees.create') },
+    { title: 'Dashboard', href: route('admin.dashboard') },
+        { title: 'Organizing Committee', href: route('admin.organizing-committees.index') },
+        { title: 'Add New Member', href: route('admin.organizing-committees.create') },
   ];
 
   return (
@@ -51,7 +51,7 @@ export default function Create() {
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-semibold">Add Committee Member</h1>
           <Button variant="outline" asChild>
-            <Link href={route('organizing-committees.index')}>
+            <Link href={route('admin.organizing-committees.index')}>
               <ArrowLeft className="mr-2 h-4 w-4" /> Back to List
             </Link>
           </Button>

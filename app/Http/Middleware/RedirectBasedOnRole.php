@@ -36,7 +36,7 @@ class RedirectBasedOnRole
 
         // If user is admin and trying to access home page, redirect to dashboard
         if ($user->role === 'admin' && $request->routeIs('home')) {
-            return redirect()->route('dashboard');
+            return redirect()->route('admin.dashboard');
         }
 
         // PERBAIKAN: Hapus redirect untuk user biasa ke admin routes

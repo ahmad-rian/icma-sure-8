@@ -46,9 +46,9 @@ export default function Show({ event }: Props) {
   };
 
   const breadcrumbs = [
-    { title: 'Dashboard', href: route('dashboard') },
-    { title: 'Events', href: route('events.index') },
-    { title: event.title, href: route('events.show', event.id) },
+    { title: 'Dashboard', href: route('admin.dashboard') },
+        { title: 'Events', href: route('admin.events.index') },
+        { title: event.title, href: route('admin.events.show', event.id) },
   ];
 
   const hasCoordinates = Boolean(event.latitude && event.longitude);
@@ -62,12 +62,12 @@ export default function Show({ event }: Props) {
           <h1 className="text-2xl font-semibold">Event Details</h1>
           <div className="flex space-x-2">
             <Button variant="outline" size="sm" asChild>
-              <Link href={route('events.index')}>
+              <Link href={route('admin.events.index')}>
                 <ArrowLeft className="mr-2 h-4 w-4" /> Back to Events
               </Link>
             </Button>
             <Button size="sm" asChild>
-              <Link href={route('events.edit', event.id)}>
+              <Link href={route('admin.events.edit', event.id)}>
                 <Edit className="mr-2 h-4 w-4" /> Edit Event
               </Link>
             </Button>

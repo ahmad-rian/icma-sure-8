@@ -6,10 +6,25 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasUlids;
+
+    /**
+     * Indicates if the model's ID is auto-incrementing.
+     *
+     * @var bool
+     */
+    public $incrementing = false;
+
+    /**
+     * The data type of the auto-incrementing ID.
+     *
+     * @var string
+     */
+    protected $keyType = 'string';
 
     protected $fillable = [
         'name',
@@ -47,6 +62,14 @@ class User extends Authenticatable
         } else {
             $this->attributes['password'] = null;
         }
+    }
+
+    /**
+     * Get the user profile associated with the user.
+     */
+    public function profile(): HasOne
+    {
+        return $this->hasOne(UserProfile::class);
     }
 
     /**
@@ -111,6 +134,14 @@ class User extends Authenticatable
     public function isUser(): bool
     {
         return $this->role === 'user';
+    }
+
+    /**
+     * Get all abstract submissions for this user.
+     */
+    public function submissions()
+    {
+        return $this->hasMany(AbstractSubmission::class);
     }
 
     /**

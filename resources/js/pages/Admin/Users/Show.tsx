@@ -25,7 +25,7 @@ import {
 } from 'lucide-react';
 
 interface User {
-    id: number;
+    id: string; // ULID
     name: string;
     email: string;
     email_verified_at: string | null;
@@ -56,20 +56,20 @@ export default function Show({ user, loginHistory = [], flash = {} }: Props) {
     const toggleUserAccess = () => {
         const action = user.is_allowed ? 'block' : 'allow';
         if (confirm(`${action === 'allow' ? 'Allow' : 'Block'} access for ${user.name}?`)) {
-            router.post(route('users.toggle-access', user.id));
+            router.post(route('admin.users.toggle-access', user.id));
         }
     };
 
     const deleteUser = () => {
         if (confirm(`Delete user ${user.name}? This action cannot be undone.`)) {
-            router.delete(route('users.destroy', user.id));
+            router.delete(route('admin.users.destroy', user.id));
         }
     };
 
     const breadcrumbs = [
-        { title: 'Dashboard', href: route('dashboard') },
-        { title: 'User Management', href: route('users.index') },
-        { title: user.name, href: route('users.show', user.id) },
+        { title: 'Dashboard', href: route('admin.dashboard') },
+        { title: 'User Management', href: route('admin.users.index') },
+        { title: user.name, href: route('admin.users.show', user.id) },
     ];
 
     return (
@@ -79,7 +79,7 @@ export default function Show({ user, loginHistory = [], flash = {} }: Props) {
             <div className="container py-6">
                 <div className="flex items-center gap-4 mb-6">
                     <Button variant="outline" size="sm" asChild>
-                        <Link href={route('users.index')}>
+                        <Link href={route('admin.users.index')}>
                             <ArrowLeft className="mr-2 h-4 w-4" />
                             Back to Users
                         </Link>
@@ -304,7 +304,7 @@ export default function Show({ user, loginHistory = [], flash = {} }: Props) {
                             </CardHeader>
                             <CardContent className="space-y-3">
                                 <Button className="w-full" asChild>
-                                    <Link href={route('users.edit', user.id)}>
+                                    <Link href={route('admin.users.edit', user.id)}>
                                         <Edit className="mr-2 h-4 w-4" />
                                         Edit User
                                     </Link>

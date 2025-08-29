@@ -44,7 +44,7 @@ export default function Edit({ article }: Props) {
 
   const handleSubmit: FormEventHandler = (e) => {
     e.preventDefault();
-    post(route('articles.update', article.id));
+    post(route('admin.articles.update', article.id));
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -61,9 +61,9 @@ export default function Edit({ article }: Props) {
   };
 
   const breadcrumbs = [
-    { title: 'Dashboard', href: route('dashboard') },
-    { title: 'Articles', href: route('articles.index') },
-    { title: 'Edit Article', href: route('articles.edit', article.id) },
+    { title: 'Dashboard', href: route('admin.dashboard') },
+        { title: 'Articles', href: route('admin.articles.index') },
+        { title: 'Edit Article', href: route('admin.articles.edit', article.id) },
   ];
 
   return (
@@ -74,7 +74,7 @@ export default function Edit({ article }: Props) {
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-semibold">Edit Article</h1>
           <Button variant="outline" asChild>
-            <Link href={route('articles.index')}>
+            <Link href={route('admin.articles.index')}>
               <ArrowLeft className="mr-2 h-4 w-4" /> Back to Articles
             </Link>
           </Button>

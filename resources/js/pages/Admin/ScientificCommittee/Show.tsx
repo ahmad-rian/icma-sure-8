@@ -20,9 +20,9 @@ interface Props {
 
 export default function Show({ committee }: Props) {
   const breadcrumbs = [
-    { title: 'Dashboard', href: route('dashboard') },
-    { title: 'Scientific Committee', href: route('scientific-committees.index') },
-    { title: committee.name, href: route('scientific-committees.show', committee.id) },
+    { title: 'Dashboard', href: route('admin.dashboard') },
+        { title: 'Scientific Committee', href: route('admin.scientific-committees.index') },
+        { title: 'Member Details', href: route('admin.scientific-committees.show', committee.id) },
   ];
 
   return (
@@ -34,12 +34,12 @@ export default function Show({ committee }: Props) {
           <h1 className="text-2xl font-semibold">Scientific Committee Member Details</h1>
           <div className="flex space-x-2">
             <Button variant="outline" asChild>
-              <Link href={route('scientific-committees.index')}>
+              <Link href={route('admin.scientific-committees.index')}>
                 <ArrowLeft className="mr-2 h-4 w-4" /> Back to List
               </Link>
             </Button>
             <Button asChild>
-              <Link href={route('scientific-committees.edit', committee.id)}>
+              <Link href={route('admin.scientific-committees.edit', committee.id)}>
                 <Edit className="mr-2 h-4 w-4" /> Edit
               </Link>
             </Button>

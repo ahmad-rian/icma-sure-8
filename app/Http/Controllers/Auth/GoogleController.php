@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\AbstractSubmission;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
@@ -95,7 +96,16 @@ class GoogleController extends Controller
             if ($user->role === 'admin') {
                 return redirect()->route('dashboard')->with('success', 'Selamat datang kembali, Admin!');
             } else {
-                return redirect()->route('home')->with('success', 'Login berhasil! Selamat datang di ICMA SURE.');
+                // For regular users, check if they have any abstract submissions
+                $hasSubmissions = AbstractSubmission::where('user_id', $user->id)->exists();
+                
+                if ($hasSubmissions) {
+                    // User has submissions, redirect to submissions index
+                    return redirect()->route('user.submissions.index')->with('success', 'Login berhasil! Selamat datang di ICMA SURE.');
+                } else {
+                    // User has no submissions, redirect to create submission
+                    return redirect()->route('user.submissions.create')->with('success', 'Login berhasil! Selamat datang di ICMA SURE. Silakan buat submission pertama Anda.');
+                }
             }
         } catch (\Exception $e) {
             Log::error('Google authentication error', [

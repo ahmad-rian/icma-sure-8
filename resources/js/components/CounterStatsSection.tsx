@@ -90,7 +90,7 @@ const CounterStatsSection: React.FC<CounterStatsSectionProps> = ({
   stats = [],
   backgroundImage,
   showSubmitButton = true,
-  submitUrl = "https://jos.unsoed.ac.id/index.php/eprocicma/index"
+  submitUrl = "/login"
 }) => {
   const { isDarkMode } = useTheme();
   const sectionRef = useRef(null);
@@ -217,10 +217,8 @@ const CounterStatsSection: React.FC<CounterStatsSectionProps> = ({
                 whileTap={{ scale: 0.95 }}
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-white to-gray-100 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <svg className="w-6 h-6 mr-3 relative z-10 text-[#4CB050]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C20.168 18.477 18.582 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                </svg>
-                <span className="relative z-10">Submit Your Paper</span>
+              
+                <span className="relative z-10">Submit Your Paper ( Abstract )</span>
                 <svg className="w-5 h-5 ml-3 relative z-10 group-hover:translate-x-1 transition-transform duration-300 text-[#E52531]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                 </svg>

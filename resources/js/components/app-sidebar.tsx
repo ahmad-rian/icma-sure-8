@@ -5,40 +5,56 @@ import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid, Users, GraduationCap, FileText, Calendar, UserCog } from 'lucide-react';
+import { BookOpen, Folder, LayoutGrid, Users, GraduationCap, FileText, Calendar, UserCog, Globe, UserCheck, ScrollText, CreditCard } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
     {
         title: 'Dashboard',
-        href: '/dashboard',
+        href: '/admin/dashboard',
         icon: LayoutGrid,
     },
     {
         title: 'Organizing Committee',
-        href: '/organizing-committees',
+        href: '/admin/organizing-committees',
         icon: Users,
     },
     {
         title: 'Scientific Committee',
-        href: '/scientific-committees',
+        href: '/admin/scientific-committees',
         icon: GraduationCap,
     },
     {
         title: 'Articles',
-        href: '/articles',
+        href: '/admin/articles',
         icon: FileText,
     },
     {
         title: 'Events',
-        href: '/events',
+        href: '/admin/events',
         icon: Calendar,
     },
     {
         title: 'User Management',
-        href: '/users',
+        href: '/admin/users',
         icon: UserCog,
     },
+    {
+        title: 'Countries',
+        href: '/admin/countries',
+        icon: Globe,
+    },
+    {
+        title: 'User Profiles',
+        href: '/admin/user-profiles',
+        icon: UserCheck,
+    },
+    {
+        title: 'Abstract Submissions',
+        href: '/admin/abstract-submissions',
+        icon: ScrollText,
+    },
+    
 ];
 
 const footerNavItems: NavItem[] = [
@@ -61,7 +77,7 @@ export function AppSidebar() {
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
-                            <Link href="/dashboard" prefetch>
+                            <Link href="/admin/dashboard" prefetch>
                                 <AppLogo />
                             </Link>
                         </SidebarMenuButton>

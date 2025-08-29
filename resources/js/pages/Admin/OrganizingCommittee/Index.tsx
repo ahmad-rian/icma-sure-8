@@ -29,13 +29,13 @@ export default function Index(props: PageProps) {
   
   const handleDelete = (id: number) => {
     if (confirm('Are you sure you want to delete this member?')) {
-      router.delete(route('organizing-committees.destroy', id));
+      router.delete(route('admin.organizing-committees.destroy', id));
     }
   };
 
   const breadcrumbs = [
-    { title: 'Dashboard', href: route('dashboard') },
-    { title: 'Organizing Committee', href: route('organizing-committees.index') },
+    { title: 'Dashboard', href: route('admin.dashboard') },
+        { title: 'Organizing Committee', href: route('admin.organizing-committees.index') },
   ];
 
   return (
@@ -46,7 +46,7 @@ export default function Index(props: PageProps) {
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-semibold">Organizing Committee</h1>
           <Button asChild>
-            <Link href={route('organizing-committees.create')}>
+            <Link href={route('admin.organizing-committees.create')}>
               <Plus className="mr-2 h-4 w-4" /> Add New Member
             </Link>
           </Button>
@@ -90,12 +90,12 @@ export default function Index(props: PageProps) {
                       <TableCell className="text-right">
                         <div className="flex justify-end space-x-2">
                           <Button variant="ghost" size="sm" asChild>
-                            <Link href={route('organizing-committees.show', committee.id)}>
+                            <Link href={route('admin.organizing-committees.show', committee.id)}>
                               <Eye className="h-4 w-4" />
                             </Link>
                           </Button>
                           <Button variant="outline" size="sm" asChild>
-                            <Link href={route('organizing-committees.edit', committee.id)}>
+                            <Link href={route('admin.organizing-committees.edit', committee.id)}>
                               <Edit className="h-4 w-4" />
                             </Link>
                           </Button>

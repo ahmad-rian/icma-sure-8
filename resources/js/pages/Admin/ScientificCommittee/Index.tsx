@@ -26,13 +26,13 @@ interface Props {
 export default function Index({ committees, flash = {} }: Props) {
   const handleDelete = (id: number) => {
     if (confirm('Are you sure you want to delete this member?')) {
-      router.delete(route('scientific-committees.destroy', id));
+      router.delete(route('admin.scientific-committees.destroy', id));
     }
   };
 
   const breadcrumbs = [
-    { title: 'Dashboard', href: route('dashboard') },
-    { title: 'Scientific Committee', href: route('scientific-committees.index') },
+    { title: 'Dashboard', href: route('admin.dashboard') },
+        { title: 'Scientific Committee', href: route('admin.scientific-committees.index') },
   ];
 
   return (
@@ -43,7 +43,7 @@ export default function Index({ committees, flash = {} }: Props) {
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-semibold">Scientific Committee</h1>
           <Button asChild>
-            <Link href={route('scientific-committees.create')}>
+            <Link href={route('admin.scientific-committees.create')}>
               <Plus className="mr-2 h-4 w-4" /> Add New Member
             </Link>
           </Button>
@@ -113,12 +113,12 @@ export default function Index({ committees, flash = {} }: Props) {
                     <TableCell className="text-right">
                       <div className="flex justify-end space-x-2">
                         <Button variant="ghost" size="sm" asChild>
-                          <Link href={route('scientific-committees.show', committee.id)}>
+                          <Link href={route('admin.scientific-committees.show', committee.id)}>
                             <Eye className="h-4 w-4" />
                           </Link>
                         </Button>
                         <Button variant="outline" size="sm" asChild>
-                          <Link href={route('scientific-committees.edit', committee.id)}>
+                          <Link href={route('admin.scientific-committees.edit', committee.id)}>
                             <Edit className="h-4 w-4" />
                           </Link>
                         </Button>

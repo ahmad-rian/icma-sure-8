@@ -27,9 +27,9 @@ interface Props {
 
 export default function Show({ article }: Props) {
   const breadcrumbs = [
-    { title: 'Dashboard', href: route('dashboard') },
-    { title: 'Articles', href: route('articles.index') },
-    { title: article.title, href: route('articles.show', article.id) },
+    { title: 'Dashboard', href: route('admin.dashboard') },
+        { title: 'Articles', href: route('admin.articles.index') },
+        { title: article.title, href: route('admin.articles.show', article.id) },
   ];
 
   return (
@@ -41,12 +41,12 @@ export default function Show({ article }: Props) {
           <h1 className="text-2xl font-semibold">Article Details</h1>
           <div className="flex space-x-2">
             <Button variant="outline" size="sm" asChild>
-              <Link href={route('articles.index')}>
+              <Link href={route('admin.articles.index')}>
                 <ArrowLeft className="mr-2 h-4 w-4" /> Back to Articles
               </Link>
             </Button>
             <Button size="sm" asChild>
-              <Link href={route('articles.edit', article.id)}>
+              <Link href={route('admin.articles.edit', article.id)}>
                 <Edit className="mr-2 h-4 w-4" /> Edit Article
               </Link>
             </Button>
