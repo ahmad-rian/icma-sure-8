@@ -28,7 +28,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'check.admin' => CheckAdminRole::class,
             'redirect.role' => RedirectBasedOnRole::class,
-            // Hapus baris middleware email API - tidak diperlukan di ICMA
+            'api.key' => \App\Http\Middleware\ApiKeyAuthentication::class,
+            'api.logging' => \App\Http\Middleware\EmailApiLogging::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

@@ -41,19 +41,19 @@ class EmailApiController extends Controller
 
             // Test email configuration if requested
             if ($request->boolean('test_connection')) {
-                $connectionTest = $this->emailService->testEmailConnection();
+                $connectionTest = $this->emailService->testConnection();
                 if (!$connectionTest['success']) {
                     return response()->json([
                         'success' => false,
                         'message' => 'Email configuration test failed',
-                        'error' => $connectionTest['error'],
+                        'error' => $connectionTest['message'],
                         'error_code' => 'EMAIL_CONFIG_ERROR'
                     ], 500);
                 }
             }
 
             // Send the email
-            $result = $this->emailService->sendEmail($emailData);
+            $result = $this->emailService->sendViaApi($emailData);
 
             if ($result['success']) {
                 Log::info('Email sent successfully via API', [
@@ -113,10 +113,10 @@ class EmailApiController extends Controller
     {
         try {
             // Test email connection
-            $connectionTest = $this->emailService->testEmailConnection();
+            $connectionTest = $this->emailService->testConnection();
             
             // Get email statistics
-            $stats = $this->emailService->getEmailStats();
+            $stats = $this->emailService->getStatus();
 
             return response()->json([
                 'success' => true,
@@ -148,7 +148,7 @@ class EmailApiController extends Controller
     public function testConnection(): JsonResponse
     {
         try {
-            $result = $this->emailService->testEmailConnection();
+            $result = $this->emailService->testConnection();
 
             return response()->json([
                 'success' => $result['success'],

@@ -80,6 +80,12 @@ return [
         'test_on_boot' => env('EMAIL_API_TEST_ON_BOOT', false),
         'test_interval' => env('EMAIL_API_TEST_INTERVAL', 300),
 
+        // API Keys for authentication
+        'api_keys' => array_filter([
+            env('EMAIL_API_KEY'),
+            env('SINARILMU_EMAIL_API_KEY'), // Fallback key
+        ]),
+
         // Queue settings
         'use_queue' => env('EMAIL_API_USE_QUEUE', true),
         'queue_name' => env('EMAIL_API_QUEUE_NAME', 'emails'),
