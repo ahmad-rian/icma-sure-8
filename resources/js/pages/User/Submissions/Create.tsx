@@ -262,7 +262,7 @@ export default function Create({ auth, countries }: CreateProps) {
                                                     value={data.keywords}
                                                     onChange={(e) => setData('keywords', e.target.value)}
                                                     className={`h-12 rounded-xl border-2 transition-all duration-200 ${errors.keywords ? 'border-red-500 focus:border-red-500' : 'border-gray-200 dark:border-gray-600 focus:border-[#4CB050]'}`}
-                                                    placeholder="Enter keywords separated by commas"
+                                                    placeholder="sustainable development, rural economy, agriculture, environmental management, community empowerment"
                                                 />
                                                 {errors.keywords && (
                                                     <p className="text-sm text-red-600 mt-1 flex items-center">
