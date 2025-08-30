@@ -52,9 +52,9 @@ return [
     */
 
     'sinarilmu_email_api' => [
-        'url' => env('APP_ENV') === 'production'
+        'url' => env('SINARILMU_EMAIL_API_URL', env('APP_ENV') === 'production'
             ? 'https://sinarilmu.id/api/email'
-            : env('SINARILMU_EMAIL_API_URL', 'http://localhost:8001/api/email'),
+            : 'http://localhost:8001/api/email'),
         'key' => env('SINARILMU_EMAIL_API_KEY'),
         'timeout' => env('SINARILMU_EMAIL_API_TIMEOUT', 60),
         'retry_attempts' => env('SINARILMU_EMAIL_API_RETRY_ATTEMPTS', 3),
