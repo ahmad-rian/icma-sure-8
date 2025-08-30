@@ -58,12 +58,13 @@ const StatItem: React.FC<StatItemProps> = ({ icon, value, label, duration }) => 
     hidden: { opacity: 0, y: 20 },
     visible: { 
       opacity: 1, 
-      y: 0,
-      transition: { 
-        duration: 0.6,
-        ease: "easeOut" 
-      }
+      y: 0
     }
+  };
+
+  const transition = {
+    duration: 0.6,
+    ease: [0.25, 0.46, 0.45, 0.94] as const
   };
 
   return (
@@ -71,6 +72,7 @@ const StatItem: React.FC<StatItemProps> = ({ icon, value, label, duration }) => 
       initial="hidden"
       animate="visible"
       variants={variants}
+      transition={transition}
       className="flex flex-col items-center justify-center"
     >
       <div className="text-4xl sm:text-5xl md:text-6xl mb-4 text-white">
@@ -90,7 +92,7 @@ const CounterStatsSection: React.FC<CounterStatsSectionProps> = ({
   stats = [],
   backgroundImage,
   showSubmitButton = true,
-  submitUrl = "/login"
+  submitUrl = "/user/submissions/create"
 }) => {
   const { isDarkMode } = useTheme();
   const sectionRef = useRef(null);
@@ -168,7 +170,9 @@ const CounterStatsSection: React.FC<CounterStatsSectionProps> = ({
     : `linear-gradient(90deg, ${colors.blue}BB 0%, ${colors.orange}88 50%, ${colors.red}BB 100%)`;
 
   const handleSubmit = () => {
-    window.open(submitUrl, '_blank', 'noopener,noreferrer');
+    // Check if user is authenticated by trying to access a protected route
+    // If not authenticated, Laravel will redirect to login page automatically
+    window.location.href = '/user/submissions/create';
   };
 
   return (

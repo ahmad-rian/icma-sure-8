@@ -45,7 +45,7 @@ export default function Edit({ submission, countries, users }: Props) {
         { label: 'Edit', href: '#' }
     ];
 
-    const { data, setData, patch, processing, errors } = useForm<SubmissionFormData>({
+    const { data, setData, put, processing, errors } = useForm<SubmissionFormData>({
         title: submission.title,
         abstract: submission.abstract,
         keywords: submission.keywords.join(', '),
@@ -104,7 +104,7 @@ export default function Edit({ submission, countries, users }: Props) {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        patch(route('admin.abstract-submissions.update', submission.id));
+        put(route('admin.abstract-submissions.update', submission.id));
     };
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -5,14 +5,15 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\AbstractSubmission;
 use App\Models\SubmissionPayment;
-use App\Models\EmailNotification;
 use App\Models\User;
 use App\Models\Country;
 use App\Services\PdfGenerationService;
-use App\Jobs\SendEmailNotificationJob;
+use App\Services\EmailApiService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -113,7 +114,7 @@ class AbstractSubmissionController extends Controller
         $submission = DB::transaction(function () use ($request) {
             // Get user data for author information
             $user = User::with('profile')->find($request->user_id);
-            
+
             // Create submission
             $submission = AbstractSubmission::create([
                 'user_id' => $request->user_id,
@@ -162,8 +163,7 @@ class AbstractSubmissionController extends Controller
             'contributors.country',
             'country',
             'payment.reviewer',
-            'reviewer',
-            'emailNotifications.sender'
+            'reviewer'
         ]);
 
         return Inertia::render('Admin/AbstractSubmissions/Show', [
@@ -215,7 +215,7 @@ class AbstractSubmissionController extends Controller
         DB::transaction(function () use ($request, $submission) {
             // Get user data for author information
             $user = User::with('profile')->find($request->user_id);
-            
+
             // Update submission
             $submission->update([
                 'user_id' => $request->user_id,
@@ -299,7 +299,7 @@ class AbstractSubmissionController extends Controller
 
         // Return PDF download response
         $fullPath = storage_path('app/public/abstracts/' . $submission->abstract_pdf);
-        
+
         if (!file_exists($fullPath)) {
             return redirect()->back()->with('error', 'File PDF tidak ditemukan.');
         }
@@ -348,9 +348,9 @@ class AbstractSubmissionController extends Controller
                 'reviewed_by' => Auth::id(),
             ]);
 
-            // Create email notification if approved
+            // Send email notification if approved
             if ($request->status === 'approved') {
-                $this->createApprovalEmailNotification($submission);
+                $this->sendApprovalEmailNotification($submission);
             }
         });
 
@@ -379,7 +379,7 @@ class AbstractSubmissionController extends Controller
                     'reviewed_by' => Auth::id(),
                 ]);
 
-                $this->createApprovalEmailNotification($submission);
+                $this->sendApprovalEmailNotification($submission);
             }
         });
 
@@ -487,9 +487,9 @@ class AbstractSubmissionController extends Controller
                 'reviewed_by' => Auth::id(),
             ]);
 
-            // Create LOA email notification if approved
+            // Send LOA email if approved
             if ($request->status === 'approved') {
-                $this->createLoaEmailNotification($submission);
+                $this->sendLoaEmailNotification($submission);
             }
         });
 
@@ -519,7 +519,7 @@ class AbstractSubmissionController extends Controller
                     'reviewed_by' => Auth::id(),
                 ]);
 
-                $this->createLoaEmailNotification($payment->submission);
+                $this->sendLoaEmailNotification($payment->submission);
             }
         });
 
@@ -527,116 +527,6 @@ class AbstractSubmissionController extends Controller
             'success',
             'Berhasil menyetujui ' . count($request->payment_ids) . ' pembayaran.'
         );
-    }
-
-    /**
-     * Create approval email notification
-     */
-    private function createApprovalEmailNotification(AbstractSubmission $submission): void
-    {
-        // Get ICMA LPPM user ID
-        $icmaLppmUserId = User::where('email', 'icmasure.lppm@unsoed.ac.id')->first()?->id;
-        
-        $notification = EmailNotification::create([
-            'submission_id' => $submission->id,
-            'type' => 'abstract_approved',
-            'recipient_email' => $submission->user->email,
-            'subject' => 'Abstract Submission Approved - Payment Required',
-            'body' => $this->generateApprovalEmailBody($submission),
-            'status' => 'pending',
-            'sent_by' => $icmaLppmUserId ?? Auth::id(),
-        ]);
-
-        // Dispatch email job immediately
-        SendEmailNotificationJob::dispatch($notification);
-    }
-
-    /**
-     * Create LOA email notification
-     */
-    private function createLoaEmailNotification(AbstractSubmission $submission): void
-    {
-        // Get ICMA LPPM user ID
-        $icmaLppmUserId = User::where('email', 'icmasure.lppm@unsoed.ac.id')->first()?->id;
-        
-        $notification = EmailNotification::create([
-            'submission_id' => $submission->id,
-            'type' => 'loa_ready',
-            'recipient_email' => $submission->user->email,
-            'subject' => 'Letter of Acceptance (LOA) - ICMA-SURE 2025',
-            'body' => $this->generateLoaEmailBody($submission),
-            'status' => 'pending',
-            'sent_by' => $icmaLppmUserId ?? Auth::id(),
-        ]);
-
-        // Dispatch email job immediately
-        SendEmailNotificationJob::dispatch($notification);
-    }
-
-    /**
-     * Generate approval email body
-     */
-    private function generateApprovalEmailBody(AbstractSubmission $submission): string
-    {
-        $participantName = $submission->user->profile->full_name ?? $submission->user->name;
-        $contributorCount = $submission->contributors ? count($submission->contributors) : 0;
-        $totalParticipants = 1 + $contributorCount; // Main author + contributors
-        $feePerParticipant = 150000; // IDR 150,000
-        $totalAmount = $totalParticipants * $feePerParticipant;
-        $formattedAmount = 'IDR ' . number_format($totalAmount, 0, ',', '.');
-        
-        $uploadUrl = url('/user/submissions/' . $submission->id . '/upload-payment');
-        
-        return "Dear {$participantName},\n\n" .
-               "Thank you for submitting your abstract to 8th International Conference on Multidisciplinary Approaches for Sustainable Rural Development (ICMA-SURE) 2025. We are pleased to confirm that your submission has been successfully received.\n\n" .
-               "In accordance with the registration process, we kindly request the payment of the registration fee of IDR 150,000 per participant.\n\n" .
-               "Abstract Title: {$submission->title}\n" .
-               "Number of Participants: {$totalParticipants} (1 main author + {$contributorCount} contributors)\n" .
-               "Therefore, the total amount due is: {$formattedAmount}\n\n" .
-               "Please make the payment to the following account:\n" .
-               "• Bank Name: Bank Mandiri\n" .
-               "• Account Number: 1800044322222\n" .
-               "• Account Holder: RPL 029 BLU Unsoed\n\n" .
-               "After making the payment, please upload your payment proof (JPEG, JPG, PNG format) at:\n" .
-               "{$uploadUrl}\n\n" .
-               "Upon confirmation of your payment, we will issue the Letter of Acceptance (LoA) as proof of your participation in 8th International Conference on Multidisciplinary Approaches for Sustainable Rural Development (ICMA-SURE) 2025.\n\n" .
-               "📱 JOIN OUR WHATSAPP GROUP:\n" .
-               "For important updates and announcements, please join our WhatsApp group:\n" .
-               "https://chat.whatsapp.com/LQ6C4Z2xDwe4tQq072uJU1?mode=ems_wa_c\n\n" .
-               "We greatly appreciate your prompt attention to this matter and look forward to your active participation in the conference.\n\n" .
-               "Best regards,\n" .
-               "ICMA-SURE 2025 Organizing Committee\n" .
-               "Faculty of Agriculture, Universitas Jenderal Soedirman\n" .
-               "Email: icmasure.lppm@unsoed.ac.id";
-    }
-
-    /**
-     * Generate LOA email body
-     */
-    private function generateLoaEmailBody(AbstractSubmission $submission): string
-    {
-        $participantName = $submission->user->profile->full_name ?? $submission->user->name;
-        
-        return "Dear {$participantName},\n\n" .
-               "LETTER OF ACCEPTANCE (LOA)\n" .
-               "8th International Conference on Multidisciplinary Approaches for Sustainable Rural Development (ICMA-SURE) 2025\n\n" .
-               "Thank you for submitting your abstract for presentation at the 8th International Conference on Multidisciplinary Approaches for Sustainable Rural Development (ICMA-SURE) 2025.\n\n" .
-               "After a thorough review, we are pleased to inform you that your abstract, entitled:\n\n" .
-               "\"{$submission->title}\"\n\n" .
-               "has met the preliminary acceptance requirements set forth by our Scientific Committee and has been accepted for oral presentation at the conference.\n\n" .
-               "CONFERENCE DETAILS:\n" .
-               "• Conference Name: 8th International Conference on Multidisciplinary Approaches for Sustainable Rural Development (ICMA-SURE) 2025\n" .
-               "• Date: October 7, 2025\n" .
-               "• Format: Virtual Conference via Zoom\n" .
-               "• Presentation Type: Oral Presentation\n\n" .
-               "This Letter of Acceptance serves as official confirmation of your participation in the conference. Please keep this document for your records.\n\n" .
-               "Should you require any further information, please do not hesitate to contact us at icmasure.lppm@unsoed.ac.id or visit our website.\n\n" .
-               "We look forward to your active participation and valuable contribution to the conference.\n\n" .
-               "Best regards,\n\n" .
-               "ICMA-SURE 2025 Organizing Committee\n" .
-               "Faculty of Agriculture, Universitas Jenderal Soedirman\n" .
-               "Email: icmasure.lppm@unsoed.ac.id\n" .
-               "Website: https://icma8.lppm.unsoed.ac.id/";
     }
 
     /**
@@ -675,7 +565,7 @@ class AbstractSubmissionController extends Controller
                 ]);
 
                 // Send payment invoice email
-                $this->createApprovalEmailNotification($submission);
+                $this->sendApprovalEmailNotification($submission);
             }
         });
 
@@ -713,7 +603,7 @@ class AbstractSubmissionController extends Controller
                 ]);
 
                 // Send Letter of Acceptance (LOA)
-                $this->createLoaEmailNotification($submission);
+                $this->sendLoaEmailNotification($submission);
             }
         });
 
@@ -721,5 +611,336 @@ class AbstractSubmissionController extends Controller
             'success',
             'Berhasil menyetujui ' . count($request->submission_ids) . ' pembayaran. Email LoA telah dikirim ke peserta.'
         );
+    }
+
+    /**
+     * Send approval email notification with proper HTML handling
+     */
+    private function sendApprovalEmailNotification(AbstractSubmission $submission): void
+    {
+        try {
+            $emailService = new EmailApiService();
+            $htmlContent = $this->generateApprovalEmailBody($submission);
+
+            // First try API with HTML content type
+            $emailData = [
+                'to' => [$submission->user->email],
+                'subject' => 'Abstract Submission Approved - Payment Required',
+                'body' => $htmlContent,
+                'content_type' => 'text/html',
+                'from_name' => 'ICMA SURE'
+            ];
+
+            $result = $emailService->sendViaApi($emailData);
+
+            if ($result['success']) {
+                Log::info('Approval email sent via Sinar Ilmu API', [
+                    'submission_id' => $submission->id,
+                    'recipient' => $submission->user->email,
+                    'message_id' => $result['data']['message_id'] ?? null
+                ]);
+            } else {
+                // Fallback to Laravel Mail with HTML
+                $this->sendHtmlMail(
+                    $submission->user->email,
+                    'Abstract Submission Approved - Payment Required',
+                    $htmlContent,
+                    'ICMA SURE'
+                );
+
+                Log::info('Approval email sent via Laravel Mail fallback', [
+                    'submission_id' => $submission->id,
+                    'recipient' => $submission->user->email,
+                    'api_error' => $result['message'] ?? 'Unknown API error'
+                ]);
+            }
+        } catch (\Exception $e) {
+            Log::error('Failed to send approval email', [
+                'submission_id' => $submission->id,
+                'recipient' => $submission->user->email,
+                'error' => $e->getMessage()
+            ]);
+
+            // Emergency fallback
+            try {
+                $this->sendHtmlMail(
+                    $submission->user->email,
+                    'Abstract Submission Approved - Payment Required',
+                    $this->generateApprovalEmailBody($submission),
+                    'ICMA SURE'
+                );
+
+                Log::info('Approval email sent via emergency fallback', [
+                    'submission_id' => $submission->id
+                ]);
+            } catch (\Exception $fallbackError) {
+                Log::critical('All email methods failed for approval notification', [
+                    'submission_id' => $submission->id,
+                    'original_error' => $e->getMessage(),
+                    'fallback_error' => $fallbackError->getMessage()
+                ]);
+            }
+        }
+    }
+
+    /**
+     * Send LOA email notification with proper HTML handling
+     */
+    private function sendLoaEmailNotification(AbstractSubmission $submission): void
+    {
+        try {
+            $emailService = new EmailApiService();
+            $htmlContent = $this->generateLoaEmailBody($submission);
+
+            // First try API with HTML content type
+            $emailData = [
+                'to' => [$submission->user->email],
+                'subject' => 'Letter of Acceptance (LOA) - ICMA-SURE 2025',
+                'body' => $htmlContent,
+                'content_type' => 'text/html',
+                'from_name' => 'ICMA SURE'
+            ];
+
+            $result = $emailService->sendViaApi($emailData);
+
+            if ($result['success']) {
+                Log::info('LOA email sent via Sinar Ilmu API', [
+                    'submission_id' => $submission->id,
+                    'recipient' => $submission->user->email,
+                    'message_id' => $result['data']['message_id'] ?? null
+                ]);
+            } else {
+                // Fallback to Laravel Mail with HTML
+                $this->sendHtmlMail(
+                    $submission->user->email,
+                    'Letter of Acceptance (LOA) - ICMA-SURE 2025',
+                    $htmlContent,
+                    'ICMA SURE'
+                );
+
+                Log::info('LOA email sent via Laravel Mail fallback', [
+                    'submission_id' => $submission->id,
+                    'recipient' => $submission->user->email,
+                    'api_error' => $result['message'] ?? 'Unknown API error'
+                ]);
+            }
+        } catch (\Exception $e) {
+            Log::error('Failed to send LOA email', [
+                'submission_id' => $submission->id,
+                'recipient' => $submission->user->email,
+                'error' => $e->getMessage()
+            ]);
+
+            // Emergency fallback
+            try {
+                $this->sendHtmlMail(
+                    $submission->user->email,
+                    'Letter of Acceptance (LOA) - ICMA-SURE 2025',
+                    $this->generateLoaEmailBody($submission),
+                    'ICMA SURE'
+                );
+
+                Log::info('LOA email sent via emergency fallback', [
+                    'submission_id' => $submission->id
+                ]);
+            } catch (\Exception $fallbackError) {
+                Log::critical('All email methods failed for LOA notification', [
+                    'submission_id' => $submission->id,
+                    'original_error' => $e->getMessage(),
+                    'fallback_error' => $fallbackError->getMessage()
+                ]);
+            }
+        }
+    }
+
+    /**
+     * Helper method to send HTML emails via Laravel Mail
+     */
+    private function sendHtmlMail(string $to, string $subject, string $htmlContent, string $fromName): void
+    {
+        Mail::send([], [], function ($message) use ($to, $subject, $htmlContent, $fromName) {
+            $message->to($to)
+                ->subject($subject)
+                ->from(config('mail.from.address'), $fromName)
+                ->html($htmlContent);
+        });
+    }
+
+    /**
+     * Generate approval email body with improved HTML structure
+     */
+    private function generateApprovalEmailBody(AbstractSubmission $submission): string
+    {
+        $participantName = $submission->user->profile->full_name ?? $submission->user->name;
+        $contributorCount = $submission->contributors ? count($submission->contributors) : 0;
+        $totalParticipants = 1 + $contributorCount;
+        $feePerParticipant = 150000;
+        $totalAmount = $totalParticipants * $feePerParticipant;
+        $formattedAmount = 'IDR ' . number_format($totalAmount, 0, ',', '.');
+        $uploadUrl = url('/user/submissions/' . $submission->id . '/upload-payment');
+
+        return '<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abstract Submission Approved</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { text-align: center; border-bottom: 2px solid #007bff; padding-bottom: 20px; margin-bottom: 30px; }
+        .header h2 { color: #007bff; margin: 0; }
+        .header p { margin: 5px 0; color: #666; }
+        .success-box { background-color: #e8f5e8; padding: 15px; border-radius: 5px; margin: 20px 0; }
+        .success-box h3 { margin-top: 0; color: #28a745; }
+        .payment-info { background-color: #fff3cd; border: 1px solid #ffeaa7; padding: 20px; border-radius: 5px; margin: 20px 0; }
+        .payment-info h4 { margin-top: 0; color: #856404; }
+        .payment-info ul { list-style: none; padding: 0; }
+        .payment-info li { margin: 5px 0; }
+        .btn { display: inline-block; background-color: #28a745; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; text-align: center; }
+        .whatsapp-box { background-color: #e8f5e8; padding: 15px; border-radius: 5px; margin: 20px 0; }
+        .footer { border-top: 1px solid #eee; padding-top: 20px; margin-top: 30px; text-align: center; color: #666; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>ICMA-SURE 2025</h2>
+            <p>8th International Conference on Multidisciplinary Approaches<br>for Sustainable Rural Development</p>
+        </div>
+        
+        <p>Dear <strong>' . htmlspecialchars($participantName) . '</strong>,</p>
+        
+        <p>Thank you for submitting your abstract to <strong>ICMA-SURE 2025</strong>. We are pleased to confirm that your submission has been successfully received and reviewed.</p>
+        
+        <div class="success-box">
+            <h3>Your Abstract Has Been Accepted!</h3>
+            <p><strong>Abstract Title:</strong> ' . htmlspecialchars($submission->title) . '</p>
+        </div>
+        
+        <p>In accordance with the registration process, we kindly request the payment of the registration fee.</p>
+        
+        <div class="payment-info">
+            <h4>Payment Information</h4>
+            <p><strong>Registration Fee:</strong> IDR 150,000 per participant</p>
+            <p><strong>Number of Participants:</strong> ' . $totalParticipants . ' (1 main author + ' . $contributorCount . ' contributors)</p>
+            <p style="font-weight: bold; color: #856404;">Total Amount Due: ' . $formattedAmount . '</p>
+            
+            <h4>Bank Details</h4>
+            <ul>
+                <li><strong>Bank Name:</strong> Bank Mandiri</li>
+                <li><strong>Account Number:</strong> 1800044322222</li>
+                <li><strong>Account Holder:</strong> RPL 029 BLU Unsoed</li>
+            </ul>
+        </div>
+        
+        <p>After making the payment, please upload your payment proof (JPEG, JPG, PNG format) at:</p>
+        <div style="text-align: center; margin: 20px 0;">
+            <a href="' . $uploadUrl . '" class="btn">Upload Payment Proof</a>
+        </div>
+        
+        <p>Upon confirmation of your payment, we will issue the <strong>Letter of Acceptance (LoA)</strong> as proof of your participation.</p>
+        
+        <div class="whatsapp-box">
+            <h4>JOIN OUR WHATSAPP GROUP:</h4>
+            <p>For important updates and announcements, please join our WhatsApp group:<br>
+            <a href="https://chat.whatsapp.com/LQ6C4Z2xDwe4tQq072uJU1?mode=ems_wa_c" style="color: #25d366; font-weight: bold;">https://chat.whatsapp.com/LQ6C4Z2xDwe4tQq072uJU1?mode=ems_wa_c</a></p>
+        </div>
+        
+        <div class="footer">
+            <p><strong>ICMA-SURE 2025 Organizing Committee</strong><br>
+            Universitas Jenderal Soedirman<br>
+            Email: icmasure.lppm@unsoed.ac.id</p>
+        </div>
+    </div>
+</body>
+</html>';
+    }
+
+    /**
+     * Generate LOA email body with improved HTML structure
+     */
+    private function generateLoaEmailBody(AbstractSubmission $submission): string
+    {
+        $participantName = $submission->user->profile->full_name ?? $submission->user->name;
+
+        return '<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Letter of Acceptance - ICMA-SURE 2025</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { text-align: center; border-bottom: 2px solid #007bff; padding-bottom: 20px; margin-bottom: 30px; }
+        .header h2 { color: #007bff; margin: 0; }
+        .header p { margin: 5px 0; color: #666; }
+        .loa-header { background-color: #e7f3ff; padding: 20px; border-radius: 5px; text-align: center; margin: 20px 0; }
+        .loa-header h2 { margin: 0; color: #007bff; font-size: 20px; }
+        .congratulations-box { background-color: #d4edda; border: 1px solid #c3e6cb; color: #155724; padding: 15px; border-radius: 5px; text-align: center; margin: 20px 0; }
+        .congratulations-box h3 { margin-top: 0; }
+        .details-box { background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0; border-left: 4px solid #007bff; }
+        .details-box h4 { margin-top: 0; color: #007bff; }
+        .conference-info { background-color: #fff3cd; border: 1px solid #ffeaa7; padding: 20px; border-radius: 5px; margin: 20px 0; }
+        .conference-info h4 { margin-top: 0; color: #856404; }
+        .conference-info ul { list-style: none; padding: 0; }
+        .conference-info li { margin: 5px 0; }
+        .footer { border-top: 1px solid #eee; padding-top: 20px; margin-top: 30px; text-align: center; color: #666; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>ICMA-SURE 2025</h2>
+            <p>8th International Conference on Multidisciplinary Approaches<br>for Sustainable Rural Development</p>
+        </div>
+        
+        <div class="loa-header">
+            <h2>LETTER OF ACCEPTANCE (LOA)</h2>
+        </div>
+        
+        <p>Dear <strong>' . htmlspecialchars($participantName) . '</strong>,</p>
+        
+        <div class="congratulations-box">
+            <h3>Congratulations!</h3>
+            <p style="margin-bottom: 0;">Your payment has been confirmed and your abstract has been accepted for presentation.</p>
+        </div>
+        
+        <p>Thank you for submitting your abstract for presentation at the <strong>8th International Conference on Multidisciplinary Approaches for Sustainable Rural Development (ICMA-SURE) 2025</strong>.</p>
+        
+        <p>After a thorough review, we are pleased to inform you that your abstract has met the preliminary acceptance requirements set forth by our Scientific Committee and has been <strong>accepted for oral presentation</strong> at the conference.</p>
+        
+        <div class="details-box">
+            <h4>Your Abstract Details</h4>
+            <p><strong>Title:</strong> "' . htmlspecialchars($submission->title) . '"</p>
+            <p><strong>Presentation Type:</strong> Oral Presentation</p>
+        </div>
+        
+        <div class="conference-info">
+            <h4>Conference Details</h4>
+            <ul>
+                <li><strong>Conference:</strong> 8th ICMA-SURE 2025</li>
+                <li><strong>Date:</strong> October 7, 2025</li>
+                <li><strong>Format:</strong> Virtual Conference via Zoom</li>
+                <li><strong>Presentation Type:</strong> Oral Presentation</li>
+            </ul>
+        </div>
+        
+        <p>This Letter of Acceptance serves as <strong>official confirmation</strong> of your participation in the conference. Please keep this document for your records.</p>
+        
+        <p>Should you require any further information, please do not hesitate to contact us at <strong>icmasure.lppm@unsoed.ac.id</strong> or visit our website.</p>
+        
+        <p>We look forward to your active participation and valuable contribution to the conference.</p>
+        
+        <div class="footer">
+            <p><strong>ICMA-SURE 2025 Organizing Committee</strong><br>
+            Universitas Jenderal Soedirman<br>
+            Email: icmasure.lppm@unsoed.ac.id<br>
+            Website: https://icma8.lppm.unsoed.ac.id/</p>
+        </div>
+    </div>
+</body>
+</html>';
     }
 }

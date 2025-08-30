@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\EmailNotification;
+use App\Services\EmailApiService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -18,13 +19,14 @@ class SendEmailNotificationJob implements ShouldQueue
 
     public $tries = 3;
     public $backoff = [60, 300, 900]; // 1 min, 5 min, 15 min
+    public $timeout = 120;
 
-    /**
-     * Create a new job instance.
-     */
-    public function __construct(
-        public EmailNotification $emailNotification
-    ) {}
+    protected $emailNotification;
+
+    public function __construct(EmailNotification $emailNotification)
+    {
+        $this->emailNotification = $emailNotification;
+    }
 
     /**
      * Execute the job.
@@ -34,30 +36,38 @@ class SendEmailNotificationJob implements ShouldQueue
         try {
             // Skip if already sent
             if ($this->emailNotification->status === 'sent') {
+                Log::info('Email already sent, skipping', [
+                    'notification_id' => $this->emailNotification->id
+                ]);
                 return;
             }
 
-            // Send email using Laravel's Mail facade
-            Mail::raw($this->emailNotification->body, function ($message) {
-                $message->to($this->emailNotification->recipient_email)
-                        ->subject($this->emailNotification->subject)
-                        ->from(config('mail.from.address'), config('mail.from.name'));
-            });
+            // Prepare email data
+            $emailData = [
+                'to' => [$this->emailNotification->recipient_email],
+                'subject' => $this->emailNotification->subject,
+                'body' => $this->emailNotification->body,
+                'from_name' => config('mail.from.name', 'ICMA SURE')
+            ];
 
-            // Mark as sent
-            $this->emailNotification->markAsSent();
+            // Try sending via Sinar Ilmu API first
+            if ($this->trySendViaApi($emailData)) {
+                return;
+            }
 
-            Log::info('Email notification sent successfully', [
-                'notification_id' => $this->emailNotification->id,
-                'recipient' => $this->emailNotification->recipient_email,
-                'type' => $this->emailNotification->type
-            ]);
+            // Fallback to direct Gmail if API fails
+            if ($this->trySendViaGmail($emailData)) {
+                return;
+            }
 
+            // If both methods fail, throw exception for retry
+            throw new Exception('Both API and Gmail fallback failed');
         } catch (Exception $e) {
-            Log::error('Failed to send email notification', [
+            Log::error('Email notification job failed', [
                 'notification_id' => $this->emailNotification->id,
                 'recipient' => $this->emailNotification->recipient_email,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
+                'attempt' => $this->attempts()
             ]);
 
             // Mark as failed if this is the last attempt
@@ -70,14 +80,102 @@ class SendEmailNotificationJob implements ShouldQueue
     }
 
     /**
+     * Try sending email via Sinar Ilmu API
+     *
+     * @param array $emailData
+     * @return bool
+     */
+    protected function trySendViaApi(array $emailData): bool
+    {
+        try {
+            $emailService = new EmailApiService();
+            $result = $emailService->sendViaApi($emailData);
+
+            if ($result['success']) {
+                $this->emailNotification->update([
+                    'status' => 'sent',
+                    'sent_at' => now(),
+                    'sent_via' => 'sinarilmu_api',
+                    'api_response' => $result['data'] ?? null
+                ]);
+
+                Log::info('Email sent successfully via Sinar Ilmu API', [
+                    'notification_id' => $this->emailNotification->id,
+                    'recipient' => $this->emailNotification->recipient_email,
+                    'message_id' => $result['data']['message_id'] ?? null
+                ]);
+
+                return true;
+            }
+
+            // Log API failure but don't throw exception yet
+            Log::warning('Sinar Ilmu API failed, will try Gmail fallback', [
+                'notification_id' => $this->emailNotification->id,
+                'api_error' => $result['message'] ?? 'Unknown error'
+            ]);
+
+            return false;
+        } catch (Exception $e) {
+            Log::warning('API send attempt failed', [
+                'notification_id' => $this->emailNotification->id,
+                'error' => $e->getMessage()
+            ]);
+
+            return false;
+        }
+    }
+
+    /**
+     * Try sending email via direct Gmail
+     *
+     * @param array $emailData
+     * @return bool
+     */
+    protected function trySendViaGmail(array $emailData): bool
+    {
+        try {
+            // Send using Laravel's Mail facade (direct Gmail)
+            Mail::raw($emailData['body'], function ($message) use ($emailData) {
+                $message->to($emailData['to'][0])
+                    ->subject($emailData['subject'])
+                    ->from(
+                        config('mail.from.address'),
+                        $emailData['from_name']
+                    );
+            });
+
+            $this->emailNotification->update([
+                'status' => 'sent',
+                'sent_at' => now(),
+                'sent_via' => 'gmail_direct'
+            ]);
+
+            Log::info('Email sent successfully via Gmail fallback', [
+                'notification_id' => $this->emailNotification->id,
+                'recipient' => $this->emailNotification->recipient_email
+            ]);
+
+            return true;
+        } catch (Exception $e) {
+            Log::error('Gmail fallback also failed', [
+                'notification_id' => $this->emailNotification->id,
+                'error' => $e->getMessage()
+            ]);
+
+            return false;
+        }
+    }
+
+    /**
      * Handle a job failure.
      */
     public function failed(Exception $exception): void
     {
-        Log::error('Email notification job failed permanently', [
+        Log::critical('Email notification job failed permanently', [
             'notification_id' => $this->emailNotification->id,
             'recipient' => $this->emailNotification->recipient_email,
-            'error' => $exception->getMessage()
+            'error' => $exception->getMessage(),
+            'attempts' => $this->attempts()
         ]);
 
         $this->emailNotification->markAsFailed($exception->getMessage());

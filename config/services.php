@@ -34,10 +34,31 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
+
     'google' => [
         'client_id' => env('GOOGLE_CLIENT_ID'),
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),
         'redirect' => env('GOOGLE_REDIRECT_URI'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Sinar Ilmu Email API Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Configuration for connecting to Sinar Ilmu Email API service.
+    | Dynamic URL based on environment for easy deployment.
+    |
+    */
+
+    'sinarilmu_email_api' => [
+        'url' => env('APP_ENV') === 'production'
+            ? 'https://sinarilmu.id/api/email'
+            : env('SINARILMU_EMAIL_API_URL', 'http://localhost:8001/api/email'),
+        'key' => env('SINARILMU_EMAIL_API_KEY'),
+        'timeout' => env('SINARILMU_EMAIL_API_TIMEOUT', 60),
+        'retry_attempts' => env('SINARILMU_EMAIL_API_RETRY_ATTEMPTS', 3),
+        'retry_delay' => env('SINARILMU_EMAIL_API_RETRY_DELAY', 5),
     ],
 
     /*
@@ -51,16 +72,27 @@ return [
     */
 
     'email_api' => [
-        'api_keys' => [
-            env('EMAIL_API_KEY_1'),
-            env('EMAIL_API_KEY_2'),
-            env('EMAIL_API_KEY_3'),
-        ],
+        'enabled' => env('EMAIL_API_ENABLED', true),
+        'fallback_enabled' => env('EMAIL_API_FALLBACK_ENABLED', true),
+        'fallback_threshold' => env('EMAIL_API_FALLBACK_THRESHOLD', 3),
+        'log_requests' => env('EMAIL_API_LOG_REQUESTS', true),
+        'log_responses' => env('EMAIL_API_LOG_RESPONSES', true),
+        'test_on_boot' => env('EMAIL_API_TEST_ON_BOOT', false),
+        'test_interval' => env('EMAIL_API_TEST_INTERVAL', 300),
+
+        // Queue settings
+        'use_queue' => env('EMAIL_API_USE_QUEUE', true),
+        'queue_name' => env('EMAIL_API_QUEUE_NAME', 'emails'),
+        'high_priority_queue' => env('EMAIL_API_HIGH_PRIORITY_QUEUE', 'high_priority_emails'),
+
+        // Rate limiting
         'rate_limit' => [
             'max_attempts' => env('EMAIL_API_RATE_LIMIT', 100),
             'decay_minutes' => env('EMAIL_API_RATE_DECAY', 60),
         ],
-        'allowed_domains' => explode(',', env('EMAIL_API_ALLOWED_DOMAINS', '')),
+
+        // Validation settings
+        'allowed_domains' => array_filter(explode(',', env('EMAIL_API_ALLOWED_DOMAINS', ''))),
         'max_recipients' => env('EMAIL_API_MAX_RECIPIENTS', 50),
         'max_attachment_size' => env('EMAIL_API_MAX_ATTACHMENT_SIZE', 10485760), // 10MB
     ],

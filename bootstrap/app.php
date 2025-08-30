@@ -25,12 +25,10 @@ return Application::configure(basePath: dirname(__DIR__))
             AddLinkHeadersForPreloadedAssets::class,
         ]);
 
-
         $middleware->alias([
             'check.admin' => CheckAdminRole::class,
             'redirect.role' => RedirectBasedOnRole::class,
-            'api.key' => \App\Http\Middleware\ApiKeyAuthentication::class,
-            'api.logging' => \App\Http\Middleware\EmailApiLogging::class,
+            // Hapus baris middleware email API - tidak diperlukan di ICMA
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

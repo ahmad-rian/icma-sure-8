@@ -43,7 +43,7 @@ const ConferenceInfoSection: React.FC<ConferenceInfoSectionProps> = ({
     visible: {
       y: 0,
       opacity: 1,
-      transition: { duration: 0.4, ease: [0.4, 0.0, 0.2, 1] }
+      transition: { duration: 0.4, ease: "easeOut" as const }
     }
   };
 
@@ -64,7 +64,9 @@ const ConferenceInfoSection: React.FC<ConferenceInfoSectionProps> = ({
   ];
 
   const handleSubmit = () => {
-    window.open(submitUrl, '_blank', 'noopener,noreferrer');
+    // Check if user is authenticated by trying to access a protected route
+    // If not authenticated, Laravel will redirect to login page automatically
+    window.location.href = '/user/submissions/create';
   };
 
   return (
