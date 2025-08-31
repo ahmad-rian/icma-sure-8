@@ -18,6 +18,7 @@ class GoogleController extends Controller
     public function redirect()
     {
         Log::info('Google OAuth redirect initiated');
+        dd('Redirecting to Google OAuth');
         return Socialite::driver('google')->redirect();
     }
 
@@ -98,7 +99,7 @@ class GoogleController extends Controller
             } else {
                 // For regular users, check if they have any abstract submissions
                 $hasSubmissions = AbstractSubmission::where('user_id', $user->id)->exists();
-                
+
                 if ($hasSubmissions) {
                     // User has submissions, redirect to submissions index
                     return redirect()->route('user.submissions.index')->with('success', 'Login berhasil! Selamat datang di ICMA SURE.');
