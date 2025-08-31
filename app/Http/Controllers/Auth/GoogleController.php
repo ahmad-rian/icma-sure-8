@@ -74,13 +74,13 @@ class GoogleController extends Controller
                     Log::info('User data to be created', $userData);
 
                     $user = User::create($userData);
-
+                    dd('Redirecting to Google OAuth');
                     Log::info('New user created successfully', [
                         'user_id' => $user->id,
                         'email' => $user->email
                     ]);
                 }
-                dd('Redirecting to Google OAuth');
+
                 return $user;
             });
 
