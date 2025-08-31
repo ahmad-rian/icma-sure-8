@@ -71,10 +71,11 @@ class GoogleController extends Controller
                         'is_allowed' => true, // Auto allow semua user baru
                         'password' => null, // Set password null untuk Google users
                     ];
+                    $user = User::create($userData);
                     dd($userData);
                     //Log::info('User data to be created', $userData);
 
-                    $user = User::create($userData);
+
 
                     Log::info('New user created successfully', [
                         'user_id' => $user->id,
