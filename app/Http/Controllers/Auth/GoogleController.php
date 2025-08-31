@@ -71,8 +71,7 @@ class GoogleController extends Controller
                         'is_allowed' => true, // Auto allow semua user baru
                         'password' => null, // Set password null untuk Google users
                     ];
-                    $userId = DB::table('users')->insertGetId($userData);
-                    $user = User::find($userId);
+                    $userId = DB::table('users')->insert($userData);
                     dd($userData);
                     //Log::info('User data to be created', $userData);
 
