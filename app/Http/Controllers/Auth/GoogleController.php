@@ -71,7 +71,7 @@ class GoogleController extends Controller
                         'password' => null, // Set password null untuk Google users
                     ];
 
-                    Log::info('User data to be created', $userData);
+                    //Log::info('User data to be created', $userData);
                     dd('Redirecting to Google OAuth ' . $userData);
                     $user = User::create($userData);
 
