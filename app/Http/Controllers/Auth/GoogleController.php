@@ -94,7 +94,7 @@ class GoogleController extends Controller
 
             // Redirect based on user role
             if ($user->role === 'admin') {
-                return redirect()->route('dashboard')->with('success', 'Selamat datang kembali, Admin!');
+                return redirect()->route('admin.dashboard')->with('success', 'Selamat datang kembali, Admin!');
             } else {
                 // For regular users, check if they have any abstract submissions
                 $hasSubmissions = AbstractSubmission::where('user_id', $user->id)->exists();

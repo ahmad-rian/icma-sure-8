@@ -39,6 +39,7 @@ class UpdateExistingUsersSeeder extends Seeder
                         'role' => 'admin',
                         'is_allowed' => true,
                         'email_verified_at' => now(),
+                        'phone_number' => null, // Default phone number
                     ]);
 
                     AllowedEmail::firstOrCreate(['email' => $email]);

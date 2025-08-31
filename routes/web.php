@@ -27,6 +27,13 @@ Route::middleware([RedirectBasedOnRole::class])->group(function () {
     })->name('home');
 });
 
+// Access denied route
+Route::get('/access-denied', function () {
+    return Inertia::render('Errors/AccessDenied', [
+        'message' => 'Akses Anda belum disetujui. Silakan hubungi administrator.'
+    ]);
+})->name('access.denied');
+
 // User routes (authenticated users)
 Route::middleware(['auth', 'verified'])->prefix('user')->name('user.')->group(function () {
     // User dashboard
