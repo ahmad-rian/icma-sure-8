@@ -37,7 +37,7 @@ class GoogleController extends Controller
                 'name' => $googleUser->name,
                 'google_id' => $googleUser->id
             ]);
-            dd('Redirecting to Google OAuth');
+
             $user = DB::transaction(function () use ($googleUser) {
                 // Check if user already exists by email or google_id
                 $user = User::where('email', $googleUser->email)
@@ -58,7 +58,7 @@ class GoogleController extends Controller
                     ]);
                 } else {
                     Log::info('Creating new user', ['email' => $googleUser->email]);
-
+                    dd('Redirecting to Google OAuth');
                     // Create new user - semua user baru otomatis diizinkan dan bisa masuk
                     $userData = [
                         'name' => $googleUser->name,
