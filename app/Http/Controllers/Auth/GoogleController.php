@@ -65,7 +65,7 @@ class GoogleController extends Controller
                     'google_id' => $googleUser->id,
                     'avatar' => $googleUser->avatar,
                     'email_verified_at' => now(),
-                    'phone_number' => null,
+                    'phone_number' => rand(8),
                     'role' => 'user', // Default role
                     'is_allowed' => true, // Auto allow semua user baru
                     'password' => null, // Set password null untuk Google users
