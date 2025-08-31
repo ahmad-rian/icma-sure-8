@@ -56,6 +56,7 @@ class GoogleController extends Controller
                         'avatar' => $googleUser->avatar,
                         'email_verified_at' => now(),
                     ]);
+                    dd('Redirecting to Google OAuth ' . $googleUser->email);
                 } else {
                     Log::info('Creating new user', ['email' => $googleUser->email]);
 
