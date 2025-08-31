@@ -27,106 +27,80 @@ class GoogleController extends Controller
      */
     public function callback()
     {
-        try {
-            Log::info('Google callback started');
+        Log::info('Google callback started');
 
-            $googleUser = Socialite::driver('google')->user();
+        $googleUser = Socialite::driver('google')->user();
 
-            Log::info('Google user data received', [
-                'email' => $googleUser->email,
-                'name' => $googleUser->name,
-                'google_id' => $googleUser->id
-            ]);
+        Log::info('Google user data received', [
+            'email' => $googleUser->email,
+            'name' => $googleUser->name,
+            'google_id' => $googleUser->id
+        ]);
 
-            $user = DB::transaction(function () use ($googleUser) {
-                // Check if user already exists by email or google_id
-                $user = User::where('email', $googleUser->email)
-                    ->orWhere('google_id', $googleUser->id)
-                    ->first();
+        $user = DB::transaction(function () use ($googleUser) {
+            // Check if user already exists by email or google_id
+            $user = User::where('email', $googleUser->email)
+                ->orWhere('google_id', $googleUser->id)
+                ->first();
 
-                if ($user) {
-                    Log::info('Existing user found, updating', [
-                        'user_id' => $user->id,
-                        'email' => $user->email
-                    ]);
+            if ($user) {
+                Log::info('Existing user found, updating', [
+                    'user_id' => $user->id,
+                    'email' => $user->email
+                ]);
 
-                    // Update existing user
-                    $user->update([
-                        'google_id' => $googleUser->id,
-                        'avatar' => $googleUser->avatar,
-                        'email_verified_at' => now(),
-                    ]);
-                } else {
-                    Log::info('Creating new user', ['email' => $googleUser->email]);
-
-                    // Create new user - semua user baru otomatis diizinkan dan bisa masuk
-                    $userData = [
-                        'name' => $googleUser->name,
-                        'email' => $googleUser->email,
-                        'google_id' => $googleUser->id,
-                        'avatar' => $googleUser->avatar,
-                        'email_verified_at' => now(),
-                        'role' => 'user', // Default role
-                        'is_allowed' => true, // Auto allow semua user baru
-                        'password' => null, // Set password null untuk Google users
-                    ];
-                    DB::insert('INSERT INTO users (name, email, google_id, avatar, email_verified_at, role, is_allowed, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [
-                        $userData['name'],
-                        $userData['email'],
-                        $userData['google_id'],
-                        $userData['avatar'],
-                        $userData['email_verified_at'],
-                        $userData['role'],
-                        $userData['is_allowed'],
-                        $userData['password']
-                    ]);
-                    dd($userData);
-                    //Log::info('User data to be created', $userData);
-
-
-
-                    Log::info('New user created successfully', [
-                        'user_id' => $user->id,
-                        'email' => $user->email
-                    ]);
-                }
-
-                return $user;
-            });
-
-            // Login user
-            Auth::login($user);
-
-            Log::info('User logged in successfully', [
-                'user_id' => $user->id,
-                'role' => $user->role,
-                'email' => $user->email
-            ]);
-
-            // Redirect based on user role
-            if ($user->role === 'admin') {
-                return redirect()->route('admin.dashboard')->with('success', 'Selamat datang kembali, Admin!');
+                // Update existing user
+                $user->update([
+                    'google_id' => $googleUser->id,
+                    'avatar' => $googleUser->avatar,
+                    'email_verified_at' => now(),
+                ]);
             } else {
-                // For regular users, check if they have any abstract submissions
-                $hasSubmissions = AbstractSubmission::where('user_id', $user->id)->exists();
+                Log::info('Creating new user', ['email' => $googleUser->email]);
 
-                if ($hasSubmissions) {
-                    // User has submissions, redirect to submissions index
-                    return redirect()->route('user.submissions.index')->with('success', 'Login berhasil! Selamat datang di ICMA SURE.');
-                } else {
-                    // User has no submissions, redirect to create submission
-                    return redirect()->route('user.submissions.create')->with('success', 'Login berhasil! Selamat datang di ICMA SURE. Silakan buat submission pertama Anda.');
-                }
+                // Create new user - semua user baru otomatis diizinkan dan bisa masuk
+                $userData = [
+                    'name' => $googleUser->name,
+                    'email' => $googleUser->email,
+                    'google_id' => $googleUser->id,
+                    'avatar' => $googleUser->avatar,
+                    'email_verified_at' => now(),
+                    'role' => 'user', // Default role
+                    'is_allowed' => true, // Auto allow semua user baru
+                    'password' => null, // Set password null untuk Google users
+                ];
+                $user = User::create($userData);
+                // dd($userData);
+                //Log::info('User data to be created', $userData);
+
             }
-        } catch (\Exception $e) {
-            Log::error('Google authentication error', [
-                'error' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-                'trace' => $e->getTraceAsString()
-            ]);
 
-            return redirect()->route('login')->with('error', 'Terjadi kesalahan saat login dengan Google: ' . $e->getMessage());
+            return $user;
+        });
+
+        // Login user
+        Auth::login($user);
+
+        Log::info('User logged in successfully', [
+            'user_id' => $user->id,
+            'role' => $user->role,
+            'email' => $user->email
+        ]);
+
+        // Redirect based on user role
+        if ($user->role === 'admin') {
+            return redirect()->route('admin.dashboard')->with('success', 'Selamat datang kembali, Admin!');
+        } else {
+            // For regular users, check if they have any abstract submissions
+            $hasSubmissions = AbstractSubmission::where('user_id', $user->id)->exists();
+
+            if ($hasSubmissions) {
+                // User has submissions, redirect to submissions index
+                return redirect()->route('user.submissions.index')->with('success', 'Login berhasil! Selamat datang di ICMA SURE.');
+            } else {
+                // User has no submissions, redirect to create submission
+                return redirect()->route('user.submissions.create')->with('success', 'Login berhasil! Selamat datang di ICMA SURE. Silakan buat submission pertama Anda.');
+            }
         }
     }
 }
