@@ -43,7 +43,7 @@ class GoogleController extends Controller
                 $user = User::where('email', $googleUser->email)
                     ->orWhere('google_id', $googleUser->id)
                     ->first();
-                dd('Redirecting to Google OAuth ' . $user);
+
                 if ($user) {
                     Log::info('Existing user found, updating', [
                         'user_id' => $user->id,
@@ -59,7 +59,7 @@ class GoogleController extends Controller
                     dd('Redirecting to Google OAuth ' . $googleUser->email);
                 } else {
                     Log::info('Creating new user', ['email' => $googleUser->email]);
-
+                    dd('Redirecting to Google OAuth ' . $googleUser->email);
                     // Create new user - semua user baru otomatis diizinkan dan bisa masuk
                     $userData = [
                         'name' => $googleUser->name,
