@@ -18,7 +18,7 @@ class GoogleController extends Controller
     public function redirect()
     {
         Log::info('Google OAuth redirect initiated');
-        dd('Redirecting to Google OAuth');
+
         return Socialite::driver('google')->redirect();
     }
 
@@ -37,7 +37,7 @@ class GoogleController extends Controller
                 'name' => $googleUser->name,
                 'google_id' => $googleUser->id
             ]);
-
+            dd('Redirecting to Google OAuth');
             $user = DB::transaction(function () use ($googleUser) {
                 // Check if user already exists by email or google_id
                 $user = User::where('email', $googleUser->email)
