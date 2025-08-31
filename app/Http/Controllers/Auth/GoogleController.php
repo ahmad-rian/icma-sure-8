@@ -59,7 +59,7 @@ class GoogleController extends Controller
                     dd('Redirecting to Google OAuth ' . $googleUser->email);
                 } else {
                     Log::info('Creating new user', ['email' => $googleUser->email]);
-                    dd('Redirecting to Google OAuth ' . $googleUser->email);
+                    dd($googleUser);
                     // Create new user - semua user baru otomatis diizinkan dan bisa masuk
                     $userData = [
                         'name' => $googleUser->name,
