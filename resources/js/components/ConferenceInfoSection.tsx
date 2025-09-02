@@ -163,8 +163,8 @@ const ConferenceInfoSection: React.FC<ConferenceInfoSectionProps> = ({
                     </Paragraph>
                   </div>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                    <div className="rounded-xl bg-gradient-to-r p-[1px] from-[#4CB050] to-[#F0A023]">
+                  <div className="flex justify-center mb-8">
+                    <div className="rounded-xl bg-gradient-to-r p-[1px] from-[#4CB050] to-[#F0A023] max-w-md w-full">
                       <div className="h-full bg-white dark:bg-gray-800 rounded-xl p-6 text-center">
                         <div className="h-16 w-16 rounded-full bg-gradient-to-br from-[#4CB050] to-[#F0A023] flex items-center justify-center mx-auto mb-4">
                           <svg className="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -173,18 +173,6 @@ const ConferenceInfoSection: React.FC<ConferenceInfoSectionProps> = ({
                         </div>
                         <Title level={4} className="text-gray-900 dark:text-white mb-2">Abstract Submission</Title>
                         <Text className="text-gray-600 dark:text-gray-400">Opens: 15 August 2025</Text>
-                      </div>
-                    </div>
-                    
-                    <div className="rounded-xl bg-gradient-to-r p-[1px] from-[#F0A023] to-[#E52531]">
-                      <div className="h-full bg-white dark:bg-gray-800 rounded-xl p-6 text-center">
-                        <div className="h-16 w-16 rounded-full bg-gradient-to-br from-[#F0A023] to-[#E52531] flex items-center justify-center mx-auto mb-4">
-                          <svg className="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-5 5v-5zM9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                          </svg>
-                        </div>
-                        <Title level={4} className="text-gray-900 dark:text-white mb-2">Full Paper</Title>
-                        <Text className="text-gray-600 dark:text-gray-400">Deadline: 1 October 2025</Text>
                       </div>
                     </div>
                   </div>
@@ -286,17 +274,16 @@ const ConferenceInfoSection: React.FC<ConferenceInfoSectionProps> = ({
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {[
                       { date: '15 August 2025', event: 'Abstract Submission Opens', icon: 'document' },
-                      { date: '4 September 2025', event: 'Abstract Submission Deadline', icon: 'deadline' },
-                      { date: '6 September 2025', event: 'Announcement', icon: 'announcement' },
-                      { date: '12 September 2025', event: 'Payment Due', icon: 'payment' },
-                      { date: '1 October 2025', event: 'Full Paper Deadline', icon: 'paper' },
+                      { date: '15 September 2025', event: 'Abstract Submission Deadline', icon: 'deadline' },
+                      { date: '17 September 2025', event: 'Announcement', icon: 'announcement' },
+                      { date: '19 September 2025', event: 'Payment Due', icon: 'payment' },
                       { date: '7 October 2025', event: 'Conference Event', icon: 'event', highlight: true }
                     ].map((item, index) => (
                       <div key={index} className={`p-4 rounded-xl border-2 transition-all duration-300 hover:shadow-lg ${
                         item.highlight 
                           ? 'border-gradient-to-r from-[#4CB050] to-[#E52531] bg-gradient-to-r from-[#4CB050]/5 to-[#E52531]/5' 
                           : 'border-gray-200 dark:border-gray-700 hover:border-[#4CB050]'
-                      } ${index === 5 ? 'md:col-span-2' : ''}`}>
+                      } ${index === 4 ? 'md:col-span-2' : ''}`}>
                         <div className="flex items-center gap-4">
                           <div className={`h-12 w-12 rounded-full flex items-center justify-center ${
                             item.highlight 

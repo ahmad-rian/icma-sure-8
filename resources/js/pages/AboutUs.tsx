@@ -29,7 +29,7 @@ const AboutUs: React.FC<AboutUsProps> = ({ darkMode = false }) => {
   useEffect(() => {
     const calculateTimeLeft = () => {
       const now = new Date();
-      const difference = conferenceDate - now;
+      const difference = conferenceDate.getTime() - now.getTime();
       
       if (difference > 0) {
         const days = Math.floor(difference / (1000 * 60 * 60 * 24));
@@ -88,7 +88,7 @@ const AboutUs: React.FC<AboutUsProps> = ({ darkMode = false }) => {
     visible: {
       y: 0,
       opacity: 1,
-      transition: { duration: 0.6, ease: [0.4, 0.0, 0.2, 1] }
+      transition: { duration: 0.6, ease: "easeOut" }
     }
   };
 
@@ -100,7 +100,7 @@ const AboutUs: React.FC<AboutUsProps> = ({ darkMode = false }) => {
     <>
       <Head title="About the 8th ICMA SURE" />
       <div className={`min-h-screen ${isDarkMode ? 'dark bg-gray-900 text-white' : 'bg-white text-gray-900'}`}>
-        <Navbar isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
+        <Navbar />
         <div className="relative overflow-hidden">
           <div className="absolute inset-0 bg-white dark:bg-gray-900">
             <div className="absolute top-20 right-20 w-64 h-64 rounded-full bg-gradient-to-tr from-[#4CB050]/10 to-transparent"></div>
@@ -147,7 +147,7 @@ const AboutUs: React.FC<AboutUsProps> = ({ darkMode = false }) => {
 
             {/* Conference Poster Section */}
             <motion.div
-              variants={itemVariants}
+              variants={itemVariants as any}
               className="mb-16"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -178,7 +178,7 @@ const AboutUs: React.FC<AboutUsProps> = ({ darkMode = false }) => {
                     
                     {/* Main poster image */}
                     <motion.img
-                      src="/images/assets/poster.webp"
+                      src="/images/assets/poster.jpeg"
                       alt="ICMA SURE 2025 Conference Poster"
                       className="w-full h-auto object-contain"
                       initial={{ opacity: 0, scale: 0.95 }}
@@ -330,7 +330,7 @@ const AboutUs: React.FC<AboutUsProps> = ({ darkMode = false }) => {
                   <div className="absolute bottom-0 left-0 w-64 h-64 bg-gradient-to-tr from-[#E52531]/10 via-[#F0A023]/5 to-transparent rounded-tr-full"></div>
                   <div className="relative z-10 p-8 sm:p-10">
                     <motion.div 
-                      variants={itemVariants} 
+                      variants={itemVariants as any} 
                       className="prose lg:prose-lg max-w-none"
                       initial={{ opacity: 0, y: 20 }}
                       whileInView={{ opacity: 1, y: 0 }}
@@ -369,7 +369,7 @@ const AboutUs: React.FC<AboutUsProps> = ({ darkMode = false }) => {
                     </Divider>
 
                     <motion.div 
-                      variants={itemVariants}
+                      variants={itemVariants as any}
                       initial={{ opacity: 0, y: 20 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true }}
@@ -439,7 +439,7 @@ const AboutUs: React.FC<AboutUsProps> = ({ darkMode = false }) => {
                     </motion.div>
 
                     <motion.div 
-                      variants={itemVariants}
+                      variants={itemVariants as any}
                       initial={{ opacity: 0, y: 20 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true }}
@@ -523,7 +523,7 @@ const AboutUs: React.FC<AboutUsProps> = ({ darkMode = false }) => {
                     </motion.div>
                     
                     <motion.div 
-                      variants={itemVariants}
+                      variants={itemVariants as any}
                       initial={{ opacity: 0, y: 20 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true }}
@@ -561,7 +561,7 @@ const AboutUs: React.FC<AboutUsProps> = ({ darkMode = false }) => {
                                 </svg>
                               ),
                               title: "Abstract Submission Deadline",
-                              date: "4 September 2025",
+                              date: "15 September 2025",
                               gradient: "from-[#F0A023] to-[#E52531]",
                               bgColor: "bg-orange-50 dark:bg-orange-900/20",
                               borderColor: "border-orange-200 dark:border-orange-800"
@@ -573,7 +573,7 @@ const AboutUs: React.FC<AboutUsProps> = ({ darkMode = false }) => {
                                 </svg>
                               ),
                               title: "Announcement",
-                              date: "6 September 2025",
+                              date: "17 September 2025",
                               gradient: "from-[#E52531] to-[#2a3b8f]",
                               bgColor: "bg-red-50 dark:bg-red-900/20",
                               borderColor: "border-red-200 dark:border-red-800"
@@ -585,22 +585,10 @@ const AboutUs: React.FC<AboutUsProps> = ({ darkMode = false }) => {
                                 </svg>
                               ),
                               title: "Payment Due",
-                              date: "12 September 2025",
+                              date: "19 September 2025",
                               gradient: "from-[#2a3b8f] to-[#4CB050]",
                               bgColor: "bg-blue-50 dark:bg-blue-900/20",
                               borderColor: "border-blue-200 dark:border-blue-800"
-                            },
-                            {
-                              icon: (
-                                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                </svg>
-                              ),
-                              title: "Full Paper Deadline",
-                              date: "1 October 2025",
-                              gradient: "from-[#4CB050] to-[#F0A023]",
-                              bgColor: "bg-purple-50 dark:bg-purple-900/20",
-                              borderColor: "border-purple-200 dark:border-purple-800"
                             }
                           ].map((item, index) => (
                             <motion.div
@@ -662,7 +650,7 @@ const AboutUs: React.FC<AboutUsProps> = ({ darkMode = false }) => {
             </motion.div>
           </motion.div>
         </div>
-        <Footer isDarkMode={isDarkMode} />
+        <Footer />
       </div>
     </>
   );
