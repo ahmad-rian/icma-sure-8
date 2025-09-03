@@ -109,20 +109,23 @@ export default function Index({ submissions, stats, filters }: Props) {
         if (action === 'export-excel') {
             setIsProcessing(true);
             try {
+                // Create form for file download
                 const form = document.createElement('form');
                 form.method = 'POST';
                 form.action = route('admin.abstract-submissions.export-excel');
                 form.style.display = 'none';
                 
-                // Add CSRF token
+                // Add CSRF token - get fresh token from meta tag
                 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-                if (csrfToken) {
-                    const csrfInput = document.createElement('input');
-                    csrfInput.type = 'hidden';
-                    csrfInput.name = '_token';
-                    csrfInput.value = csrfToken;
-                    form.appendChild(csrfInput);
+                if (!csrfToken) {
+                    throw new Error('CSRF token tidak ditemukan. Silakan refresh halaman.');
                 }
+                
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = '_token';
+                csrfInput.value = csrfToken;
+                form.appendChild(csrfInput);
                 
                 // Add submission IDs
                 selectedSubmissions.forEach(id => {
@@ -138,11 +141,15 @@ export default function Index({ submissions, stats, filters }: Props) {
                 document.body.removeChild(form);
                 
                 // Clear selection after export
-                setSelectedSubmissions([]);
+                setTimeout(() => {
+                    setSelectedSubmissions([]);
+                    setIsProcessing(false);
+                }, 1000);
+                
             } catch (error) {
                 console.error('Gagal export Excel:', error);
-                alert('Terjadi kesalahan saat export Excel. Silakan coba lagi.');
-            } finally {
+                const errorMessage = error instanceof Error ? error.message : 'Terjadi kesalahan saat export Excel. Silakan coba lagi.';
+                alert(errorMessage);
                 setIsProcessing(false);
             }
             return;
