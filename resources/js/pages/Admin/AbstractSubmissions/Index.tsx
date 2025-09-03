@@ -1,11 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
 import AppSidebarLayout from '@/layouts/app/app-sidebar-layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import NotificationToast from '@/components/NotificationToast';
-import { useSubmissionPolling } from '@/hooks/useSubmissionPolling';
 import {
     Select,
     SelectContent,
@@ -61,40 +59,6 @@ interface Props {
 export default function Index({ submissions, stats, filters }: Props) {
     const [selectedSubmissions, setSelectedSubmissions] = useState<string[]>([]);
     const [isProcessing, setIsProcessing] = useState(false);
-    const [showNotificationPermission, setShowNotificationPermission] = useState(false);
-
-    // Initialize polling hook
-    const {
-        notifications,
-        isPolling,
-        error: pollingError,
-        refresh,
-        dismissNotification,
-        clearAllNotifications,
-        requestNotificationPermission,
-        viewSubmission
-    } = useSubmissionPolling({
-        enabled: true,
-        interval: 30000, // Poll every 30 seconds
-        onNewPayments: (newPayments) => {
-            console.log('New payment notifications:', newPayments);
-        }
-    });
-
-    // Request notification permission on mount
-    useEffect(() => {
-        if ('Notification' in window && Notification.permission === 'default') {
-            setShowNotificationPermission(true);
-        }
-    }, []);
-
-    const handleRequestNotificationPermission = async () => {
-        const granted = await requestNotificationPermission();
-        setShowNotificationPermission(false);
-        if (granted) {
-            console.log('Notification permission granted');
-        }
-    };
 
     // Function to truncate text
     const truncateText = (text: string, maxLength: number = 60) => {
@@ -366,59 +330,9 @@ export default function Index({ submissions, stats, filters }: Props) {
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
                         <h1 className="text-3xl font-bold text-gray-900">Abstract Submissions</h1>
-                        <div className="flex items-center gap-3 mt-1">
-                            <div className="text-gray-600">Kelola dan review semua submission abstract</div>
-                            {/* Polling Status Indicator */}
-                            <div className="flex items-center gap-2">
-                                <div className={`w-2 h-2 rounded-full ${
-                                    isPolling ? 'bg-blue-500 animate-pulse' : 
-                                    pollingError ? 'bg-red-500' : 'bg-green-500'
-                                }`} />
-                                <span className="text-xs text-gray-500">
-                                    {isPolling ? 'Memperbarui...' : 
-                                     pollingError ? 'Error polling' : 'Terhubung'}
-                                </span>
-                                {notifications.length > 0 && (
-                                    <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">
-                                        {notifications.length}
-                                    </span>
-                                )}
-                            </div>
-                        </div>
+                        <div className="text-gray-600 mt-1">Kelola dan review semua submission abstract</div>
                     </div>
                     <div className="flex items-center gap-2">
-                        {/* Notification Permission Banner */}
-                        {showNotificationPermission && (
-                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mr-2">
-                                <div className="flex items-center gap-2">
-                                    <div className="text-sm text-blue-800">
-                                        Aktifkan notifikasi untuk mendapat pemberitahuan bukti pembayaran baru
-                                    </div>
-                                    <Button 
-                                        size="sm" 
-                                        onClick={handleRequestNotificationPermission}
-                                        className="bg-blue-600 hover:bg-blue-700"
-                                    >
-                                        Aktifkan
-                                    </Button>
-                                    <Button 
-                                        size="sm" 
-                                        variant="ghost"
-                                        onClick={() => setShowNotificationPermission(false)}
-                                    >
-                                        Nanti
-                                    </Button>
-                                </div>
-                            </div>
-                        )}
-                        <Button 
-                            variant="outline" 
-                            size="sm" 
-                            onClick={refresh}
-                            disabled={isPolling}
-                        >
-                            {isPolling ? 'Memperbarui...' : 'Refresh'}
-                        </Button>
                         <Button asChild>
                             <Link href={route('admin.abstract-submissions.create')}>
                                 <Plus className="mr-2 h-4 w-4" /> Add New Submission
@@ -849,16 +763,9 @@ export default function Index({ submissions, stats, filters }: Props) {
                                 )}
                             </div>
                         </CardContent>
-                     </Card>
-                 )}
-             </div>
-
-             {/* Notification Toast */}
-             <NotificationToast
-                 notifications={notifications}
-                 onDismiss={dismissNotification}
-                 onViewSubmission={viewSubmission}
-             />
-         </AppSidebarLayout>
-     );
+                    </Card>
+                )}
+            </div>
+        </AppSidebarLayout>
+    );
 }

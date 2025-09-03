@@ -546,10 +546,15 @@ export default function Index({ users, filters, stats, flash = {} }: Props) {
                                             const prevLink = users?.links?.find(link => link.label === '&laquo; Previous');
                                             if (prevLink?.url) {
                                                 setIsLoading(true);
-                                                router.get(prevLink.url, {
+                                                // Extract page number from URL
+                                                const url = new URL(prevLink.url);
+                                                const page = url.searchParams.get('page') || '1';
+                                                
+                                                router.get(route('admin.users.index'), {
                                                     search: searchTerm,
                                                     status: statusFilter === 'all' ? '' : statusFilter,
-                                                    role: roleFilter === 'all' ? '' : roleFilter
+                                                    role: roleFilter === 'all' ? '' : roleFilter,
+                                                    page: page
                                                 }, { 
                                                     preserveState: true,
                                                     preserveScroll: true,
@@ -581,10 +586,15 @@ export default function Index({ users, filters, stats, flash = {} }: Props) {
                                                     onClick={() => {
                                                         if (link.url && !link.active) {
                                                             setIsLoading(true);
-                                                            router.get(link.url, {
+                                                            // Extract page number from URL
+                                                            const url = new URL(link.url);
+                                                            const page = url.searchParams.get('page') || '1';
+                                                            
+                                                            router.get(route('admin.users.index'), {
                                                                 search: searchTerm,
                                                                 status: statusFilter === 'all' ? '' : statusFilter,
-                                                                role: roleFilter === 'all' ? '' : roleFilter
+                                                                role: roleFilter === 'all' ? '' : roleFilter,
+                                                                page: page
                                                             }, { 
                                                                 preserveState: true,
                                                                 preserveScroll: true,
@@ -609,10 +619,15 @@ export default function Index({ users, filters, stats, flash = {} }: Props) {
                                             const nextLink = users?.links?.find(link => link.label === 'Next &raquo;');
                                             if (nextLink?.url) {
                                                 setIsLoading(true);
-                                                router.get(nextLink.url, {
+                                                // Extract page number from URL
+                                                const url = new URL(nextLink.url);
+                                                const page = url.searchParams.get('page') || '1';
+                                                
+                                                router.get(route('admin.users.index'), {
                                                     search: searchTerm,
                                                     status: statusFilter === 'all' ? '' : statusFilter,
-                                                    role: roleFilter === 'all' ? '' : roleFilter
+                                                    role: roleFilter === 'all' ? '' : roleFilter,
+                                                    page: page
                                                 }, { 
                                                     preserveState: true,
                                                     preserveScroll: true,
