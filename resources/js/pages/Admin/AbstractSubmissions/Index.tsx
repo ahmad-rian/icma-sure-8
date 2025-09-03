@@ -33,7 +33,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Eye, FileText, Users, Clock, CheckCircle, XCircle, Plus, Search, Edit, Trash2, MapPin, Download, MoreHorizontal } from 'lucide-react';
+import { Eye, FileText, Users, Clock, CheckCircle, XCircle, Plus, Search, Edit, Trash2, MapPin, Download, MoreHorizontal, ChevronLeft, ChevronRight } from 'lucide-react';
 import { AbstractSubmission } from '@/types/abstract-submission';
 
 interface Stats {
@@ -59,6 +59,12 @@ interface Props {
 export default function Index({ submissions, stats, filters }: Props) {
     const [selectedSubmissions, setSelectedSubmissions] = useState<string[]>([]);
     const [isProcessing, setIsProcessing] = useState(false);
+
+    // Function to truncate text
+    const truncateText = (text: string, maxLength: number = 60) => {
+        if (text.length <= maxLength) return text;
+        return text.substring(0, maxLength) + '...';
+    };
 
     const breadcrumbs = [
         { title: 'Dashboard', href: route('admin.dashboard') },
@@ -510,8 +516,8 @@ export default function Index({ submissions, stats, filters }: Props) {
                                                     />
                                                 </TableCell>
                                                 <TableCell className="py-4">
-                                                    <div className="font-semibold text-gray-900 mb-1 leading-tight">
-                                                        {submission.title}
+                                                    <div className="font-semibold text-gray-900 mb-1 leading-tight" title={submission.title}>
+                                                        {truncateText(submission.title, 80)}
                                                     </div>
                                                 </TableCell>
                                                 <TableCell className="py-4">
@@ -675,10 +681,86 @@ export default function Index({ submissions, stats, filters }: Props) {
                         <CardContent className="py-4">
                             <div className="flex items-center justify-between">
                                 <div className="text-sm text-gray-600">
-                                    Menampilkan <span className="font-medium">1</span> sampai{' '}
-                                    <span className="font-medium">{submissions.data.length}</span> dari{' '}
-                                    <span className="font-medium">{submissions.data.length}</span> hasil
+                                    Menampilkan <span className="font-medium">{submissions.meta.from || 1}</span> sampai{' '}
+                                    <span className="font-medium">{submissions.meta.to || submissions.data.length}</span> dari{' '}
+                                    <span className="font-medium">{submissions.meta.total || submissions.data.length}</span> hasil
                                 </div>
+                                
+                                {/* Pagination Controls */}
+                                {submissions.links && submissions.links.length > 3 && (
+                                    <div className="flex items-center space-x-2">
+                                        {/* Previous Button */}
+                                        {submissions.links[0].url ? (
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => router.get(submissions.links[0].url, filters, { preserveState: true })}
+                                                className="flex items-center gap-1"
+                                            >
+                                                <ChevronLeft className="h-4 w-4" />
+                                                Previous
+                                            </Button>
+                                        ) : (
+                                            <Button variant="outline" size="sm" disabled className="flex items-center gap-1">
+                                                <ChevronLeft className="h-4 w-4" />
+                                                Previous
+                                            </Button>
+                                        )}
+                                        
+                                        {/* Page Numbers */}
+                                        <div className="flex items-center space-x-1">
+                                            {submissions.links.slice(1, -1).map((link, index) => {
+                                                const isActive = link.active;
+                                                const pageNumber = link.label;
+                                                
+                                                if (link.label.includes('...')) {
+                                                    return (
+                                                        <span key={index} className="px-2 py-1 text-gray-500">
+                                                            ...
+                                                        </span>
+                                                    );
+                                                }
+                                                
+                                                return (
+                                                    <Button
+                                                        key={index}
+                                                        variant={isActive ? "default" : "outline"}
+                                                        size="sm"
+                                                        onClick={() => {
+                                                            if (link.url && !isActive) {
+                                                                router.get(link.url, filters, { preserveState: true });
+                                                            }
+                                                        }}
+                                                        className={`min-w-[40px] ${
+                                                            isActive ? 'bg-blue-600 text-white' : 'hover:bg-gray-100'
+                                                        }`}
+                                                        disabled={!link.url || isActive}
+                                                    >
+                                                        {pageNumber}
+                                                    </Button>
+                                                );
+                                            })}
+                                        </div>
+                                        
+                                        {/* Next Button */}
+                                        {submissions.links[submissions.links.length - 1].url ? (
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => router.get(submissions.links[submissions.links.length - 1].url, filters, { preserveState: true })}
+                                                className="flex items-center gap-1"
+                                            >
+                                                Next
+                                                <ChevronRight className="h-4 w-4" />
+                                            </Button>
+                                        ) : (
+                                            <Button variant="outline" size="sm" disabled className="flex items-center gap-1">
+                                                Next
+                                                <ChevronRight className="h-4 w-4" />
+                                            </Button>
+                                        )}
+                                    </div>
+                                )}
                             </div>
                         </CardContent>
                     </Card>
