@@ -44,11 +44,11 @@ const mainNavItems: NavItem[] = [
         href: '/admin/countries',
         icon: Globe,
     },
-    {
-        title: 'User Profiles',
-        href: '/admin/user-profiles',
-        icon: UserCheck,
-    },
+    // {
+    //     title: 'User Profiles',
+    //     href: '/admin/user-profiles',
+    //     icon: UserCheck,
+    // },
     {
         title: 'Abstract Submissions',
         href: '/admin/abstract-submissions',
