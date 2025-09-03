@@ -681,9 +681,9 @@ export default function Index({ submissions, stats, filters }: Props) {
                         <CardContent className="py-4">
                             <div className="flex items-center justify-between">
                                 <div className="text-sm text-gray-600">
-                                    Menampilkan <span className="font-medium">{submissions.meta.from || 1}</span> sampai{' '}
-                                    <span className="font-medium">{submissions.meta.to || submissions.data.length}</span> dari{' '}
-                                    <span className="font-medium">{submissions.meta.total || submissions.data.length}</span> hasil
+                                    Menampilkan <span className="font-medium">{submissions.meta?.from || 1}</span> sampai{' '}
+                                    <span className="font-medium">{submissions.meta?.to || submissions.data.length}</span> dari{' '}
+                                    <span className="font-medium">{submissions.meta?.total || submissions.data.length}</span> hasil
                                 </div>
                                 
                                 {/* Pagination Controls */}
