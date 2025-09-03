@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
 import AppSidebarLayout from '@/layouts/app/app-sidebar-layout';
 import { Button } from '@/components/ui/button';
@@ -82,6 +82,7 @@ export default function Index({ users, filters, stats, flash = {} }: Props) {
     const [searchTerm, setSearchTerm] = useState(filters.search || '');
     const [statusFilter, setStatusFilter] = useState(filters.status || 'all');
     const [roleFilter, setRoleFilter] = useState(filters.role || 'all');
+    const [isLoading, setIsLoading] = useState(false);
     
     // State for delete dialogs
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -91,12 +92,16 @@ export default function Index({ users, filters, stats, flash = {} }: Props) {
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
+        setIsLoading(true);
         router.get(route('admin.users.index'), { 
             search: searchTerm,
             status: statusFilter === 'all' ? '' : statusFilter,
-            role: roleFilter === 'all' ? '' : roleFilter
+            role: roleFilter === 'all' ? '' : roleFilter,
+            page: 1 // Reset to first page when searching
         }, { 
-            preserveState: true 
+            preserveState: true,
+            preserveScroll: true,
+            onFinish: () => setIsLoading(false)
         });
     };
 
@@ -107,12 +112,28 @@ export default function Index({ users, filters, stats, flash = {} }: Props) {
             setRoleFilter(value);
         }
         
+        setIsLoading(true);
         router.get(route('admin.users.index'), { 
             search: searchTerm,
             status: type === 'status' ? (value === 'all' ? '' : value) : (statusFilter === 'all' ? '' : statusFilter),
-            role: type === 'role' ? (value === 'all' ? '' : value) : (roleFilter === 'all' ? '' : roleFilter)
+            role: type === 'role' ? (value === 'all' ? '' : value) : (roleFilter === 'all' ? '' : roleFilter),
+            page: 1 // Reset to first page when filtering
         }, { 
-            preserveState: true 
+            preserveState: true,
+            preserveScroll: true,
+            onFinish: () => setIsLoading(false)
+        });
+    };
+
+    const clearFilters = () => {
+        setSearchTerm('');
+        setStatusFilter('all');
+        setRoleFilter('all');
+        setIsLoading(true);
+        router.get(route('admin.users.index'), {}, {
+            preserveState: true,
+            preserveScroll: true,
+            onFinish: () => setIsLoading(false)
         });
     };
 
@@ -329,7 +350,19 @@ export default function Index({ users, filters, stats, flash = {} }: Props) {
                                     <SelectItem value="user">User Only</SelectItem>
                                 </SelectContent>
                             </Select>
-                            <Button type="submit">Search</Button>
+                            <Button type="submit" disabled={isLoading}>
+                                {isLoading ? 'Searching...' : 'Search'}
+                            </Button>
+                            {(searchTerm || statusFilter !== 'all' || roleFilter !== 'all') && (
+                                <Button 
+                                    type="button" 
+                                    variant="outline" 
+                                    onClick={clearFilters}
+                                    disabled={isLoading}
+                                >
+                                    Clear Filters
+                                </Button>
+                            )}
                         </form>
                     </CardContent>
                 </Card>
@@ -491,6 +524,107 @@ export default function Index({ users, filters, stats, flash = {} }: Props) {
                         </Table>
                     </CardContent>
                 </Card>
+
+                {/* Pagination */}
+                {users.links && users.links.length > 3 && (
+                    <Card className="mt-6">
+                        <CardContent className="pt-6">
+                            <div className="flex items-center justify-between">
+                                {/* Results Info */}
+                                <div className="text-sm text-gray-600">
+                                    Showing {users.meta?.from || 1} to {users.meta?.to || users.data.length} of {users.meta?.total || users.data.length} results
+                                </div>
+
+                                {/* Pagination Controls */}
+                                <div className="flex items-center space-x-2">
+                                    {/* Previous Button */}
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        disabled={!users.links.find(link => link.label === '&laquo; Previous')?.url || isLoading}
+                                        onClick={() => {
+                                            const prevLink = users.links.find(link => link.label === '&laquo; Previous');
+                                            if (prevLink?.url) {
+                                                setIsLoading(true);
+                                                router.get(prevLink.url, {
+                                                    search: searchTerm,
+                                                    status: statusFilter === 'all' ? '' : statusFilter,
+                                                    role: roleFilter === 'all' ? '' : roleFilter
+                                                }, { 
+                                                    preserveState: true,
+                                                    onFinish: () => setIsLoading(false)
+                                                });
+                                            }
+                                        }}
+                                    >
+                                        {isLoading ? 'Loading...' : 'Previous'}
+                                    </Button>
+
+                                    {/* Page Numbers */}
+                                    {users.links
+                                        .filter(link => link.label !== '&laquo; Previous' && link.label !== 'Next &raquo;')
+                                        .map((link, index) => {
+                                            if (link.label === '...') {
+                                                return (
+                                                    <span key={`ellipsis-${index}`} className="px-2 text-gray-400">
+                                                        ...
+                                                    </span>
+                                                );
+                                            }
+
+                                            return (
+                                                <Button
+                                                    key={index}
+                                                    variant={link.active ? "default" : "outline"}
+                                                    size="sm"
+                                                    onClick={() => {
+                                                        if (link.url && !link.active) {
+                                                            setIsLoading(true);
+                                                            router.get(link.url, {
+                                                                search: searchTerm,
+                                                                status: statusFilter === 'all' ? '' : statusFilter,
+                                                                role: roleFilter === 'all' ? '' : roleFilter
+                                                            }, { 
+                                                                preserveState: true,
+                                                                onFinish: () => setIsLoading(false)
+                                                            });
+                                                        }
+                                                    }}
+                                                    disabled={!link.url || link.active || isLoading}
+                                                >
+                                                    {link.label}
+                                                </Button>
+                                            );
+                                        })
+                                    }
+
+                                    {/* Next Button */}
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        disabled={!users.links.find(link => link.label === 'Next &raquo;')?.url || isLoading}
+                                        onClick={() => {
+                                            const nextLink = users.links.find(link => link.label === 'Next &raquo;');
+                                            if (nextLink?.url) {
+                                                setIsLoading(true);
+                                                router.get(nextLink.url, {
+                                                    search: searchTerm,
+                                                    status: statusFilter === 'all' ? '' : statusFilter,
+                                                    role: roleFilter === 'all' ? '' : roleFilter
+                                                }, { 
+                                                    preserveState: true,
+                                                    onFinish: () => setIsLoading(false)
+                                                });
+                                            }
+                                        }}
+                                    >
+                                        {isLoading ? 'Loading...' : 'Next'}
+                                    </Button>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                )}
 
                 {/* Single User Delete Dialog */}
                 <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
