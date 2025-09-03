@@ -139,7 +139,7 @@ export default function Index({ users, filters, stats, flash = {} }: Props) {
 
     const handleSelectAll = (checked: boolean) => {
         if (checked) {
-            setSelectedUsers(users.data.map(user => user.id.toString()));
+            setSelectedUsers(users?.data?.map(user => user.id.toString()) || []);
         } else {
             setSelectedUsers([]);
         }
@@ -420,7 +420,7 @@ export default function Index({ users, filters, stats, flash = {} }: Props) {
                                 <TableRow>
                                     <TableHead className="w-[50px]">
                                         <Checkbox
-                                            checked={selectedUsers.length === users.data.length && users.data.length > 0}
+                                            checked={selectedUsers.length === (users?.data?.length || 0) && (users?.data?.length || 0) > 0}
                                             onCheckedChange={handleSelectAll}
                                         />
                                     </TableHead>
@@ -436,7 +436,7 @@ export default function Index({ users, filters, stats, flash = {} }: Props) {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {users.data.map((user) => (
+                                {users?.data?.map((user) => (
                                     <TableRow key={user.id}>
                                         <TableCell>
                                             <Checkbox
@@ -513,7 +513,7 @@ export default function Index({ users, filters, stats, flash = {} }: Props) {
                                     </TableRow>
                                 ))}
                                 
-                                {users.data.length === 0 && (
+                                {(!users?.data || users.data.length === 0) && (
                                     <TableRow>
                                         <TableCell colSpan={10} className="h-24 text-center">
                                             No users found matching your criteria.
@@ -526,13 +526,13 @@ export default function Index({ users, filters, stats, flash = {} }: Props) {
                 </Card>
 
                 {/* Pagination */}
-                {users.links && users.links.length > 3 && (
+                {users?.links && users.links.length > 3 && (
                     <Card className="mt-6">
                         <CardContent className="pt-6">
                             <div className="flex items-center justify-between">
                                 {/* Results Info */}
                                 <div className="text-sm text-gray-600">
-                                    Showing {users.meta?.from || 1} to {users.meta?.to || users.data.length} of {users.meta?.total || users.data.length} results
+                                    Showing {users?.meta?.from || 1} to {users?.meta?.to || users?.data?.length || 0} of {users?.meta?.total || users?.data?.length || 0} results
                                 </div>
 
                                 {/* Pagination Controls */}
@@ -541,9 +541,9 @@ export default function Index({ users, filters, stats, flash = {} }: Props) {
                                     <Button
                                         variant="outline"
                                         size="sm"
-                                        disabled={!users.links.find(link => link.label === '&laquo; Previous')?.url || isLoading}
+                                        disabled={!users?.links?.find(link => link.label === '&laquo; Previous')?.url || isLoading}
                                         onClick={() => {
-                                            const prevLink = users.links.find(link => link.label === '&laquo; Previous');
+                                            const prevLink = users?.links?.find(link => link.label === '&laquo; Previous');
                                             if (prevLink?.url) {
                                                 setIsLoading(true);
                                                 router.get(prevLink.url, {
@@ -552,6 +552,7 @@ export default function Index({ users, filters, stats, flash = {} }: Props) {
                                                     role: roleFilter === 'all' ? '' : roleFilter
                                                 }, { 
                                                     preserveState: true,
+                                                    preserveScroll: true,
                                                     onFinish: () => setIsLoading(false)
                                                 });
                                             }
@@ -561,9 +562,9 @@ export default function Index({ users, filters, stats, flash = {} }: Props) {
                                     </Button>
 
                                     {/* Page Numbers */}
-                                    {users.links
-                                        .filter(link => link.label !== '&laquo; Previous' && link.label !== 'Next &raquo;')
-                                        .map((link, index) => {
+                                    {users?.links
+                                        ?.filter(link => link.label !== '&laquo; Previous' && link.label !== 'Next &raquo;')
+                                        ?.map((link, index) => {
                                             if (link.label === '...') {
                                                 return (
                                                     <span key={`ellipsis-${index}`} className="px-2 text-gray-400">
@@ -586,6 +587,7 @@ export default function Index({ users, filters, stats, flash = {} }: Props) {
                                                                 role: roleFilter === 'all' ? '' : roleFilter
                                                             }, { 
                                                                 preserveState: true,
+                                                                preserveScroll: true,
                                                                 onFinish: () => setIsLoading(false)
                                                             });
                                                         }
@@ -602,9 +604,9 @@ export default function Index({ users, filters, stats, flash = {} }: Props) {
                                     <Button
                                         variant="outline"
                                         size="sm"
-                                        disabled={!users.links.find(link => link.label === 'Next &raquo;')?.url || isLoading}
+                                        disabled={!users?.links?.find(link => link.label === 'Next &raquo;')?.url || isLoading}
                                         onClick={() => {
-                                            const nextLink = users.links.find(link => link.label === 'Next &raquo;');
+                                            const nextLink = users?.links?.find(link => link.label === 'Next &raquo;');
                                             if (nextLink?.url) {
                                                 setIsLoading(true);
                                                 router.get(nextLink.url, {
@@ -613,6 +615,7 @@ export default function Index({ users, filters, stats, flash = {} }: Props) {
                                                     role: roleFilter === 'all' ? '' : roleFilter
                                                 }, { 
                                                     preserveState: true,
+                                                    preserveScroll: true,
                                                     onFinish: () => setIsLoading(false)
                                                 });
                                             }

@@ -21,6 +21,56 @@ use Inertia\Response;
 class AbstractSubmissionController extends Controller
 {
     /**
+     * Get latest submission updates for polling
+     */
+    public function getUpdates(Request $request)
+    {
+        $lastCheck = $request->get('last_check');
+        $currentTime = now();
+        
+        // Get submissions with recent payment proof uploads
+        $query = AbstractSubmission::with([
+            'user.profile.country',
+            'contributors.country',
+            'country',
+            'payment.reviewer',
+            'reviewer'
+        ]);
+        
+        // If last_check is provided, only get updates since then
+        if ($lastCheck) {
+            $query->where(function ($q) use ($lastCheck) {
+                $q->where('updated_at', '>', $lastCheck)
+                  ->orWhereHas('payment', function ($paymentQuery) use ($lastCheck) {
+                      $paymentQuery->where('updated_at', '>', $lastCheck)
+                                   ->whereNotNull('payment_proof');
+                  });
+            });
+        }
+        
+        $submissions = $query->orderBy('updated_at', 'desc')
+                           ->limit(10)
+                           ->get();
+        
+        // Get recent payment proof uploads specifically
+        $recentPayments = SubmissionPayment::with('submission.user')
+            ->whereNotNull('payment_proof')
+            ->when($lastCheck, function ($q) use ($lastCheck) {
+                return $q->where('updated_at', '>', $lastCheck);
+            })
+            ->orderBy('updated_at', 'desc')
+            ->limit(5)
+            ->get();
+        
+        return response()->json([
+            'submissions' => $submissions,
+            'recent_payments' => $recentPayments,
+            'timestamp' => $currentTime->toISOString(),
+            'has_updates' => $submissions->count() > 0 || $recentPayments->count() > 0
+        ]);
+    }
+
+    /**
      * Display a listing of abstract submissions
      */
     public function index(Request $request): Response

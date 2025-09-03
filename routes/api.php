@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\EmailApiController;
+use App\Http\Controllers\Admin\AbstractSubmissionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,6 +18,22 @@ use App\Http\Controllers\Api\EmailApiController;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
+});
+
+/*
+|--------------------------------------------------------------------------
+| Admin Polling Routes
+|--------------------------------------------------------------------------
+|
+| These routes handle polling for real-time updates in admin interface.
+| Protected with sanctum authentication.
+|
+*/
+
+Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
+    // Get latest submission updates for polling
+    Route::get('/submissions/updates', [AbstractSubmissionController::class, 'getUpdates'])
+        ->name('api.admin.submissions.updates');
 });
 
 /*
