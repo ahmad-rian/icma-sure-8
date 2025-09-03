@@ -84,6 +84,23 @@ export default function Index({ users, filters, stats, flash = {} }: Props) {
     const [roleFilter, setRoleFilter] = useState(filters.role || 'all');
     const [isLoading, setIsLoading] = useState(false);
     
+    // Helper function to clean empty parameters
+    const getCleanParams = (additionalParams: Record<string, any> = {}) => {
+        const params: Record<string, any> = { ...additionalParams };
+        
+        if (searchTerm && searchTerm.trim()) {
+            params.search = searchTerm;
+        }
+        if (statusFilter && statusFilter !== 'all') {
+            params.status = statusFilter;
+        }
+        if (roleFilter && roleFilter !== 'all') {
+            params.role = roleFilter;
+        }
+        
+        return params;
+    };
+    
     // State for delete dialogs
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
@@ -93,12 +110,7 @@ export default function Index({ users, filters, stats, flash = {} }: Props) {
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
-        router.get(route('admin.users.index'), { 
-            search: searchTerm,
-            status: statusFilter === 'all' ? '' : statusFilter,
-            role: roleFilter === 'all' ? '' : roleFilter,
-            page: 1 // Reset to first page when searching
-        }, { 
+        router.get(route('admin.users.index'), getCleanParams({ page: 1 }), { 
             preserveState: true,
             preserveScroll: true,
             onFinish: () => setIsLoading(false)
@@ -113,12 +125,25 @@ export default function Index({ users, filters, stats, flash = {} }: Props) {
         }
         
         setIsLoading(true);
-        router.get(route('admin.users.index'), { 
-            search: searchTerm,
-            status: type === 'status' ? (value === 'all' ? '' : value) : (statusFilter === 'all' ? '' : statusFilter),
-            role: type === 'role' ? (value === 'all' ? '' : value) : (roleFilter === 'all' ? '' : roleFilter),
-            page: 1 // Reset to first page when filtering
-        }, { 
+        
+        // Create temporary values for clean params calculation
+        const tempSearchTerm = searchTerm;
+        const tempStatusFilter = type === 'status' ? value : statusFilter;
+        const tempRoleFilter = type === 'role' ? value : roleFilter;
+        
+        const params: Record<string, any> = { page: 1 };
+        
+        if (tempSearchTerm && tempSearchTerm.trim()) {
+            params.search = tempSearchTerm;
+        }
+        if (tempStatusFilter && tempStatusFilter !== 'all') {
+            params.status = tempStatusFilter;
+        }
+        if (tempRoleFilter && tempRoleFilter !== 'all') {
+            params.role = tempRoleFilter;
+        }
+        
+        router.get(route('admin.users.index'), params, { 
             preserveState: true,
             preserveScroll: true,
             onFinish: () => setIsLoading(false)
@@ -130,7 +155,7 @@ export default function Index({ users, filters, stats, flash = {} }: Props) {
         setStatusFilter('all');
         setRoleFilter('all');
         setIsLoading(true);
-        router.get(route('admin.users.index'), {}, {
+        router.get(route('admin.users.index'), getCleanParams(), {
             preserveState: true,
             preserveScroll: true,
             onFinish: () => setIsLoading(false)
@@ -550,12 +575,7 @@ export default function Index({ users, filters, stats, flash = {} }: Props) {
                                                 const url = new URL(prevLink.url);
                                                 const page = url.searchParams.get('page') || '1';
                                                 
-                                                router.get(route('admin.users.index'), {
-                                                    search: searchTerm,
-                                                    status: statusFilter === 'all' ? '' : statusFilter,
-                                                    role: roleFilter === 'all' ? '' : roleFilter,
-                                                    page: page
-                                                }, { 
+                                                router.get(route('admin.users.index'), getCleanParams({ page }), { 
                                                     preserveState: true,
                                                     preserveScroll: true,
                                                     onFinish: () => setIsLoading(false)
@@ -590,12 +610,7 @@ export default function Index({ users, filters, stats, flash = {} }: Props) {
                                                             const url = new URL(link.url);
                                                             const page = url.searchParams.get('page') || '1';
                                                             
-                                                            router.get(route('admin.users.index'), {
-                                                                search: searchTerm,
-                                                                status: statusFilter === 'all' ? '' : statusFilter,
-                                                                role: roleFilter === 'all' ? '' : roleFilter,
-                                                                page: page
-                                                            }, { 
+                                                            router.get(route('admin.users.index'), getCleanParams({ page }), { 
                                                                 preserveState: true,
                                                                 preserveScroll: true,
                                                                 onFinish: () => setIsLoading(false)
@@ -623,12 +638,7 @@ export default function Index({ users, filters, stats, flash = {} }: Props) {
                                                 const url = new URL(nextLink.url);
                                                 const page = url.searchParams.get('page') || '1';
                                                 
-                                                router.get(route('admin.users.index'), {
-                                                    search: searchTerm,
-                                                    status: statusFilter === 'all' ? '' : statusFilter,
-                                                    role: roleFilter === 'all' ? '' : roleFilter,
-                                                    page: page
-                                                }, { 
+                                                router.get(route('admin.users.index'), getCleanParams({ page }), { 
                                                     preserveState: true,
                                                     preserveScroll: true,
                                                     onFinish: () => setIsLoading(false)
