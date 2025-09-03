@@ -268,7 +268,7 @@
             <h2 class="document-type">Abstract Submission</h2>
         </div>
 
-        <!-- Submission Information -->
+        {{-- <!-- Submission Information -->
         <div class="submission-info">
             <div class="info-row">
                 <div class="info-label">Submission ID:</div>
@@ -286,25 +286,25 @@
                 <div class="info-label">Submitted:</div>
                 <div class="info-value">{{ $submission->submitted_at ? $submission->submitted_at->format('F d, Y H:i:s') : 'Not submitted' }}</div>
             </div>
-            @if($submission->reviewed_at)
+            @if ($submission->reviewed_at)
             <div class="info-row">
                 <div class="info-label">Reviewed:</div>
                 <div class="info-value">{{ $submission->reviewed_at->format('F d, Y H:i:s') }}</div>
             </div>
             @endif
-            @if($submission->reviewer)
+            @if ($submission->reviewer)
             <div class="info-row">
                 <div class="info-label">Reviewed by:</div>
                 <div class="info-value">{{ $submission->reviewer->name }}</div>
             </div>
             @endif
-            @if($submission->country)
+            @if ($submission->country)
             <div class="info-row">
                 <div class="info-label">Country:</div>
                 <div class="info-value">{{ $submission->country->name }}</div>
             </div>
             @endif
-        </div>
+        </div> --}}
 
         <!-- Abstract Title -->
         <div class="abstract-title">
@@ -322,18 +322,18 @@
                     </div>
                     <div class="author-details">
                         Email: {{ $submission->user->email }}
-                        @if($submission->author_phone_number)
+                        @if ($submission->author_phone_number)
                             | Phone: {{ $submission->author_phone_number }}
                         @elseif($submission->user->phone_number)
                             | Phone: {{ $submission->user->phone_number }}
                         @elseif($submission->user->profile && $submission->user->profile->phone)
                             | Phone: {{ $submission->user->profile->phone }}
                         @endif
-                        @if($submission->user->profile)
-                            @if($submission->user->profile->affiliation)
+                        @if ($submission->user->profile)
+                            @if ($submission->user->profile->affiliation)
                                 <br>Affiliation: {{ $submission->user->profile->affiliation }}
                             @endif
-                            @if($submission->user->profile->country)
+                            @if ($submission->user->profile->country)
                                 | Country: {{ $submission->user->profile->country->name }}
                             @endif
                         @endif
@@ -341,39 +341,39 @@
                 </div>
 
                 <!-- Contributors -->
-                @if($submission->contributors && $submission->contributors->count() > 0)
-                    @foreach($submission->contributors as $contributor)
-                    <div class="author-item">
-                        <div class="author-name">
-                            {{ $contributor->first_name }} {{ $contributor->last_name }}
-                            @if($contributor->is_primary_contact)
-                                (Primary Contact)
-                            @endif
+                @if ($submission->contributors && $submission->contributors->count() > 0)
+                    @foreach ($submission->contributors as $contributor)
+                        <div class="author-item">
+                            <div class="author-name">
+                                {{ $contributor->first_name }} {{ $contributor->last_name }}
+                                @if ($contributor->is_primary_contact)
+                                    (Primary Contact)
+                                @endif
+                            </div>
+                            <div class="author-details">
+                                Email: {{ $contributor->email }}
+                                @if ($contributor->phone_number)
+                                    | Phone: {{ $contributor->phone_number }}
+                                @endif
+                                <br>Affiliation: {{ $contributor->affiliation }}
+                                @if ($contributor->country)
+                                    | Country: {{ $contributor->country->name }}
+                                @endif
+                            </div>
                         </div>
-                        <div class="author-details">
-                            Email: {{ $contributor->email }}
-                            @if($contributor->phone_number)
-                                | Phone: {{ $contributor->phone_number }}
-                            @endif
-                            <br>Affiliation: {{ $contributor->affiliation }}
-                            @if($contributor->country)
-                                | Country: {{ $contributor->country->name }}
-                            @endif
-                        </div>
-                    </div>
                     @endforeach
                 @endif
             </div>
         </div>
 
         <!-- Keywords -->
-        @if($submission->keywords && count($submission->keywords) > 0)
-        <div class="section">
-            <div class="section-title">Keywords</div>
-            <div class="keywords">
-                {{ implode(', ', $submission->keywords) }}
+        @if ($submission->keywords && count($submission->keywords) > 0)
+            <div class="section">
+                <div class="section-title">Keywords</div>
+                <div class="keywords">
+                    {{ implode(', ', $submission->keywords) }}
+                </div>
             </div>
-        </div>
         @endif
 
         <!-- Abstract Content -->
@@ -392,16 +392,16 @@
                     $abstractContent = preg_replace('/<p[^>]*>\s*<\/p>/', '', $abstractContent);
 
                     // If there's no HTML formatting, wrap in paragraphs
-                    if (strip_tags($abstractContent) === $abstractContent && !empty(trim($abstractContent))) {
-                        $paragraphs = preg_split('/\r\n|\r|\n/', trim($abstractContent));
-                        $paragraphs = array_filter($paragraphs, function ($p) {
-                            return trim($p) !== '';
-                        });
+if (strip_tags($abstractContent) === $abstractContent && !empty(trim($abstractContent))) {
+    $paragraphs = preg_split('/\r\n|\r|\n/', trim($abstractContent));
+    $paragraphs = array_filter($paragraphs, function ($p) {
+        return trim($p) !== '';
+    });
 
-                        $abstractContent = '';
-                        foreach ($paragraphs as $paragraph) {
-                            if (!empty(trim($paragraph))) {
-                                $abstractContent .= '<p>' . htmlspecialchars(trim($paragraph)) . '</p>';
+    $abstractContent = '';
+    foreach ($paragraphs as $paragraph) {
+        if (!empty(trim($paragraph))) {
+            $abstractContent .= '<p>' . htmlspecialchars(trim($paragraph)) . '</p>';
                             }
                         }
                     }
@@ -412,48 +412,50 @@
         </div>
 
         <!-- Payment Information -->
-        @if($submission->payment_required || $submission->registration_fee)
-        <div class="section">
-            <div class="section-title">Payment Information</div>
-            <div class="payment-info">
-                @if($submission->registration_fee)
-                <div class="info-row">
-                    <div class="info-label">Registration Fee:</div>
-                    <div class="info-value">IDR {{ number_format($submission->registration_fee, 0, ',', '.') }}</div>
+        @if ($submission->payment_required || $submission->registration_fee)
+            <div class="section">
+                <div class="section-title">Payment Information</div>
+                <div class="payment-info">
+                    @if ($submission->registration_fee)
+                        <div class="info-row">
+                            <div class="info-label">Registration Fee:</div>
+                            <div class="info-value">IDR {{ number_format($submission->registration_fee, 0, ',', '.') }}
+                            </div>
+                        </div>
+                    @endif
+                    @if ($submission->payment)
+                        <div class="info-row">
+                            <div class="info-label">Payment Status:</div>
+                            <div class="info-value">
+                                <span class="status-badge status-{{ $submission->payment->status }}">
+                                    {{ ucfirst($submission->payment->status) }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Amount:</div>
+                            <div class="info-value">IDR {{ number_format($submission->payment->amount, 0, ',', '.') }}
+                            </div>
+                        </div>
+                        @if ($submission->payment->uploaded_at)
+                            <div class="info-row">
+                                <div class="info-label">Payment Uploaded:</div>
+                                <div class="info-value">{{ $submission->payment->uploaded_at }}</div>
+                            </div>
+                        @endif
+                    @endif
                 </div>
-                @endif
-                @if($submission->payment)
-                <div class="info-row">
-                    <div class="info-label">Payment Status:</div>
-                    <div class="info-value">
-                        <span class="status-badge status-{{ $submission->payment->status }}">
-                            {{ ucfirst($submission->payment->status) }}
-                        </span>
-                    </div>
-                </div>
-                <div class="info-row">
-                    <div class="info-label">Amount:</div>
-                    <div class="info-value">IDR {{ number_format($submission->payment->amount, 0, ',', '.') }}</div>
-                </div>
-                @if($submission->payment->uploaded_at)
-                <div class="info-row">
-                    <div class="info-label">Payment Uploaded:</div>
-                    <div class="info-value">{{ $submission->payment->uploaded_at }}</div>
-                </div>
-                @endif
-                @endif
             </div>
-        </div>
         @endif
 
         <!-- Review Information -->
-        @if($submission->reviewer_notes)
-        <div class="section">
-            <div class="section-title">Review Notes</div>
-            <div class="review-info">
-                {{ $submission->reviewer_notes }}
+        @if ($submission->reviewer_notes)
+            <div class="section">
+                <div class="section-title">Review Notes</div>
+                <div class="review-info">
+                    {{ $submission->reviewer_notes }}
+                </div>
             </div>
-        </div>
         @endif
 
         <div class="footer">
