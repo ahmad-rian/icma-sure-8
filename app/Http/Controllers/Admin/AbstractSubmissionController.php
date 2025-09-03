@@ -9,12 +9,14 @@ use App\Models\User;
 use App\Models\Country;
 use App\Services\PdfGenerationService;
 use App\Services\EmailApiService;
+use App\Exports\AbstractSubmissionsExport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -623,6 +625,32 @@ class AbstractSubmissionController extends Controller
             'success',
             'Berhasil menyetujui ' . count($request->submission_ids) . ' abstract. Email invoice telah dikirim ke peserta.'
         );
+    }
+
+    /**
+     * Export selected submissions to Excel
+     */
+    public function exportExcel(Request $request)
+    {
+        $request->validate([
+            'submission_ids' => 'required|array',
+            'submission_ids.*' => 'exists:abstract_submissions,id',
+        ]);
+
+        $submissionIds = $request->submission_ids;
+        
+        // Generate filename with timestamp
+        $filename = 'abstract_submissions_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
+        
+        try {
+            return Excel::download(
+                new AbstractSubmissionsExport($submissionIds),
+                $filename
+            );
+        } catch (\Exception $e) {
+            Log::error('Export Excel failed: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal mengexport data ke Excel.');
+        }
     }
 
     /**

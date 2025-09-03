@@ -33,7 +33,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Eye, FileText, Users, Clock, CheckCircle, XCircle, Plus, Search, Edit, Trash2, MapPin, Download, MoreHorizontal, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Eye, FileText, Users, Clock, CheckCircle, XCircle, Plus, Search, Edit, Trash2, MapPin, Download, MoreHorizontal, ChevronLeft, ChevronRight, FileSpreadsheet } from 'lucide-react';
 import { AbstractSubmission } from '@/types/abstract-submission';
 
 interface Stats {
@@ -101,8 +101,50 @@ export default function Index({ submissions, stats, filters }: Props) {
         }
     };
 
-    const handleBulkAction = async (action: 'approve' | 'reject' | 'download') => {
+    const handleBulkAction = async (action: 'approve' | 'reject' | 'download' | 'export-excel') => {
         if (selectedSubmissions.length === 0) {
+            return;
+        }
+
+        if (action === 'export-excel') {
+            setIsProcessing(true);
+            try {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = route('admin.abstract-submissions.export-excel');
+                form.style.display = 'none';
+                
+                // Add CSRF token
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                if (csrfToken) {
+                    const csrfInput = document.createElement('input');
+                    csrfInput.type = 'hidden';
+                    csrfInput.name = '_token';
+                    csrfInput.value = csrfToken;
+                    form.appendChild(csrfInput);
+                }
+                
+                // Add submission IDs
+                selectedSubmissions.forEach(id => {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'submission_ids[]';
+                    input.value = id;
+                    form.appendChild(input);
+                });
+                
+                document.body.appendChild(form);
+                form.submit();
+                document.body.removeChild(form);
+                
+                // Clear selection after export
+                setSelectedSubmissions([]);
+            } catch (error) {
+                console.error('Gagal export Excel:', error);
+                alert('Terjadi kesalahan saat export Excel. Silakan coba lagi.');
+            } finally {
+                setIsProcessing(false);
+            }
             return;
         }
 
@@ -477,6 +519,16 @@ export default function Index({ submissions, stats, filters }: Props) {
                                          >
                                              <Download className="mr-1 h-3 w-3" />
                                              Download PDF
+                                         </Button>
+                                         <Button 
+                                             onClick={() => handleBulkAction('export-excel')}
+                                             disabled={isProcessing}
+                                             size="sm"
+                                             variant="outline"
+                                             className="h-8 text-green-600 hover:text-green-700 hover:bg-green-50 border-green-200"
+                                         >
+                                             <FileSpreadsheet className="mr-1 h-3 w-3" />
+                                             Export Excel
                                          </Button>
                                      </div>
                                  </div>
