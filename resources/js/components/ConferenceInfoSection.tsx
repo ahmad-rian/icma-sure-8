@@ -58,7 +58,6 @@ const ConferenceInfoSection: React.FC<ConferenceInfoSectionProps> = ({
 
   // Updated publication venues based on TOR
   const journals: JournalInfo[] = [
-    { name: "E3S Web of Conferences", type: "Proceedings", indexed: "Scopus Q4" },
     { name: "Jurnal Molekul", type: "Journal", indexed: "Scopus Q4" },
     { name: "Jurnal Keperawatan Soedirman", type: "Journal", indexed: "Scopus Q4" }
   ];
@@ -219,7 +218,7 @@ const ConferenceInfoSection: React.FC<ConferenceInfoSectionProps> = ({
                     </Paragraph>
                   </div>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 max-w-4xl mx-auto">
                     {journals.map((journal, index) => (
                       <div key={index} className="rounded-xl bg-gradient-to-r p-[1px] from-[#4CB050] via-[#F0A023] to-[#E52531]">
                         <div className="h-full bg-white dark:bg-gray-800 rounded-xl p-6 text-center">
