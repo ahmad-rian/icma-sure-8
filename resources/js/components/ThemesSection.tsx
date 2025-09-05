@@ -39,32 +39,32 @@ const ThemesSection: React.FC = () => {
       bgColor: "bg-green-50 dark:bg-green-900/20",
       borderColor: "border-green-200 dark:border-green-800"
     },
+    // {
+    //   number: "02", 
+    //   title: "Health and Well-being",
+    //   description: "Comprehensive health approaches focusing on community wellness, preventive care, and sustainable healthcare systems for rural development.",
+    //   gradient: "from-[#F0A023] to-[#E52531]",
+    //   bgColor: "bg-orange-50 dark:bg-orange-900/20",
+    //   borderColor: "border-orange-200 dark:border-orange-800"
+    // },
     {
-      number: "02", 
-      title: "Health and Well-being",
-      description: "Comprehensive health approaches focusing on community wellness, preventive care, and sustainable healthcare systems for rural development.",
-      gradient: "from-[#F0A023] to-[#E52531]",
-      bgColor: "bg-orange-50 dark:bg-orange-900/20",
-      borderColor: "border-orange-200 dark:border-orange-800"
-    },
-    {
-      number: "03",
+      number: "02",
       title: "Resilience and Sustainable Infrastructure",
       description: "Building robust systems and infrastructure that can withstand challenges while promoting long-term sustainability and adaptability.",
       gradient: "from-[#E52531] to-[#2a3b8f]",
       bgColor: "bg-red-50 dark:bg-red-900/20",
       borderColor: "border-red-200 dark:border-red-800"
     },
+    // {
+    //   number: "04",
+    //   title: "Social, Economy and Justice",
+    //   description: "Addressing equitable development, social transformation, economic empowerment, and justice in sustainable rural communities.",
+    //   gradient: "from-[#2a3b8f] to-[#4CB050]",
+    //   bgColor: "bg-blue-50 dark:bg-blue-900/20",
+    //   borderColor: "border-blue-200 dark:border-blue-800"
+    // },
     {
-      number: "04",
-      title: "Social, Economy and Justice",
-      description: "Addressing equitable development, social transformation, economic empowerment, and justice in sustainable rural communities.",
-      gradient: "from-[#2a3b8f] to-[#4CB050]",
-      bgColor: "bg-blue-50 dark:bg-blue-900/20",
-      borderColor: "border-blue-200 dark:border-blue-800"
-    },
-    {
-      number: "05",
+      number: "03",
       title: "Sustainable Communities",
       description: "Building resilient, self-sufficient community systems that balance environmental protection with social and economic development.",
       gradient: "from-[#4CB050] to-[#E52531]",

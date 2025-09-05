@@ -66,10 +66,10 @@ const getNavigation = (auth?: AuthProps) => {
       id: 'previous-events',
       dropdown: [
         { name: '7th ICMA SURE 2024', href: 'https://icma.lppm.unsoed.ac.id/', isExternal: true },
-        { name: '6th ICMA SURE 2023', href: 'https://conference.unsoed.ac.id/index.php/ICMASRD/ICMASURE2023', isExternal: true },
-        { name: '5th ICMA SURE 2022', href: 'https://conference.unsoed.ac.id/index.php/ICMASRD/ICMASURE2022', isExternal: true },
-        { name: '4th ICMA SURE 2021', href: 'https://conference.unsoed.ac.id/index.php/ICMASRD/ICMASURE2021', isExternal: true },
-        { name: '3rd ICMA SURE 2020', href: 'https://conference.unsoed.ac.id/index.php/icma/index/schedConfs/archive', isExternal: true },
+        { name: '6th ICMA SURE 2023', href: 'https://old.unsoed.ac.id/id/6th-international-conference-multidisciplinary-approaches-sustainable-rural-development-icma-sure', isExternal: true },
+        { name: '5th ICMA SURE 2022', href: 'https://old.unsoed.ac.id/id/5th-icma-sure-2022', isExternal: true },
+        { name: '4th ICMA SURE 2021', href: 'https://old.unsoed.ac.id/id/lppm-unsoed-gelar-icma-sure-2021', isExternal: true },
+        { name: '3rd ICMA SURE 2020', href: 'https://old.unsoed.ac.id/id/3-rd-international-conference-multidisciplinary-approaches-sustainable-rural-development-icma-sure', isExternal: true },
         { name: '2nd ICMA SURE 2019', href: 'https://conference.unsoed.ac.id/index.php/icma/ICMA2019', isExternal: true }
       ] 
     }
