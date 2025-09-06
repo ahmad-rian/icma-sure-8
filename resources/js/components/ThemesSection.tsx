@@ -33,7 +33,7 @@ const ThemesSection: React.FC = () => {
   const subThemes = [
     {
       number: "01",
-      title: "Life and Applied Sciences",
+      title: "Sustainable energy and infrastructure",
       description: "Scientific approaches to sustainable development and innovation in biological systems, environmental sciences, and applied research methodologies.",
       gradient: "from-[#4CB050] to-[#F0A023]",
       bgColor: "bg-green-50 dark:bg-green-900/20",
@@ -49,7 +49,7 @@ const ThemesSection: React.FC = () => {
     // },
     {
       number: "02",
-      title: "Resilience and Sustainable Infrastructure",
+      title: "⁠Sustainable communities and environment",
       description: "Building robust systems and infrastructure that can withstand challenges while promoting long-term sustainability and adaptability.",
       gradient: "from-[#E52531] to-[#2a3b8f]",
       bgColor: "bg-red-50 dark:bg-red-900/20",
@@ -65,7 +65,7 @@ const ThemesSection: React.FC = () => {
     // },
     {
       number: "03",
-      title: "Sustainable Communities",
+      title: " ⁠Earth, life, and applied sciences",
       description: "Building resilient, self-sufficient community systems that balance environmental protection with social and economic development.",
       gradient: "from-[#4CB050] to-[#E52531]",
       bgColor: "bg-purple-50 dark:bg-purple-900/20",
@@ -166,9 +166,9 @@ const ThemesSection: React.FC = () => {
                   {theme.title}
                 </Typography.Title>
                 
-                <Typography.Paragraph className="text-sm sm:text-base text-gray-600 dark:text-gray-400 leading-relaxed group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors duration-300">
+                {/* <Typography.Paragraph className="text-sm sm:text-base text-gray-600 dark:text-gray-400 leading-relaxed group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors duration-300">
                   {theme.description}
-                </Typography.Paragraph>
+                </Typography.Paragraph> */}
 
                 {/* Animated bottom accent */}
                 <div className={`h-1 w-0 group-hover:w-full mt-6 rounded-full bg-gradient-to-r ${theme.gradient} transition-all duration-700 ease-out`}></div>
