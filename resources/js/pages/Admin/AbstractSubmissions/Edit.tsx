@@ -23,6 +23,10 @@ interface SubmissionFormData {
     keywords: string;
     user_id: string;
     country_id: string;
+    author_first_name: string;
+    author_last_name: string;
+    author_email: string;
+    author_affiliation: string;
     author_phone_number: string;
     pdf_file: File | null;
     contributors: {
@@ -51,7 +55,11 @@ export default function Edit({ submission, countries, users }: Props) {
         keywords: submission.keywords.join(', '),
         user_id: submission.user?.id.toString() || '',
         country_id: submission.country?.id.toString() || '',
-        author_phone_number: submission.author_phone_number || '',
+        author_first_name: submission.author_first_name || submission.user?.name?.split(' ')[0] || '',
+        author_last_name: submission.author_last_name || submission.user?.name?.split(' ').slice(1).join(' ') || '',
+        author_email: submission.author_email || submission.user?.email || '',
+        author_affiliation: submission.author_affiliation || '',
+        author_phone_number: submission.author_phone_number || submission.user?.phone_number || '',
         pdf_file: null,
         contributors: submission.contributors?.map(c => ({
             id: c.id?.toString() || '',
@@ -221,20 +229,77 @@ export default function Edit({ submission, countries, users }: Props) {
                                 </div>
                             </div>
 
-                            <div className="space-y-2">
-                                <Label htmlFor="author_phone_number" className="text-sm font-medium flex items-center gap-2">
-                                    <Phone className="h-4 w-4" />
-                                    Author WhatsApp Number
-                                </Label>
-                                <Input
-                                    id="author_phone_number"
-                                    type="tel"
-                                    value={data.author_phone_number}
-                                    onChange={(e) => setData('author_phone_number', e.target.value)}
-                                    placeholder="Enter author WhatsApp number (e.g., +62812345678)"
-                                    className="w-full"
-                                />
-                                {errors.author_phone_number && <p className="text-sm text-destructive">{errors.author_phone_number}</p>}
+                            {/* Author Information */}
+                            <div className="space-y-4 pt-4 border-t">
+                                <h3 className="text-lg font-medium">Author Information</h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="author_first_name" className="text-sm font-medium">Author First Name</Label>
+                                        <Input
+                                            id="author_first_name"
+                                            value={data.author_first_name}
+                                            onChange={(e) => setData('author_first_name', e.target.value)}
+                                            placeholder="Enter author first name"
+                                            className="w-full"
+                                        />
+                                        {errors.author_first_name && <p className="text-sm text-destructive">{errors.author_first_name}</p>}
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <Label htmlFor="author_last_name" className="text-sm font-medium">Author Last Name</Label>
+                                        <Input
+                                            id="author_last_name"
+                                            value={data.author_last_name}
+                                            onChange={(e) => setData('author_last_name', e.target.value)}
+                                            placeholder="Enter author last name"
+                                            className="w-full"
+                                        />
+                                        {errors.author_last_name && <p className="text-sm text-destructive">{errors.author_last_name}</p>}
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="author_email" className="text-sm font-medium">Author Email</Label>
+                                        <Input
+                                            id="author_email"
+                                            type="email"
+                                            value={data.author_email}
+                                            onChange={(e) => setData('author_email', e.target.value)}
+                                            placeholder="Enter author email"
+                                            className="w-full"
+                                        />
+                                        {errors.author_email && <p className="text-sm text-destructive">{errors.author_email}</p>}
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <Label htmlFor="author_phone_number" className="text-sm font-medium flex items-center gap-2">
+                                            <Phone className="h-4 w-4" />
+                                            Author WhatsApp Number
+                                        </Label>
+                                        <Input
+                                            id="author_phone_number"
+                                            type="tel"
+                                            value={data.author_phone_number}
+                                            onChange={(e) => setData('author_phone_number', e.target.value)}
+                                            placeholder="Enter author WhatsApp number (e.g., +62812345678)"
+                                            className="w-full"
+                                        />
+                                        {errors.author_phone_number && <p className="text-sm text-destructive">{errors.author_phone_number}</p>}
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="author_affiliation" className="text-sm font-medium">Author Affiliation</Label>
+                                    <Input
+                                        id="author_affiliation"
+                                        value={data.author_affiliation}
+                                        onChange={(e) => setData('author_affiliation', e.target.value)}
+                                        placeholder="Enter author affiliation"
+                                        className="w-full"
+                                    />
+                                    {errors.author_affiliation && <p className="text-sm text-destructive">{errors.author_affiliation}</p>}
+                                </div>
                             </div>
 
                             <div className="space-y-2">

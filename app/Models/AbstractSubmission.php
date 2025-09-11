@@ -51,12 +51,12 @@ class AbstractSubmission extends Model
         if (is_null($value)) {
             return [];
         }
-        
+
         if (is_string($value)) {
             $decoded = json_decode($value, true);
             return is_array($decoded) ? $decoded : [];
         }
-        
+
         return is_array($value) ? $value : [];
     }
 
@@ -110,7 +110,7 @@ class AbstractSubmission extends Model
     public function contributors(): HasMany
     {
         return $this->hasMany(SubmissionContributor::class, 'submission_id')
-                    ->orderBy('order_index');
+            ->orderBy('order_index');
     }
 
     /**
@@ -119,7 +119,7 @@ class AbstractSubmission extends Model
     public function primaryContact(): HasOne
     {
         return $this->hasOne(SubmissionContributor::class, 'submission_id')
-                    ->where('is_primary_contact', true);
+            ->where('is_primary_contact', true);
     }
 
     /**

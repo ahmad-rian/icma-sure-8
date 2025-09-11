@@ -29,7 +29,7 @@ class AbstractSubmissionController extends Controller
     {
         $lastCheck = $request->get('last_check');
         $currentTime = now();
-        
+
         // Get submissions with recent payment proof uploads
         $query = AbstractSubmission::with([
             'user.profile.country',
@@ -38,22 +38,22 @@ class AbstractSubmissionController extends Controller
             'payment.reviewer',
             'reviewer'
         ]);
-        
+
         // If last_check is provided, only get updates since then
         if ($lastCheck) {
             $query->where(function ($q) use ($lastCheck) {
                 $q->where('updated_at', '>', $lastCheck)
-                  ->orWhereHas('payment', function ($paymentQuery) use ($lastCheck) {
-                      $paymentQuery->where('updated_at', '>', $lastCheck)
-                                   ->whereNotNull('payment_proof');
-                  });
+                    ->orWhereHas('payment', function ($paymentQuery) use ($lastCheck) {
+                        $paymentQuery->where('updated_at', '>', $lastCheck)
+                            ->whereNotNull('payment_proof');
+                    });
             });
         }
-        
+
         $submissions = $query->orderBy('updated_at', 'desc')
-                           ->limit(10)
-                           ->get();
-        
+            ->limit(10)
+            ->get();
+
         // Get recent payment proof uploads specifically
         $recentPayments = SubmissionPayment::with('submission.user')
             ->whereNotNull('payment_proof')
@@ -63,7 +63,7 @@ class AbstractSubmissionController extends Controller
             ->orderBy('updated_at', 'desc')
             ->limit(5)
             ->get();
-        
+
         return response()->json([
             'submissions' => $submissions,
             'recent_payments' => $recentPayments,
@@ -150,6 +150,11 @@ class AbstractSubmissionController extends Controller
         $request->validate([
             'user_id' => 'required|exists:users,id',
             'country_id' => 'required|exists:countries,id',
+            'author_first_name' => 'nullable|string|max:255',
+            'author_last_name' => 'nullable|string|max:255',
+            'author_email' => 'nullable|email|max:255',
+            'author_affiliation' => 'nullable|string|max:255',
+            'author_phone_number' => 'nullable|string|max:20',
             'title' => 'required|string|max:255',
             'abstract' => 'required|string',
             'keywords' => 'nullable|string|max:500',
@@ -164,17 +169,15 @@ class AbstractSubmissionController extends Controller
         ]);
 
         $submission = DB::transaction(function () use ($request) {
-            // Get user data for author information
-            $user = User::with('profile')->find($request->user_id);
-
-            // Create submission
+            // Create submission with form data
             $submission = AbstractSubmission::create([
                 'user_id' => $request->user_id,
                 'country_id' => $request->country_id,
-                'author_first_name' => $user->profile->first_name ?? '',
-                'author_last_name' => $user->profile->last_name ?? '',
-                'author_email' => $user->email,
-                'author_affiliation' => $user->profile->affiliation ?? '',
+                'author_first_name' => $request->author_first_name,
+                'author_last_name' => $request->author_last_name,
+                'author_email' => $request->author_email,
+                'author_affiliation' => $request->author_affiliation,
+                'author_phone_number' => $request->author_phone_number,
                 'title' => $request->title,
                 'abstract' => $request->abstract,
                 'keywords' => $request->keywords,
@@ -251,6 +254,11 @@ class AbstractSubmissionController extends Controller
         $request->validate([
             'user_id' => 'required|exists:users,id',
             'country_id' => 'required|exists:countries,id',
+            'author_first_name' => 'nullable|string|max:255',
+            'author_last_name' => 'nullable|string|max:255',
+            'author_email' => 'nullable|email|max:255',
+            'author_affiliation' => 'nullable|string|max:255',
+            'author_phone_number' => 'nullable|string|max:20',
             'title' => 'required|string|max:255',
             'abstract' => 'required|string',
             'keywords' => 'nullable|string|max:500',
@@ -265,17 +273,15 @@ class AbstractSubmissionController extends Controller
         ]);
 
         DB::transaction(function () use ($request, $submission) {
-            // Get user data for author information
-            $user = User::with('profile')->find($request->user_id);
-
-            // Update submission
+            // Update submission with form data
             $submission->update([
                 'user_id' => $request->user_id,
                 'country_id' => $request->country_id,
-                'author_first_name' => $user->profile->first_name ?? '',
-                'author_last_name' => $user->profile->last_name ?? '',
-                'author_email' => $user->email,
-                'author_affiliation' => $user->profile->affiliation ?? '',
+                'author_first_name' => $request->author_first_name,
+                'author_last_name' => $request->author_last_name,
+                'author_email' => $request->author_email,
+                'author_affiliation' => $request->author_affiliation,
+                'author_phone_number' => $request->author_phone_number,
                 'title' => $request->title,
                 'abstract' => $request->abstract,
                 'keywords' => $request->keywords,
@@ -638,18 +644,25 @@ class AbstractSubmissionController extends Controller
         ]);
 
         $submissionIds = $request->submission_ids;
-        
+
         // Generate filename with timestamp
         $filename = 'abstract_submissions_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
-        
+
         try {
-            return Excel::download(
-                new AbstractSubmissionsExport($submissionIds),
-                $filename
-            );
+            // Create export instance
+            $export = new AbstractSubmissionsExport($submissionIds);
+
+            // Test basic functionality first
+            Log::info('Starting Excel export', ['submission_count' => count($submissionIds)]);
+
+            return Excel::download($export, $filename, \Maatwebsite\Excel\Excel::XLSX, [
+                'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            ]);
         } catch (\Exception $e) {
-            Log::error('Export Excel failed: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Gagal mengexport data ke Excel.');
+            Log::error('Export Excel failed: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
+            return response()->json(['error' => 'Gagal mengexport data ke Excel: ' . $e->getMessage()], 500);
         }
     }
 

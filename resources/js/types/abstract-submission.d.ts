@@ -17,6 +17,7 @@ export interface User {
     is_allowed: boolean;
     role: 'admin' | 'user';
     google_id?: string | null;
+    phone_number?: string | null;
     created_at: string;
     updated_at: string;
     profile?: UserProfile;
@@ -87,6 +88,10 @@ export interface AbstractSubmission {
     id: string;
     user_id: string;
     country_id?: string;
+    author_first_name?: string;
+    author_last_name?: string;
+    author_email?: string;
+    author_affiliation?: string;
     title: string;
     abstract: string;
     abstract_pdf?: string;

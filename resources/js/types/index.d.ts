@@ -39,6 +39,7 @@ export interface User {
     is_allowed: boolean;
     role: 'admin' | 'user';
     google_id?: string | null;
+    phone_number?: string | null;
     created_at: string;
     updated_at: string;
     [key: string]: unknown; // This allows for additional properties...

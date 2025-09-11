@@ -459,40 +459,24 @@ const AboutUs: React.FC<AboutUsProps> = ({ darkMode = false }) => {
                         {[
                           {
                             number: "01",
-                            title: "Life and Applied Sciences",
-                            description: "Scientific approaches to sustainable development and innovation",
+                            title: "Sustainable energy and infrastructure",
+                            description: "Scientific approaches to sustainable development and innovation in biological systems, environmental sciences, and applied research methodologies.",
                             gradient: "from-[#4CB050] to-[#F0A023]",
                             bgColor: "bg-green-50 dark:bg-green-900/20",
                             borderColor: "border-green-200 dark:border-green-800"
                           },
                           {
-                            number: "02", 
-                            title: "Health and Well-being",
-                            description: "Comprehensive health approaches for sustainable communities",
-                            gradient: "from-[#F0A023] to-[#E52531]",
-                            bgColor: "bg-orange-50 dark:bg-orange-900/20",
-                            borderColor: "border-orange-200 dark:border-orange-800"
-                          },
-                          {
-                            number: "03",
-                            title: "Resilience and Sustainable Infrastructure",
-                            description: "Building robust systems for long-term sustainability",
+                            number: "02",
+                            title: "⁠Sustainable communities and environment",
+                            description: "Building robust systems and infrastructure that can withstand challenges while promoting long-term sustainability and adaptability.",
                             gradient: "from-[#E52531] to-[#2a3b8f]",
                             bgColor: "bg-red-50 dark:bg-red-900/20",
                             borderColor: "border-red-200 dark:border-red-800"
                           },
                           {
-                            number: "04",
-                            title: "Social, Economy and Justice",
-                            description: "Equitable development and social transformation",
-                            gradient: "from-[#2a3b8f] to-[#4CB050]",
-                            bgColor: "bg-blue-50 dark:bg-blue-900/20",
-                            borderColor: "border-blue-200 dark:border-blue-800"
-                          },
-                          {
-                            number: "05",
-                            title: "Sustainable Communities",
-                            description: "Building resilient and self-sufficient community systems",
+                            number: "03",
+                            title: " ⁠Earth, life, and applied sciences",
+                            description: "Building resilient, self-sufficient community systems that balance environmental protection with social and economic development.",
                             gradient: "from-[#4CB050] to-[#E52531]",
                             bgColor: "bg-purple-50 dark:bg-purple-900/20",
                             borderColor: "border-purple-200 dark:border-purple-800"
@@ -500,22 +484,32 @@ const AboutUs: React.FC<AboutUsProps> = ({ darkMode = false }) => {
                         ].map((theme, index) => (
                           <motion.div
                             key={index}
-                            className={`p-6 rounded-2xl ${theme.bgColor} border ${theme.borderColor} hover:shadow-lg transition-all duration-300 hover:scale-105`}
-                            whileHover={{ y: -5 }}
-                            transition={{ type: "spring", stiffness: 300 }}
+                            className={`group p-6 sm:p-8 rounded-3xl ${theme.bgColor} border ${theme.borderColor} hover:shadow-2xl transition-all duration-500 hover:scale-105 hover:-translate-y-2 relative overflow-hidden`}
+                            whileHover={{ 
+                              boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+                              transition: { duration: 0.3 }
+                            }}
                           >
-                            <div className="flex items-start space-x-4">
-                              <div className={`flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br ${theme.gradient} flex items-center justify-center shadow-lg`}>
-                                <span className="text-white font-bold text-lg">{theme.number}</span>
+                            {/* Background gradient overlay */}
+                            <div className={`absolute inset-0 bg-gradient-to-br ${theme.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-500`}></div>
+                            
+                            <div className="relative z-10">
+                              <div className="flex items-start space-x-4 mb-4">
+                                <div className={`flex-shrink-0 w-16 h-16 rounded-2xl bg-gradient-to-br ${theme.gradient} flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform duration-300`}>
+                                  <span className="text-white font-bold text-2xl">{theme.number}</span>
+                                </div>
                               </div>
-                              <div className="flex-1">
-                                <Typography.Title level={4} className="text-gray-900 dark:text-white mb-2 text-lg">
-                                  {theme.title}
-                                </Typography.Title>
-                                <Typography.Text className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-                                  {theme.description}
-                                </Typography.Text>
-                              </div>
+                              
+                              <Typography.Title level={3} className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4 group-hover:text-gray-800 dark:group-hover:text-gray-100 transition-colors duration-300">
+                                {theme.title}
+                              </Typography.Title>
+                              
+                              <Typography.Paragraph className="text-sm sm:text-base text-gray-600 dark:text-gray-400 leading-relaxed group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors duration-300">
+                                {theme.description}
+                              </Typography.Paragraph>
+
+                              {/* Animated bottom accent */}
+                              <div className={`h-1 w-0 group-hover:w-full mt-6 rounded-full bg-gradient-to-r ${theme.gradient} transition-all duration-700 ease-out`}></div>
                             </div>
                           </motion.div>
                         ))}

@@ -271,6 +271,56 @@ export default function Show({ submission }: { submission: AbstractSubmission })
                             </CardContent>
                         </Card>
 
+                        {/* Author Information */}
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2">
+                                    <User className="h-5 w-5" />
+                                    <span>Author Information</span>
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <h3 className="font-medium text-sm text-muted-foreground uppercase tracking-wide">First Name</h3>
+                                        <p className="text-foreground break-words">
+                                            {submission.author_first_name || submission.user?.name?.split(' ')[0] || 'Not provided'}
+                                        </p>
+                                    </div>
+                                    
+                                    <div className="space-y-2">
+                                        <h3 className="font-medium text-sm text-muted-foreground uppercase tracking-wide">Last Name</h3>
+                                        <p className="text-foreground break-words">
+                                            {submission.author_last_name || submission.user?.name?.split(' ').slice(1).join(' ') || 'Not provided'}
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <h3 className="font-medium text-sm text-muted-foreground uppercase tracking-wide">Email</h3>
+                                        <p className="text-foreground break-words">
+                                            {submission.author_email || submission.user?.email || 'Not provided'}
+                                        </p>
+                                    </div>
+                                    
+                                    <div className="space-y-2">
+                                        <h3 className="font-medium text-sm text-muted-foreground uppercase tracking-wide">Phone Number</h3>
+                                        <p className="text-foreground break-words">
+                                            {submission.author_phone_number || submission.user?.phone_number || 'Not provided'}
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                                <div className="space-y-2">
+                                    <h3 className="font-medium text-sm text-muted-foreground uppercase tracking-wide">Affiliation</h3>
+                                    <p className="text-foreground break-words">
+                                        {submission.author_affiliation || 'Not provided'}
+                                    </p>
+                                </div>
+                            </CardContent>
+                        </Card>
+
                         {/* Contributors */}
                         <Card>
                             <CardHeader>
