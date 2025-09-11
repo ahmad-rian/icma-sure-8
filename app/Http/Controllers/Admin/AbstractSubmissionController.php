@@ -85,9 +85,48 @@ class AbstractSubmissionController extends Controller
             'reviewer'               // Load reviewer directly
         ]);
 
-        // Filter by status
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
+        // Filter by status - handle detailed status filtering
+        if ($request->filled('status') && $request->status !== 'all') {
+            $status = $request->status;
+
+            switch ($status) {
+                case 'pending':
+                    $query->where('status', 'pending');
+                    break;
+                case 'pending-abstract':
+                    $query->where('status', 'pending');
+                    break;
+                case 'pending-payment':
+                    $query->where('status', 'approved')
+                        ->whereHas('payment', function ($q) {
+                            $q->where('status', 'pending');
+                        });
+                    break;
+                case 'approved':
+                    $query->where('status', 'approved');
+                    break;
+                case 'approved-abstract':
+                    $query->where('status', 'approved');
+                    break;
+                case 'approved-payment':
+                    $query->where('status', 'approved')
+                        ->whereHas('payment', function ($q) {
+                            $q->where('status', 'approved');
+                        });
+                    break;
+                case 'rejected':
+                    $query->where('status', 'rejected');
+                    break;
+                case 'rejected-abstract':
+                    $query->where('status', 'rejected');
+                    break;
+                case 'rejected-payment':
+                    $query->where('status', 'approved')
+                        ->whereHas('payment', function ($q) {
+                            $q->where('status', 'rejected');
+                        });
+                    break;
+            }
         }
 
         // Search functionality
@@ -113,12 +152,27 @@ class AbstractSubmissionController extends Controller
 
         $submissions = $query->paginate(15)->withQueryString();
 
-        // Get statistics
+        // Get detailed statistics
         $stats = [
             'total' => AbstractSubmission::count(),
             'pending' => AbstractSubmission::where('status', 'pending')->count(),
+            'pending_abstract' => AbstractSubmission::where('status', 'pending')->count(),
+            'pending_payment' => AbstractSubmission::where('status', 'approved')
+                ->whereHas('payment', function ($q) {
+                    $q->where('status', 'pending');
+                })->count(),
             'approved' => AbstractSubmission::where('status', 'approved')->count(),
+            'approved_abstract' => AbstractSubmission::where('status', 'approved')->count(),
+            'approved_payment' => AbstractSubmission::where('status', 'approved')
+                ->whereHas('payment', function ($q) {
+                    $q->where('status', 'approved');
+                })->count(),
             'rejected' => AbstractSubmission::where('status', 'rejected')->count(),
+            'rejected_abstract' => AbstractSubmission::where('status', 'rejected')->count(),
+            'rejected_payment' => AbstractSubmission::where('status', 'approved')
+                ->whereHas('payment', function ($q) {
+                    $q->where('status', 'rejected');
+                })->count(),
         ];
 
         return Inertia::render('Admin/AbstractSubmissions/Index', [

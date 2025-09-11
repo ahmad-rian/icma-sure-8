@@ -39,8 +39,14 @@ import { AbstractSubmission } from '@/types/abstract-submission';
 interface Stats {
     total: number;
     pending: number;
+    pending_abstract: number;
+    pending_payment: number;
     approved: number;
+    approved_abstract: number;
+    approved_payment: number;
     rejected: number;
+    rejected_abstract: number;
+    rejected_payment: number;
 }
 
 interface Props {
@@ -321,22 +327,78 @@ export default function Index({ submissions, stats, filters }: Props) {
         }
     };
 
-    const getStatusBadge = (status: string) => {
-        const variants = {
-            pending: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-            approved: 'bg-green-100 text-green-800 border-green-200',
-            rejected: 'bg-red-100 text-red-800 border-red-200'
-        };
+    const getStatusBadge = (submission: AbstractSubmission) => {
+        const status = submission.status;
+        const payment = submission.payment;
         
-        const labels = {
-            pending: 'Menunggu',
-            approved: 'Disetujui',
-            rejected: 'Ditolak'
-        };
+        // Untuk approved submissions
+        if (status === 'approved') {
+            if (payment) {
+                if (payment.status === 'approved') {
+                    return (
+                        <div className="space-y-1">
+                            <Badge className="bg-green-100 text-green-800 border-green-200 font-medium">
+                                ✅ Abstract Approved
+                            </Badge>
+                            <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 font-medium">
+                                💚 Payment Approved
+                            </Badge>
+                        </div>
+                    );
+                } else if (payment.status === 'pending') {
+                    return (
+                        <div className="space-y-1">
+                            <Badge className="bg-green-100 text-green-800 border-green-200 font-medium">
+                                ✅ Abstract Approved
+                            </Badge>
+                            <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200 font-medium">
+                                💰 Payment Pending
+                            </Badge>
+                        </div>
+                    );
+                } else {
+                    return (
+                        <div className="space-y-1">
+                            <Badge className="bg-green-100 text-green-800 border-green-200 font-medium">
+                                ✅ Abstract Approved
+                            </Badge>
+                            <Badge className="bg-red-100 text-red-800 border-red-200 font-medium">
+                                💸 Payment Rejected
+                            </Badge>
+                        </div>
+                    );
+                }
+            } else {
+                return (
+                    <Badge className="bg-green-100 text-green-800 border-green-200 font-medium">
+                        ✅ Abstract Approved
+                    </Badge>
+                );
+            }
+        }
         
+        // Untuk pending submissions
+        if (status === 'pending') {
+            return (
+                <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200 font-medium">
+                    🟡 Pending Abstract
+                </Badge>
+            );
+        }
+        
+        // Untuk rejected submissions
+        if (status === 'rejected') {
+            return (
+                <Badge className="bg-red-100 text-red-800 border-red-200 font-medium">
+                    ❌ Abstract Rejected
+                </Badge>
+            );
+        }
+        
+        // Default fallback
         return (
-            <Badge className={`${variants[status as keyof typeof variants]} font-medium`}>
-                {labels[status as keyof typeof labels]}
+            <Badge className="bg-gray-100 text-gray-800 border-gray-200 font-medium">
+                {status}
             </Badge>
         );
     };
@@ -391,7 +453,7 @@ export default function Index({ submissions, stats, filters }: Props) {
                 </div>
 
                 {/* Stats Cards */}
-                <div className="grid gap-4 md:grid-cols-4">
+                <div className="grid gap-4 md:grid-cols-6">
                     <Card className="border-l-4 border-l-blue-500">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-sm font-medium text-gray-600">Total Submissions</CardTitle>
@@ -404,40 +466,69 @@ export default function Index({ submissions, stats, filters }: Props) {
                             <div className="text-xs text-gray-600 mt-1">Total semua submission</div>
                         </CardContent>
                     </Card>
+                    
                     <Card className="border-l-4 border-l-yellow-500">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium text-gray-600">Menunggu Review</CardTitle>
+                            <CardTitle className="text-sm font-medium text-gray-600">Pending Abstract</CardTitle>
                             <div className="p-2 bg-yellow-100 rounded-lg">
                                 <Clock className="h-4 w-4 text-yellow-600" />
                             </div>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold text-yellow-600">{stats.pending}</div>
-                            <div className="text-xs text-gray-600 mt-1">Perlu direview</div>
+                            <div className="text-2xl font-bold text-yellow-600">{stats.pending_abstract || stats.pending}</div>
+                            <div className="text-xs text-gray-600 mt-1">🟡 Menunggu review abstract</div>
                         </CardContent>
                     </Card>
+                    
+                    <Card className="border-l-4 border-l-orange-500">
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium text-gray-600">Pending Payment</CardTitle>
+                            <div className="p-2 bg-orange-100 rounded-lg">
+                                <Clock className="h-4 w-4 text-orange-600" />
+                            </div>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold text-orange-600">{stats.pending_payment || 0}</div>
+                            <div className="text-xs text-gray-600 mt-1">💰 Menunggu payment</div>
+                        </CardContent>
+                    </Card>
+                    
                     <Card className="border-l-4 border-l-green-500">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium text-gray-600">Disetujui</CardTitle>
+                            <CardTitle className="text-sm font-medium text-gray-600">Approved Abstract</CardTitle>
                             <div className="p-2 bg-green-100 rounded-lg">
                                 <CheckCircle className="h-4 w-4 text-green-600" />
                             </div>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold text-green-600">{stats.approved}</div>
-                            <div className="text-xs text-gray-600 mt-1">Sudah disetujui</div>
+                            <div className="text-2xl font-bold text-green-600">{stats.approved_abstract || stats.approved}</div>
+                            <div className="text-xs text-gray-600 mt-1">✅ Abstract disetujui</div>
                         </CardContent>
                     </Card>
+                    
+                    <Card className="border-l-4 border-l-emerald-500">
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium text-gray-600">Approved Payment</CardTitle>
+                            <div className="p-2 bg-emerald-100 rounded-lg">
+                                <CheckCircle className="h-4 w-4 text-emerald-600" />
+                            </div>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold text-emerald-600">{stats.approved_payment || 0}</div>
+                            <div className="text-xs text-gray-600 mt-1">💚 Payment disetujui</div>
+                        </CardContent>
+                    </Card>
+                    
                     <Card className="border-l-4 border-l-red-500">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium text-gray-600">Ditolak</CardTitle>
+                            <CardTitle className="text-sm font-medium text-gray-600">Rejected</CardTitle>
                             <div className="p-2 bg-red-100 rounded-lg">
                                 <XCircle className="h-4 w-4 text-red-600" />
                             </div>
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold text-red-600">{stats.rejected}</div>
-                            <div className="text-xs text-gray-600 mt-1">Telah ditolak</div>
+                            <div className="text-xs text-gray-600 mt-1">❌ Ditolak</div>
                         </CardContent>
                     </Card>
                 </div>
@@ -457,14 +548,20 @@ export default function Index({ submissions, stats, filters }: Props) {
                                 />
                             </div>
                             <Select value={filters.status || 'all'} onValueChange={handleStatusFilter}>
-                                <SelectTrigger className="w-[180px] h-10">
+                                <SelectTrigger className="w-[220px] h-10">
                                     <SelectValue placeholder="Filter by status" />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="all">All Status</SelectItem>
-                                    <SelectItem value="pending">Pending</SelectItem>
-                                    <SelectItem value="approved">Approved</SelectItem>
-                                    <SelectItem value="rejected">Rejected</SelectItem>
+                                    <SelectItem value="pending">🟡 Pending (All)</SelectItem>
+                                    <SelectItem value="pending-abstract">🟡 Pending Abstract</SelectItem>
+                                    <SelectItem value="pending-payment">💰 Pending Payment</SelectItem>
+                                    <SelectItem value="approved">✅ Approved (All)</SelectItem>
+                                    <SelectItem value="approved-abstract">✅ Approved Abstract</SelectItem>
+                                    <SelectItem value="approved-payment">💚 Approved Payment</SelectItem>
+                                    <SelectItem value="rejected">❌ Rejected (All)</SelectItem>
+                                    <SelectItem value="rejected-abstract">❌ Rejected Abstract</SelectItem>
+                                    <SelectItem value="rejected-payment">💸 Rejected Payment</SelectItem>
                                 </SelectContent>
                             </Select>
                             {selectedSubmissions.length > 0 && (
@@ -590,12 +687,18 @@ export default function Index({ submissions, stats, filters }: Props) {
                                                         {submission.payment && (
                                                             <div className="flex items-center gap-1">
                                                                 <div className={`w-2 h-2 rounded-full ${
-                                                                    submission.payment.status === 'approved' ? 'bg-green-500' :
+                                                                    submission.payment.status === 'approved' ? 'bg-emerald-500' :
                                                                     submission.payment.status === 'pending' ? 'bg-yellow-500' :
                                                                     'bg-red-500'
                                                                 }`} />
-                                                                <span className="text-xs text-gray-500">
-                                                                    Payment: {submission.payment.status}
+                                                                <span className={`text-xs font-medium ${
+                                                                    submission.payment.status === 'approved' ? 'text-emerald-600' :
+                                                                    submission.payment.status === 'pending' ? 'text-yellow-600' :
+                                                                    'text-red-600'
+                                                                }`}>
+                                                                    {submission.payment.status === 'approved' ? '💚 Payment Approved' :
+                                                                     submission.payment.status === 'pending' ? '💰 Payment Pending' :
+                                                                     '💸 Payment Rejected'}
                                                                 </span>
                                                             </div>
                                                         )}
@@ -611,7 +714,7 @@ export default function Index({ submissions, stats, filters }: Props) {
                                                 </TableCell>
                                                 <TableCell className="py-4">
                                                     <div className="space-y-1">
-                                                        {getStatusBadge(submission.status)}
+                                                        {getStatusBadge(submission)}
                                                         {submission.status === 'pending' && submission.payment && (
                                                             <div className="text-xs text-green-600 font-medium">
                                                                 ✓ Eligible for bulk approve
