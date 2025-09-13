@@ -1038,7 +1038,7 @@ class AbstractSubmissionController extends Controller
 
         // Add co-authors if they exist
         if ($submission->contributors && $submission->contributors->count() > 0) {
-            $authorsListHtml .= '<p><strong>Co-Authors:</strong></p>';
+            $authorsListHtml .= '<p><strong>Contributors:</strong></p>';
             $authorsListHtml .= '<ul style="list-style-type: none; padding-left: 0;">';
 
             foreach ($submission->contributors as $index => $contributor) {
@@ -1143,5 +1143,42 @@ class AbstractSubmissionController extends Controller
     </div>
 </body>
 </html>';
+    }
+
+    /**
+     * Resend Letter of Acceptance (LoA) email
+     */
+    public function resendLoa(AbstractSubmission $submission)
+    {
+        try {
+            // Check if submission is eligible for LoA resend
+            if ($submission->status !== 'approved') {
+                return redirect()->back()->with('error', 'LoA hanya dapat dikirim untuk submission yang sudah disetujui.');
+            }
+
+            if (!$submission->payment || $submission->payment->status !== 'approved') {
+                return redirect()->back()->with('error', 'LoA hanya dapat dikirim untuk submission dengan payment yang sudah disetujui.');
+            }
+
+            // Send LoA email
+            $this->sendLoaEmailNotification($submission);
+
+            // Log the resend action
+            Log::info('LoA email resent by admin', [
+                'submission_id' => $submission->id,
+                'admin_id' => Auth::id(),
+                'recipient' => $submission->user->email
+            ]);
+
+            return redirect()->back()->with('success', 'Email LoA berhasil dikirim ulang ke ' . $submission->user->email);
+        } catch (\Exception $e) {
+            Log::error('Failed to resend LoA email', [
+                'submission_id' => $submission->id,
+                'admin_id' => Auth::id(),
+                'error' => $e->getMessage()
+            ]);
+
+            return redirect()->back()->with('error', 'Gagal mengirim ulang email LoA. Silakan coba lagi.');
+        }
     }
 }

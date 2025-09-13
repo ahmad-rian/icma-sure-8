@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { ArrowLeft, Download, Edit, FileText, User, MapPin, Calendar, FileCheck, RefreshCw, Upload, CheckCircle, XCircle, Phone } from 'lucide-react';
+import { ArrowLeft, Download, Edit, FileText, User, MapPin, Calendar, FileCheck, RefreshCw, Upload, CheckCircle, XCircle, Phone, Mail } from 'lucide-react';
 import AppSidebarLayout from '@/layouts/app/app-sidebar-layout';
 import { AbstractSubmission } from '@/types/abstract-submission';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
@@ -64,6 +64,25 @@ export default function Show({ submission }: { submission: AbstractSubmission })
             },
             onError: () => {
                 setIsProcessing(false);
+            }
+        });
+    };
+
+    const handleResendLoa = () => {
+        if (!confirm('Are you sure you want to resend the Letter of Acceptance (LoA) email?')) {
+            return;
+        }
+
+        setIsProcessing(true);
+        router.post(route('admin.abstract-submissions.resend-loa', submission.id), {}, {
+            onSuccess: () => {
+                setIsProcessing(false);
+                alert('Letter of Acceptance (LoA) has been resent successfully!');
+            },
+            onError: (errors) => {
+                setIsProcessing(false);
+                const errorMessage = errors.message || 'Failed to resend LoA email. Please try again.';
+                alert(errorMessage);
             }
         });
     };
@@ -198,6 +217,20 @@ export default function Show({ submission }: { submission: AbstractSubmission })
                             <RefreshCw className="h-4 w-4 mr-2" />
                             Regenerate PDF
                         </Button>
+
+                        {/* Resend LoA Button in Header */}
+                        {submission.status === 'approved' && submission.payment?.status === 'approved' && (
+                            <Button 
+                                size="sm" 
+                                variant="outline"
+                                onClick={handleResendLoa}
+                                disabled={isProcessing}
+                                className="bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200"
+                            >
+                                <Mail className="h-4 w-4 mr-2" />
+                                {isProcessing ? 'Sending...' : 'Resend LoA'}
+                            </Button>
+                        )}
                         
                         {submission.submission_file && (
                             <Button size="sm" variant="outline" asChild>
@@ -653,6 +686,22 @@ export default function Show({ submission }: { submission: AbstractSubmission })
                                                         >
                                                             <XCircle className="mr-2 h-4 w-4" />
                                                             {isProcessing ? 'Processing...' : 'Reject Payment'}
+                                                        </Button>
+                                                    </div>
+                                                )}
+
+                                                {/* Resend LoA Button for Approved Payments */}
+                                                {submission.payment.status === 'approved' && submission.status === 'approved' && (
+                                                    <div className="pt-3 border-t">
+                                                        <Button 
+                                                            onClick={handleResendLoa}
+                                                            disabled={isProcessing}
+                                                            variant="outline"
+                                                            className="w-full bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200"
+                                                            size="sm"
+                                                        >
+                                                            <Mail className="mr-2 h-4 w-4" />
+                                                            {isProcessing ? 'Sending...' : 'Resend Letter of Acceptance (LoA)'}
                                                         </Button>
                                                     </div>
                                                 )}

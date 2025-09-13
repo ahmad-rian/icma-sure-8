@@ -38,7 +38,7 @@ Route::get('/access-denied', function () {
 Route::middleware(['auth', 'verified'])->prefix('user')->name('user.')->group(function () {
     // User dashboard
     Route::get('/dashboard', [\App\Http\Controllers\User\DashboardController::class, 'index'])->name('dashboard');
-    
+
     // User submission routes
     Route::prefix('submissions')->name('submissions.')->group(function () {
         Route::get('/', [\App\Http\Controllers\User\SubmissionController::class, 'index'])->name('index');
@@ -52,7 +52,7 @@ Route::middleware(['auth', 'verified'])->prefix('user')->name('user.')->group(fu
         Route::get('/{submission}/download-pdf', [\App\Http\Controllers\User\SubmissionController::class, 'downloadPdf'])->name('download-pdf');
         Route::get('/{submission}/download-loa', [\App\Http\Controllers\User\SubmissionController::class, 'downloadLoa'])->name('download-loa');
     });
-    
+
     // User profile routes
     Route::get('/profile', [\App\Http\Controllers\User\ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [\App\Http\Controllers\User\ProfileController::class, 'update'])->name('profile.update');
@@ -121,11 +121,14 @@ Route::middleware(['auth', 'verified', CheckAdminRole::class])->prefix('admin')-
         Route::post('/approve-abstract', [AbstractSubmissionController::class, 'approveAbstract'])->name('approve-abstract');
         Route::post('/approve-payment', [AbstractSubmissionController::class, 'approvePayment'])->name('approve-payment');
         Route::post('/export-excel', [AbstractSubmissionController::class, 'exportExcel'])->name('export-excel');
-        
+
         // PDF management routes
         Route::get('/{submission}/download-pdf', [AbstractSubmissionController::class, 'downloadPdf'])->name('download-pdf');
         Route::post('/{submission}/regenerate-pdf', [AbstractSubmissionController::class, 'regeneratePdf'])->name('regenerate-pdf');
-        
+
+        // Email management routes
+        Route::post('/{submission}/resend-loa', [AbstractSubmissionController::class, 'resendLoa'])->name('resend-loa');
+
         // Payment management routes
         Route::get('/payments', [AbstractSubmissionController::class, 'payments'])->name('payments');
         Route::patch('/payments/{submission}', [AbstractSubmissionController::class, 'updatePaymentStatus'])->name('update-payment-status');
