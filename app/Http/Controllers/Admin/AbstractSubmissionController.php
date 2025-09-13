@@ -834,6 +834,9 @@ class AbstractSubmissionController extends Controller
     private function sendLoaEmailNotification(AbstractSubmission $submission): void
     {
         try {
+            // Load submission with all required relationships
+            $submission->load(['user.profile', 'contributors']);
+
             $emailService = new EmailApiService();
             $htmlContent = $this->generateLoaEmailBody($submission);
 
@@ -878,6 +881,11 @@ class AbstractSubmissionController extends Controller
 
             // Emergency fallback
             try {
+                // Load relationships if not already loaded
+                if (!$submission->relationLoaded('contributors')) {
+                    $submission->load(['user.profile', 'contributors']);
+                }
+
                 $this->sendHtmlMail(
                     $submission->user->email,
                     'Letter of Acceptance (LOA) - ICMA-SURE 2025',
@@ -1009,6 +1017,45 @@ class AbstractSubmissionController extends Controller
     {
         $participantName = $submission->user->profile->full_name ?? $submission->user->name;
 
+        // Get main author info
+        $mainAuthorName = 'N/A';
+        $mainAuthorAffiliation = 'N/A';
+
+        if ($submission->author_first_name && $submission->author_last_name) {
+            $mainAuthorName = trim($submission->author_first_name . ' ' . $submission->author_last_name);
+            $mainAuthorAffiliation = $submission->author_affiliation ?: 'N/A';
+        } elseif ($submission->user) {
+            $mainAuthorName = $submission->user->profile->full_name ?? $submission->user->name;
+            $mainAuthorAffiliation = $submission->user->profile->institution ?? 'N/A';
+        }
+
+        // Build authors list HTML
+        $authorsListHtml = '<p><strong>Main Author:</strong><br>' . htmlspecialchars($mainAuthorName);
+        if ($mainAuthorAffiliation !== 'N/A') {
+            $authorsListHtml .= '<br><em>' . htmlspecialchars($mainAuthorAffiliation) . '</em>';
+        }
+        $authorsListHtml .= '</p>';
+
+        // Add co-authors if they exist
+        if ($submission->contributors && $submission->contributors->count() > 0) {
+            $authorsListHtml .= '<p><strong>Co-Authors:</strong></p>';
+            $authorsListHtml .= '<ul style="list-style-type: none; padding-left: 0;">';
+
+            foreach ($submission->contributors as $index => $contributor) {
+                $contributorName = $contributor->full_name ?? 'N/A';
+                $contributorAffiliation = $contributor->affiliation ?? 'N/A';
+
+                $authorsListHtml .= '<li style="margin-bottom: 10px;">';
+                $authorsListHtml .= ($index + 1) . '. ' . htmlspecialchars($contributorName);
+                if ($contributorAffiliation !== 'N/A') {
+                    $authorsListHtml .= '<br><em style="margin-left: 20px;">' . htmlspecialchars($contributorAffiliation) . '</em>';
+                }
+                $authorsListHtml .= '</li>';
+            }
+
+            $authorsListHtml .= '</ul>';
+        }
+
         return '<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1027,6 +1074,10 @@ class AbstractSubmissionController extends Controller
         .congratulations-box h3 { margin-top: 0; }
         .details-box { background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0; border-left: 4px solid #007bff; }
         .details-box h4 { margin-top: 0; color: #007bff; }
+        .authors-box { background-color: #f0f8ff; padding: 20px; border-radius: 5px; margin: 20px 0; border-left: 4px solid #007bff; }
+        .authors-box h4 { margin-top: 0; color: #007bff; }
+        .authors-box ul { margin: 10px 0; }
+        .authors-box li { margin: 8px 0; }
         .conference-info { background-color: #fff3cd; border: 1px solid #ffeaa7; padding: 20px; border-radius: 5px; margin: 20px 0; }
         .conference-info h4 { margin-top: 0; color: #856404; }
         .conference-info ul { list-style: none; padding: 0; }
@@ -1057,9 +1108,14 @@ class AbstractSubmissionController extends Controller
         <p>After a thorough review, we are pleased to inform you that your abstract has met the preliminary acceptance requirements set forth by our Scientific Committee and has been <strong>accepted for oral presentation</strong> at the conference.</p>
         
         <div class="details-box">
-            <h4>Your Abstract Details</h4>
+            <h4>Abstract Details</h4>
             <p><strong>Title:</strong> "' . htmlspecialchars($submission->title) . '"</p>
             <p><strong>Presentation Type:</strong> Oral Presentation</p>
+        </div>
+        
+        <div class="authors-box">
+            <h4>Authors Information</h4>
+            ' . $authorsListHtml . '
         </div>
         
         <div class="conference-info">
