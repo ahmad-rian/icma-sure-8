@@ -41,6 +41,8 @@ interface Stats {
     pending: number;
     pending_abstract: number;
     pending_payment: number;
+    pending_payment_with_proof: number;
+    pending_payment_no_proof: number;
     approved: number;
     approved_abstract: number;
     approved_payment: number;
@@ -453,7 +455,7 @@ export default function Index({ submissions, stats, filters }: Props) {
                 </div>
 
                 {/* Stats Cards */}
-                <div className="grid gap-4 md:grid-cols-6">
+                <div className="grid gap-4 md:grid-cols-4 lg:grid-cols-8">
                     <Card className="border-l-4 border-l-blue-500">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-sm font-medium text-gray-600">Total Submissions</CardTitle>
@@ -482,14 +484,27 @@ export default function Index({ submissions, stats, filters }: Props) {
                     
                     <Card className="border-l-4 border-l-orange-500">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium text-gray-600">Pending Payment</CardTitle>
+                            <CardTitle className="text-sm font-medium text-gray-600">Payment (With Proof)</CardTitle>
                             <div className="p-2 bg-orange-100 rounded-lg">
-                                <Clock className="h-4 w-4 text-orange-600" />
+                                <FileText className="h-4 w-4 text-orange-600" />
                             </div>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold text-orange-600">{stats.pending_payment || 0}</div>
-                            <div className="text-xs text-gray-600 mt-1">💰 Menunggu payment</div>
+                            <div className="text-2xl font-bold text-orange-600">{stats.pending_payment_with_proof || 0}</div>
+                            <div className="text-xs text-gray-600 mt-1">� Sudah upload bukti</div>
+                        </CardContent>
+                    </Card>
+
+                    <Card className="border-l-4 border-l-red-500">
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium text-gray-600">Payment (No Proof)</CardTitle>
+                            <div className="p-2 bg-red-100 rounded-lg">
+                                <XCircle className="h-4 w-4 text-red-600" />
+                            </div>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold text-red-600">{stats.pending_payment_no_proof || 0}</div>
+                            <div className="text-xs text-gray-600 mt-1">📝 Belum upload bukti</div>
                         </CardContent>
                     </Card>
                     
@@ -519,15 +534,28 @@ export default function Index({ submissions, stats, filters }: Props) {
                         </CardContent>
                     </Card>
                     
-                    <Card className="border-l-4 border-l-red-500">
+                    <Card className="border-l-4 border-l-gray-500">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium text-gray-600">Rejected</CardTitle>
-                            <div className="p-2 bg-red-100 rounded-lg">
-                                <XCircle className="h-4 w-4 text-red-600" />
+                            <CardTitle className="text-sm font-medium text-gray-600">Total Pending</CardTitle>
+                            <div className="p-2 bg-gray-100 rounded-lg">
+                                <Clock className="h-4 w-4 text-gray-600" />
                             </div>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold text-red-600">{stats.rejected}</div>
+                            <div className="text-2xl font-bold text-gray-600">{stats.pending_payment || 0}</div>
+                            <div className="text-xs text-gray-600 mt-1">💰 Total pending payment</div>
+                        </CardContent>
+                    </Card>
+
+                    <Card className="border-l-4 border-l-slate-500">
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium text-gray-600">Rejected</CardTitle>
+                            <div className="p-2 bg-slate-100 rounded-lg">
+                                <XCircle className="h-4 w-4 text-slate-600" />
+                            </div>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold text-slate-600">{stats.rejected}</div>
                             <div className="text-xs text-gray-600 mt-1">❌ Ditolak</div>
                         </CardContent>
                     </Card>
@@ -555,7 +583,9 @@ export default function Index({ submissions, stats, filters }: Props) {
                                     <SelectItem value="all">All Status</SelectItem>
                                     <SelectItem value="pending">🟡 Pending (All)</SelectItem>
                                     <SelectItem value="pending-abstract">🟡 Pending Abstract</SelectItem>
-                                    <SelectItem value="pending-payment">💰 Pending Payment</SelectItem>
+                                    <SelectItem value="pending-payment">💰 Pending Payment (All)</SelectItem>
+                                    <SelectItem value="pending-payment-with-proof">📄 Pending Payment (With Proof)</SelectItem>
+                                    <SelectItem value="pending-payment-no-proof">📝 Pending Payment (No Proof)</SelectItem>
                                     <SelectItem value="approved">✅ Approved (All)</SelectItem>
                                     <SelectItem value="approved-abstract">✅ Approved Abstract</SelectItem>
                                     <SelectItem value="approved-payment">💚 Approved Payment</SelectItem>

@@ -102,6 +102,20 @@ class AbstractSubmissionController extends Controller
                             $q->where('status', 'pending');
                         });
                     break;
+                case 'pending-payment-with-proof':
+                    $query->where('status', 'approved')
+                        ->whereHas('payment', function ($q) {
+                            $q->where('status', 'pending')
+                                ->whereNotNull('payment_proof');
+                        });
+                    break;
+                case 'pending-payment-no-proof':
+                    $query->where('status', 'approved')
+                        ->whereHas('payment', function ($q) {
+                            $q->where('status', 'pending')
+                                ->whereNull('payment_proof');
+                        });
+                    break;
                 case 'approved':
                     $query->where('status', 'approved');
                     break;
@@ -160,6 +174,14 @@ class AbstractSubmissionController extends Controller
             'pending_payment' => AbstractSubmission::where('status', 'approved')
                 ->whereHas('payment', function ($q) {
                     $q->where('status', 'pending');
+                })->count(),
+            'pending_payment_with_proof' => AbstractSubmission::where('status', 'approved')
+                ->whereHas('payment', function ($q) {
+                    $q->where('status', 'pending')->whereNotNull('payment_proof');
+                })->count(),
+            'pending_payment_no_proof' => AbstractSubmission::where('status', 'approved')
+                ->whereHas('payment', function ($q) {
+                    $q->where('status', 'pending')->whereNull('payment_proof');
                 })->count(),
             'approved' => AbstractSubmission::where('status', 'approved')->count(),
             'approved_abstract' => AbstractSubmission::where('status', 'approved')->count(),
