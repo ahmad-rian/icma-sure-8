@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
 import AppSidebarLayout from '@/layouts/app/app-sidebar-layout';
 import { Button } from '@/components/ui/button';
@@ -33,7 +33,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Eye, FileText, Users, Clock, CheckCircle, XCircle, Plus, Search, Edit, Trash2, MapPin, Download, MoreHorizontal, ChevronLeft, ChevronRight, FileSpreadsheet } from 'lucide-react';
+import { Eye, FileText, Users, Clock, CheckCircle, XCircle, Plus, Search, Edit, Trash2, MapPin, Download, MoreHorizontal, ChevronLeft, ChevronRight, FileSpreadsheet, Loader2, X } from 'lucide-react';
 import { AbstractSubmission } from '@/types/abstract-submission';
 
 interface Stats {
@@ -67,6 +67,42 @@ interface Props {
 export default function Index({ submissions, stats, filters }: Props) {
     const [selectedSubmissions, setSelectedSubmissions] = useState<string[]>([]);
     const [isProcessing, setIsProcessing] = useState(false);
+    const [searchInput, setSearchInput] = useState(filters.search || '');
+    const [isSearching, setIsSearching] = useState(false);
+
+    // Debounce search effect
+    useEffect(() => {
+        if (searchInput !== (filters.search || '')) {
+            setIsSearching(true);
+        }
+
+        const delayedSearch = setTimeout(() => {
+            if (searchInput !== (filters.search || '')) {
+                router.get(route('admin.abstract-submissions.index'), 
+                    { ...filters, search: searchInput || undefined }, 
+                    { 
+                        preserveState: true, 
+                        replace: true,
+                        onFinish: () => setIsSearching(false)
+                    }
+                );
+            } else {
+                setIsSearching(false);
+            }
+        }, 500); // 500ms delay
+
+        return () => {
+            clearTimeout(delayedSearch);
+            if (searchInput === (filters.search || '')) {
+                setIsSearching(false);
+            }
+        };
+    }, [searchInput]);
+
+    // Update local search input when filters change (e.g., page reload)
+    useEffect(() => {
+        setSearchInput(filters.search || '');
+    }, [filters.search]);
 
     // Function to truncate text
     const truncateText = (text: string, maxLength: number = 60) => {
@@ -79,11 +115,8 @@ export default function Index({ submissions, stats, filters }: Props) {
         { title: 'Abstract Submissions', href: route('admin.abstract-submissions.index') },
     ];
 
-    const handleSearch = (search: string) => {
-        router.get(route('admin.abstract-submissions.index'), 
-            { ...filters, search }, 
-            { preserveState: true, replace: true }
-        );
+    const handleSearchInput = (value: string) => {
+        setSearchInput(value);
     };
 
     const handleStatusFilter = (status: string) => {
@@ -567,13 +600,32 @@ export default function Index({ submissions, stats, filters }: Props) {
                         <CardTitle className="text-xl font-semibold">Submissions List</CardTitle>
                         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                             <div className="relative flex-1 max-w-sm">
-                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                {isSearching ? (
+                                    <Loader2 className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-blue-500 animate-spin" />
+                                ) : (
+                                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                )}
                                 <Input
                                     placeholder="Cari berdasarkan judul, author, atau email..."
-                                    value={filters.search || ''}
-                                    onChange={(e) => handleSearch(e.target.value)}
-                                    className="pl-10 h-10"
+                                    value={searchInput}
+                                    onChange={(e) => handleSearchInput(e.target.value)}
+                                    className="pl-10 pr-16 h-10"
+                                    disabled={isSearching}
                                 />
+                                <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center gap-2">
+                                    {isSearching && (
+                                        <span className="text-xs text-blue-500 font-medium">Searching...</span>
+                                    )}
+                                    {searchInput && !isSearching && (
+                                        <button
+                                            onClick={() => handleSearchInput('')}
+                                            className="text-gray-400 hover:text-gray-600 transition-colors"
+                                            title="Clear search"
+                                        >
+                                            <X className="h-4 w-4" />
+                                        </button>
+                                    )}
+                                </div>
                             </div>
                             <Select value={filters.status || 'all'} onValueChange={handleStatusFilter}>
                                 <SelectTrigger className="w-[220px] h-10">
