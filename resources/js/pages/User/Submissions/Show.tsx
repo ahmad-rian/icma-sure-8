@@ -327,8 +327,14 @@ export default function Show({ auth, submission }: ShowProps) {
                                                     </span>
                                                 </div>
                                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-gray-700 dark:text-gray-300">
-                                                    <p className="break-words"><span className="font-medium">Name:</span> {auth.user.name}</p>
-                                                    <p className="break-words"><span className="font-medium">Email:</span> {auth.user.email}</p>
+                                                    <p className="break-words"><span className="font-medium">Name:</span> {submission.author_first_name} {submission.author_last_name}</p>
+                                                    <p className="break-words"><span className="font-medium">Email:</span> {submission.author_email}</p>
+                                                    {submission.author_phone_number && (
+                                                        <p className="break-words"><span className="font-medium">Phone:</span> {submission.author_phone_number}</p>
+                                                    )}
+                                                    {submission.author_affiliation && (
+                                                        <p className="break-words"><span className="font-medium">Affiliation:</span> {submission.author_affiliation}</p>
+                                                    )}
                                                 </div>
                                             </div>
 
@@ -348,6 +354,9 @@ export default function Show({ auth, submission }: ShowProps) {
                                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-gray-700 dark:text-gray-300">
                                                                 <p className="break-words"><span className="font-medium">Email:</span> {contributor.email}</p>
                                                                 <p className="break-words"><span className="font-medium">Country:</span> {contributor.country?.name}</p>
+                                                                {contributor.phone_number && (
+                                                                    <p className="break-words"><span className="font-medium">Phone:</span> {contributor.phone_number}</p>
+                                                                )}
                                                                 <p className="md:col-span-2 break-words"><span className="font-medium">Affiliation:</span> {contributor.affiliation}</p>
                                                             </div>
                                                         </div>
