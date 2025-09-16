@@ -25,25 +25,12 @@ const ContactSection: React.FC = () => {
   const contactPeople: ContactPerson[] = [
     {
       name: "Enny Dwi Cahyani, S.H., M.H",
-      phone: "+62 813-2838-8346",
-      whatsapp: "+62 813-2838-8346",
+      phone: "+62 853-8532-3228",
+      whatsapp: "+62 853-8532-3228",
       email: "icmasure.lppm@unsoed.ac.id",
      
     },
-    {
-      name: "Yemima Sahmura Vividia",
-      phone: "+62 812-2679-8679",
-      whatsapp: "+62 812-2679-8679",
-      email: "icmasure.lppm@unsoed.ac.id",
-     
-    },
-    {
-      name: "Khaidar Ali",
-      phone: "+62 858-9623-9634",
-      whatsapp: "+62 858-9623-9634",
-      email: "icmasure.lppm@unsoed.ac.id",
-     
-    }
+    
   ];
 
   const organizationInfo = {
@@ -259,12 +246,14 @@ const ContactSection: React.FC = () => {
           
           {/* Contact Persons Grid */}
           <motion.div 
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16"
+            className="flex justify-center mb-16"
             variants={containerVariants}
           >
-            {contactPeople.map((contact, index) => (
-              <ContactCard key={index} contact={contact} index={index} />
-            ))}
+            <div className="max-w-md w-full">
+              {contactPeople.map((contact, index) => (
+                <ContactCard key={index} contact={contact} index={index} />
+              ))}
+            </div>
           </motion.div>
           
           {/* Map Section */}

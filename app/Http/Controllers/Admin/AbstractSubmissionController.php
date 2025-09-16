@@ -164,7 +164,28 @@ class AbstractSubmissionController extends Controller
         // Sort by submitted date (newest first)
         $query->orderBy('submitted_at', 'desc');
 
-        $submissions = $query->paginate(15)->withQueryString();
+        // Handle pagination - allow per_page parameter with 'all' option
+        $perPage = $request->get('per_page', 15);
+
+        if ($perPage === 'all') {
+            // Get all records without pagination
+            $allSubmissions = $query->get();
+            $submissions = new \Illuminate\Pagination\LengthAwarePaginator(
+                $allSubmissions,
+                $allSubmissions->count(),
+                $allSubmissions->count(),
+                1,
+                [
+                    'path' => request()->url(),
+                    'pageName' => 'page',
+                ]
+            );
+            $submissions->withQueryString();
+        } else {
+            // Validate per_page is a number and within reasonable limits
+            $perPage = is_numeric($perPage) ? min(max((int)$perPage, 5), 500) : 15;
+            $submissions = $query->paginate($perPage)->withQueryString();
+        }
 
         // Get detailed statistics
         $stats = [

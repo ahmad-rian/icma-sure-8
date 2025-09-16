@@ -61,6 +61,7 @@ interface Props {
     filters: {
         status?: string;
         search?: string;
+        per_page?: string | number;
     };
 }
 
@@ -123,6 +124,18 @@ export default function Index({ submissions, stats, filters }: Props) {
         router.get(route('admin.abstract-submissions.index'), 
             { ...filters, status: status === 'all' ? undefined : status }, 
             { preserveState: true, replace: true }
+        );
+    };
+
+    const handlePerPageChange = (perPage: string) => {
+        setIsSearching(true); // Show loading indicator for "Show All"
+        router.get(route('admin.abstract-submissions.index'), 
+            { ...filters, per_page: perPage === '15' ? undefined : perPage }, 
+            { 
+                preserveState: true, 
+                replace: true,
+                onFinish: () => setIsSearching(false)
+            }
         );
     };
 
@@ -646,11 +659,28 @@ export default function Index({ submissions, stats, filters }: Props) {
                                     <SelectItem value="rejected-payment">💸 Rejected Payment</SelectItem>
                                 </SelectContent>
                             </Select>
+                            <Select value={filters.per_page?.toString() || '15'} onValueChange={handlePerPageChange}>
+                                <SelectTrigger className="w-[140px] h-10">
+                                    <SelectValue placeholder="Per page" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="15">15 per page</SelectItem>
+                                    <SelectItem value="25">25 per page</SelectItem>
+                                    <SelectItem value="50">50 per page</SelectItem>
+                                    <SelectItem value="100">100 per page</SelectItem>
+                                    <SelectItem value="all">📊 Show All</SelectItem>
+                                </SelectContent>
+                            </Select>
                             {selectedSubmissions.length > 0 && (
                                 <div className="flex flex-col gap-2 p-3 bg-gray-50 rounded-lg border">
                                     <div className="flex items-center justify-between">
                                         <span className="text-sm text-gray-600 font-medium">
                                             {selectedSubmissions.length} terpilih
+                                            {filters.per_page === 'all' && submissions.data.length > 15 && (
+                                                <span className="text-blue-600 ml-1">
+                                                    dari {submissions.data.length} total
+                                                </span>
+                                            )}
                                         </span>
                                         <div className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded-full">
                                             📧 Email otomatis saat approve
@@ -727,10 +757,20 @@ export default function Index({ submissions, stats, filters }: Props) {
                                 <TableHeader>
                                     <TableRow className="bg-gray-50">
                                         <TableHead className="w-12">
-                                            <Checkbox
-                                                checked={selectedSubmissions.length === submissions.data.length && submissions.data.length > 0}
-                                                onCheckedChange={handleSelectAll}
-                                            />
+                                            <div className="flex items-center gap-2">
+                                                <Checkbox
+                                                    checked={selectedSubmissions.length === submissions.data.length && submissions.data.length > 0}
+                                                    onCheckedChange={handleSelectAll}
+                                                />
+                                                {filters.per_page === 'all' && submissions.data.length > 15 && (
+                                                    <span 
+                                                        className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded-full cursor-help" 
+                                                        title="Anda dapat memilih semua data untuk export"
+                                                    >
+                                                        📊 All
+                                                    </span>
+                                                )}
+                                            </div>
                                         </TableHead>
                                         <TableHead className="min-w-[300px]">Title</TableHead>
                                         <TableHead className="min-w-[200px]">Author</TableHead>
@@ -925,13 +965,19 @@ export default function Index({ submissions, stats, filters }: Props) {
                         <CardContent className="py-4">
                             <div className="flex items-center justify-between">
                                 <div className="text-sm text-gray-600">
-                                    Menampilkan <span className="font-medium">{submissions.meta?.from || 1}</span> sampai{' '}
-                                    <span className="font-medium">{submissions.meta?.to || submissions.data.length}</span> dari{' '}
-                                    <span className="font-medium">{submissions.meta?.total || submissions.data.length}</span> hasil
+                                    {filters.per_page === 'all' ? (
+                                        <>Menampilkan <span className="font-medium">semua {submissions.meta?.total || submissions.data.length}</span> hasil</>
+                                    ) : (
+                                        <>
+                                            Menampilkan <span className="font-medium">{submissions.meta?.from || 1}</span> sampai{' '}
+                                            <span className="font-medium">{submissions.meta?.to || submissions.data.length}</span> dari{' '}
+                                            <span className="font-medium">{submissions.meta?.total || submissions.data.length}</span> hasil
+                                        </>
+                                    )}
                                 </div>
                                 
                                 {/* Pagination Controls */}
-                                {submissions.links && submissions.links.length > 3 && (
+                                {filters.per_page !== 'all' && submissions.links && submissions.links.length > 3 && (
                                     <div className="flex items-center space-x-2">
                                         {/* Previous Button */}
                                         {submissions.links[0].url ? (

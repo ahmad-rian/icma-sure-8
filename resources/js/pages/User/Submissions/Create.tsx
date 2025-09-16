@@ -381,7 +381,7 @@ export default function Create({ auth, countries }: CreateProps) {
                                                             value={data.author.affiliation}
                                                             onChange={(e) => updateAuthor('affiliation', e.target.value)}
                                                             className={`h-12 rounded-xl border-2 transition-all duration-200 ${errors['author.affiliation'] ? 'border-red-500' : 'border-gray-200 dark:border-gray-600 focus:border-[#4CB050]'}`}
-                                                            placeholder="Informatika, Teknik, Unsoed, Indonesia"
+                                                            placeholder="Computer Science, Faculty of Engineering, Unsoed, Indonesia"
                                                         />
                                                         {errors['author.affiliation'] && (
                                                             <p className="text-sm text-red-600 mt-1">
