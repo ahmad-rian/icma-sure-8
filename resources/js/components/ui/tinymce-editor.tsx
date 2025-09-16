@@ -22,7 +22,7 @@ export default function TinyMCEEditor({
 
   return (
     <Editor
-      apiKey="6l3mc89b9bg7kns6j44lu6y0d9tsdq0kd4dgqoeffrtcli9z"
+      apiKey="nqj4t4ofs9ec6tp39n9zjib1txxxnepjjmix2ofgxobr7yhm"
       onInit={(evt, editor) => editorRef.current = editor}
       value={value}
       onEditorChange={handleEditorChange}
