@@ -71,34 +71,26 @@ export default function Index({ submissions, stats, filters }: Props) {
     const [searchInput, setSearchInput] = useState(filters.search || '');
     const [isSearching, setIsSearching] = useState(false);
 
-    // Debounce search effect
-    useEffect(() => {
-        if (searchInput !== (filters.search || '')) {
+    // Search only on Enter key press
+    const handleSearchSubmit = (searchValue: string = searchInput) => {
+        if (searchValue !== (filters.search || '')) {
             setIsSearching(true);
+            router.get(route('admin.abstract-submissions.index'), 
+                { ...filters, search: searchValue || undefined }, 
+                { 
+                    preserveState: true, 
+                    replace: true,
+                    onFinish: () => setIsSearching(false)
+                }
+            );
         }
+    };
 
-        const delayedSearch = setTimeout(() => {
-            if (searchInput !== (filters.search || '')) {
-                router.get(route('admin.abstract-submissions.index'), 
-                    { ...filters, search: searchInput || undefined }, 
-                    { 
-                        preserveState: true, 
-                        replace: true,
-                        onFinish: () => setIsSearching(false)
-                    }
-                );
-            } else {
-                setIsSearching(false);
-            }
-        }, 500); // 500ms delay
-
-        return () => {
-            clearTimeout(delayedSearch);
-            if (searchInput === (filters.search || '')) {
-                setIsSearching(false);
-            }
-        };
-    }, [searchInput]);
+    const handleSearchKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            handleSearchSubmit();
+        }
+    };
 
     // Update local search input when filters change (e.g., page reload)
     useEffect(() => {
@@ -118,6 +110,10 @@ export default function Index({ submissions, stats, filters }: Props) {
 
     const handleSearchInput = (value: string) => {
         setSearchInput(value);
+        // Reset searching state if input is cleared
+        if (!value && filters.search) {
+            handleSearchSubmit('');
+        }
     };
 
     const handleStatusFilter = (status: string) => {
@@ -619,10 +615,11 @@ export default function Index({ submissions, stats, filters }: Props) {
                                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                                 )}
                                 <Input
-                                    placeholder="Cari berdasarkan judul, author, atau email..."
+                                    placeholder="Cari berdasarkan judul, author, atau email... (tekan Enter)"
                                     value={searchInput}
                                     onChange={(e) => handleSearchInput(e.target.value)}
-                                    className="pl-10 pr-16 h-10"
+                                    onKeyPress={handleSearchKeyPress}
+                                    className="pl-10 pr-20 h-10"
                                     disabled={isSearching}
                                 />
                                 <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center gap-2">
@@ -630,13 +627,22 @@ export default function Index({ submissions, stats, filters }: Props) {
                                         <span className="text-xs text-blue-500 font-medium">Searching...</span>
                                     )}
                                     {searchInput && !isSearching && (
-                                        <button
-                                            onClick={() => handleSearchInput('')}
-                                            className="text-gray-400 hover:text-gray-600 transition-colors"
-                                            title="Clear search"
-                                        >
-                                            <X className="h-4 w-4" />
-                                        </button>
+                                        <>
+                                            <button
+                                                onClick={() => handleSearchSubmit()}
+                                                className="text-blue-500 hover:text-blue-700 transition-colors"
+                                                title="Search"
+                                            >
+                                                <Search className="h-4 w-4" />
+                                            </button>
+                                            <button
+                                                onClick={() => handleSearchInput('')}
+                                                className="text-gray-400 hover:text-gray-600 transition-colors"
+                                                title="Clear search"
+                                            >
+                                                <X className="h-4 w-4" />
+                                            </button>
+                                        </>
                                     )}
                                 </div>
                             </div>
