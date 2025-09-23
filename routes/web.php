@@ -39,7 +39,8 @@ Route::middleware(['auth', 'verified'])->prefix('user')->name('user.')->group(fu
     // User dashboard
     Route::get('/dashboard', [\App\Http\Controllers\User\DashboardController::class, 'index'])->name('dashboard');
 
-    // User submission routes
+    // User submission routes - DISABLED: Submission period closed
+    /*
     Route::prefix('submissions')->name('submissions.')->group(function () {
         Route::get('/', [\App\Http\Controllers\User\SubmissionController::class, 'index'])->name('index');
         Route::get('/create', [\App\Http\Controllers\User\SubmissionController::class, 'create'])->name('create');
@@ -52,6 +53,17 @@ Route::middleware(['auth', 'verified'])->prefix('user')->name('user.')->group(fu
         Route::get('/{submission}/download-pdf', [\App\Http\Controllers\User\SubmissionController::class, 'downloadPdf'])->name('download-pdf');
         Route::get('/{submission}/download-loa', [\App\Http\Controllers\User\SubmissionController::class, 'downloadLoa'])->name('download-loa');
     });
+    */
+
+    // Submission closed notification routes
+    Route::get('/submissions', [\App\Http\Controllers\User\SubmissionClosedController::class, 'index'])->name('submissions.index');
+    Route::get('/submissions/create', [\App\Http\Controllers\User\SubmissionClosedController::class, 'index'])->name('submissions.create');
+    Route::get('/submissions/{id}', [\App\Http\Controllers\User\SubmissionClosedController::class, 'index'])->name('submissions.show');
+    Route::get('/submissions/{id}/edit', [\App\Http\Controllers\User\SubmissionClosedController::class, 'index'])->name('submissions.edit');
+    Route::get('/submissions/{id}/upload-payment', [\App\Http\Controllers\User\SubmissionClosedController::class, 'index'])->name('submissions.upload-payment');
+    Route::get('/submissions/{id}/view-payment-proof', [\App\Http\Controllers\User\SubmissionClosedController::class, 'index'])->name('submissions.view-payment-proof');
+    Route::get('/submissions/{id}/download-pdf', [\App\Http\Controllers\User\SubmissionClosedController::class, 'index'])->name('submissions.download-pdf');
+    Route::get('/submissions/{id}/download-loa', [\App\Http\Controllers\User\SubmissionClosedController::class, 'index'])->name('submissions.download-loa');
 
     // User profile routes
     Route::get('/profile', [\App\Http\Controllers\User\ProfileController::class, 'edit'])->name('profile.edit');

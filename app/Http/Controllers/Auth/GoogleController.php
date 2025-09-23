@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\AbstractSubmission;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
@@ -146,16 +145,8 @@ class GoogleController extends Controller
             if ($user->role === 'admin') {
                 return redirect()->route('admin.dashboard')->with('success', 'Selamat datang kembali, Admin!');
             } else {
-                // For regular users, check if they have any abstract submissions
-                $hasSubmissions = AbstractSubmission::where('user_id', $user->id)->exists();
-
-                if ($hasSubmissions) {
-                    // User has submissions, redirect to submissions index
-                    return redirect()->route('user.submissions.index')->with('success', 'Login berhasil! Selamat datang di ICMA SURE.');
-                } else {
-                    // User has no submissions, redirect to create submission
-                    return redirect()->route('user.submissions.create')->with('success', 'Login berhasil! Selamat datang di ICMA SURE. Silakan buat submission pertama Anda.');
-                }
+                // For regular users, redirect to submission closed page since submission period has ended
+                return redirect()->route('user.submissions.index')->with('info', 'Login berhasil! Periode submission telah ditutup. Terima kasih atas minat Anda terhadap ICMA SURE 2025.');
             }
         } catch (\Laravel\Socialite\Two\InvalidStateException $e) {
             Log::warning('Google OAuth InvalidStateException', [
