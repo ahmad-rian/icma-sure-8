@@ -133,6 +133,7 @@ Route::middleware(['auth', 'verified', CheckAdminRole::class])->prefix('admin')-
         Route::post('/approve-abstract', [AbstractSubmissionController::class, 'approveAbstract'])->name('approve-abstract');
         Route::post('/approve-payment', [AbstractSubmissionController::class, 'approvePayment'])->name('approve-payment');
         Route::post('/export-excel', [AbstractSubmissionController::class, 'exportExcel'])->name('export-excel');
+        Route::post('/export-detailed-excel', [AbstractSubmissionController::class, 'exportDetailedExcel'])->name('export-detailed-excel');
 
         // PDF management routes
         Route::get('/{submission}/download-pdf', [AbstractSubmissionController::class, 'downloadPdf'])->name('download-pdf');

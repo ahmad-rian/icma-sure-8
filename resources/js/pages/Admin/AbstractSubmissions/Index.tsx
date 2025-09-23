@@ -151,7 +151,7 @@ export default function Index({ submissions, stats, filters }: Props) {
         }
     };
 
-    const handleBulkAction = async (action: 'approve' | 'reject' | 'download' | 'export-excel') => {
+    const handleBulkAction = async (action: 'approve' | 'reject' | 'download' | 'export-excel' | 'export-detailed-excel') => {
         if (selectedSubmissions.length === 0) {
             return;
         }
@@ -199,6 +199,55 @@ export default function Index({ submissions, stats, filters }: Props) {
             } catch (error) {
                 console.error('Gagal export Excel:', error);
                 const errorMessage = error instanceof Error ? error.message : 'Terjadi kesalahan saat export Excel. Silakan coba lagi.';
+                alert(errorMessage);
+                setIsProcessing(false);
+            }
+            return;
+        }
+
+        if (action === 'export-detailed-excel') {
+            setIsProcessing(true);
+            try {
+                // Create form for file download
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = route('admin.abstract-submissions.export-detailed-excel');
+                form.style.display = 'none';
+                
+                // Add CSRF token - get fresh token from meta tag
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                if (!csrfToken) {
+                    throw new Error('CSRF token tidak ditemukan. Silakan refresh halaman.');
+                }
+                
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = '_token';
+                csrfInput.value = csrfToken;
+                form.appendChild(csrfInput);
+                
+                // Add submission IDs
+                selectedSubmissions.forEach(id => {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'submission_ids[]';
+                    input.value = id;
+                    form.appendChild(input);
+                });
+                
+                document.body.appendChild(form);
+                form.submit();
+                document.body.removeChild(form);
+                
+                // Clear selection after export
+                setTimeout(() => {
+                    setSelectedSubmissions([]);
+                    setIsProcessing(false);
+                }, 1000);
+                
+            } catch (error) {
+                console.error('Gagal export detailed Excel:', error);
+                const errorMessage = error instanceof Error ? error.message : 'Terjadi kesalahan saat export detailed Excel. Silakan coba lagi.';
                 alert(errorMessage);
                 setIsProcessing(false);
             }
@@ -751,6 +800,16 @@ export default function Index({ submissions, stats, filters }: Props) {
                                          >
                                              <FileSpreadsheet className="mr-1 h-3 w-3" />
                                              Export Excel
+                                         </Button>
+                                         <Button 
+                                             onClick={() => handleBulkAction('export-detailed-excel')}
+                                             disabled={isProcessing}
+                                             size="sm"
+                                             variant="outline"
+                                             className="h-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50 border-blue-200"
+                                         >
+                                             <FileSpreadsheet className="mr-1 h-3 w-3" />
+                                             Export Detailed
                                          </Button>
                                      </div>
                                  </div>

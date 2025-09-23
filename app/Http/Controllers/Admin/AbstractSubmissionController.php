@@ -10,6 +10,7 @@ use App\Models\Country;
 use App\Services\PdfGenerationService;
 use App\Services\EmailApiService;
 use App\Exports\AbstractSubmissionsExport;
+use App\Exports\AbstractSubmissionsDetailedExport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -760,6 +761,38 @@ class AbstractSubmissionController extends Controller
                 'trace' => $e->getTraceAsString()
             ]);
             return response()->json(['error' => 'Gagal mengexport data ke Excel: ' . $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Export selected submissions to detailed Excel with keywords and affiliations
+     */
+    public function exportDetailedExcel(Request $request)
+    {
+        $request->validate([
+            'submission_ids' => 'required|array',
+            'submission_ids.*' => 'exists:abstract_submissions,id',
+        ]);
+
+        $submissionIds = $request->submission_ids;
+
+        // Generate filename with timestamp
+        $filename = 'abstract_submissions_detailed_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
+
+        try {
+            // Create detailed export instance
+            $export = new AbstractSubmissionsDetailedExport($submissionIds);
+
+            Log::info('Starting detailed Excel export', ['submission_count' => count($submissionIds)]);
+
+            return Excel::download($export, $filename, \Maatwebsite\Excel\Excel::XLSX, [
+                'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Export detailed Excel failed: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
+            return response()->json(['error' => 'Gagal mengexport data detailed ke Excel: ' . $e->getMessage()], 500);
         }
     }
 
