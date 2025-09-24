@@ -60,8 +60,12 @@ Route::middleware(['auth', 'verified'])->prefix('user')->name('user.')->group(fu
     Route::get('/submissions/create', [\App\Http\Controllers\User\SubmissionClosedController::class, 'index'])->name('submissions.create');
     Route::get('/submissions/{id}', [\App\Http\Controllers\User\SubmissionClosedController::class, 'index'])->name('submissions.show');
     Route::get('/submissions/{id}/edit', [\App\Http\Controllers\User\SubmissionClosedController::class, 'index'])->name('submissions.edit');
-    Route::get('/submissions/{id}/upload-payment', [\App\Http\Controllers\User\SubmissionClosedController::class, 'index'])->name('submissions.upload-payment');
-    Route::get('/submissions/{id}/view-payment-proof', [\App\Http\Controllers\User\SubmissionClosedController::class, 'index'])->name('submissions.view-payment-proof');
+    
+    // Payment upload routes - ENABLED for existing submissions only
+    Route::get('/submissions/{submission}/upload-payment', [\App\Http\Controllers\User\SubmissionController::class, 'showUploadPayment'])->name('submissions.upload-payment');
+    Route::post('/submissions/{submission}/upload-payment', [\App\Http\Controllers\User\SubmissionController::class, 'uploadPayment'])->name('submissions.upload-payment.store');
+    Route::get('/submissions/{submission}/view-payment-proof', [\App\Http\Controllers\User\SubmissionController::class, 'viewPaymentProof'])->name('submissions.view-payment-proof');
+    
     Route::get('/submissions/{id}/download-pdf', [\App\Http\Controllers\User\SubmissionClosedController::class, 'index'])->name('submissions.download-pdf');
     Route::get('/submissions/{id}/download-loa', [\App\Http\Controllers\User\SubmissionClosedController::class, 'index'])->name('submissions.download-loa');
 
