@@ -100,7 +100,7 @@ export default function SubmissionClosed({ auth }: SubmissionClosedProps) {
                                 </h1>
                                 
                                 <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
-                                    Thank you for your interest in ICMA-SURE 2025. The abstract submission period has officially closed.
+                                    Thank you for your interest in ICMA-SURE 2025. The abstract submission period has officially closed for new submissions. If you previously submitted an abstract, please check your submissions through the dashboard or email notifications.
                                 </p>
 
                                 <div className="h-1 w-32 mx-auto rounded-full bg-gradient-to-r from-[#E52531] via-[#F0A023] to-[#4CB050]"></div>

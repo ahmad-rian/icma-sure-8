@@ -55,19 +55,20 @@ Route::middleware(['auth', 'verified'])->prefix('user')->name('user.')->group(fu
     });
     */
 
-    // Submission closed notification routes
-    Route::get('/submissions', [\App\Http\Controllers\User\SubmissionClosedController::class, 'index'])->name('submissions.index');
+    // Submission routes - conditional based on user history
+    Route::get('/submissions', [\App\Http\Controllers\User\SubmissionController::class, 'index'])->name('submissions.index');
     Route::get('/submissions/create', [\App\Http\Controllers\User\SubmissionClosedController::class, 'index'])->name('submissions.create');
-    Route::get('/submissions/{id}', [\App\Http\Controllers\User\SubmissionClosedController::class, 'index'])->name('submissions.show');
+    Route::get('/submissions/{submission}', [\App\Http\Controllers\User\SubmissionController::class, 'show'])->name('submissions.show');
     Route::get('/submissions/{id}/edit', [\App\Http\Controllers\User\SubmissionClosedController::class, 'index'])->name('submissions.edit');
-    
+
     // Payment upload routes - ENABLED for existing submissions only
     Route::get('/submissions/{submission}/upload-payment', [\App\Http\Controllers\User\SubmissionController::class, 'showUploadPayment'])->name('submissions.upload-payment');
     Route::post('/submissions/{submission}/upload-payment', [\App\Http\Controllers\User\SubmissionController::class, 'uploadPayment'])->name('submissions.upload-payment.store');
     Route::get('/submissions/{submission}/view-payment-proof', [\App\Http\Controllers\User\SubmissionController::class, 'viewPaymentProof'])->name('submissions.view-payment-proof');
-    
-    Route::get('/submissions/{id}/download-pdf', [\App\Http\Controllers\User\SubmissionClosedController::class, 'index'])->name('submissions.download-pdf');
-    Route::get('/submissions/{id}/download-loa', [\App\Http\Controllers\User\SubmissionClosedController::class, 'index'])->name('submissions.download-loa');
+
+    // Document download routes - ENABLED for existing submissions only
+    Route::get('/submissions/{submission}/download-pdf', [\App\Http\Controllers\User\SubmissionController::class, 'downloadPdf'])->name('submissions.download-pdf');
+    Route::get('/submissions/{submission}/download-loa', [\App\Http\Controllers\User\SubmissionController::class, 'downloadLoa'])->name('submissions.download-loa');
 
     // User profile routes
     Route::get('/profile', [\App\Http\Controllers\User\ProfileController::class, 'edit'])->name('profile.edit');

@@ -20,6 +20,14 @@ class SubmissionController extends Controller
      */
     public function index(): Response
     {
+        // Check if user has any submissions
+        $hasSubmissions = AbstractSubmission::where('user_id', Auth::id())->exists();
+        
+        // If user has no submissions, redirect to submission closed page
+        if (!$hasSubmissions) {
+            return Inertia::render('User/SubmissionClosed');
+        }
+
         $submissions = AbstractSubmission::with([
             'contributors.country',
             'country',

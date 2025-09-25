@@ -145,8 +145,8 @@ class GoogleController extends Controller
             if ($user->role === 'admin') {
                 return redirect()->route('admin.dashboard')->with('success', 'Selamat datang kembali, Admin!');
             } else {
-                // For regular users, redirect to submission closed page since submission period has ended
-                return redirect()->route('user.submissions.index')->with('info', 'Login berhasil! Periode submission telah ditutup. Terima kasih atas minat Anda terhadap ICMA SURE 2025.');
+                // For regular users, redirect to submissions page (will show submissions if user has any, or closed page if new user)
+                return redirect()->route('user.submissions.index')->with('success', 'Login berhasil! Selamat datang di ICMA SURE 2025.');
             }
         } catch (\Laravel\Socialite\Two\InvalidStateException $e) {
             Log::warning('Google OAuth InvalidStateException', [
