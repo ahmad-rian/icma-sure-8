@@ -87,6 +87,12 @@ Route::get('/committee', [CommitteeController::class, 'index'])->name('committee
 
 Route::get('/reviewer', [ReviewerController::class, 'index'])->name('reviewer.index');
 
+Route::get('/presenter-guidelines', function () {
+    return Inertia::render('PresenterGuidelines', [
+        'darkMode' => session('darkMode', false)
+    ]);
+})->name('presenter.guidelines');
+
 // Guest routes
 Route::middleware('guest')->group(function () {
     Route::get('login', [AuthenticatedSessionController::class, 'create'])->name('login');

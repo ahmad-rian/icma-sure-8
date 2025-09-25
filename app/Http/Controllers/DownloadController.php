@@ -22,7 +22,10 @@ class DownloadController extends Controller
                 'path' => 'assets/download/icma-sure-proceeding.docx',
                 'name' => 'Template Artikel ICMA 8.docx'
             ],
-
+            'Template_Presentasi_ICMA_SURE_2025.pptx' => [
+                'path' => 'assets/download/Template_Presentasi_ICMA_SURE_2025.pptx',
+                'name' => 'Template_Presentasi_ICMA_SURE_2025.pptx'
+            ],
         ];
 
         // Periksa apakah file yang diminta ada dalam daftar yang diizinkan

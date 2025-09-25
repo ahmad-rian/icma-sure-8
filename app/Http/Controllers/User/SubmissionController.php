@@ -22,7 +22,7 @@ class SubmissionController extends Controller
     {
         // Check if user has any submissions
         $hasSubmissions = AbstractSubmission::where('user_id', Auth::id())->exists();
-        
+
         // If user has no submissions, redirect to submission closed page
         if (!$hasSubmissions) {
             return Inertia::render('User/SubmissionClosed');
@@ -34,9 +34,9 @@ class SubmissionController extends Controller
             'payment',
             'reviewer'
         ])
-        ->where('user_id', Auth::id())
-        ->orderBy('created_at', 'desc')
-        ->get();
+            ->where('user_id', Auth::id())
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         return Inertia::render('User/Submissions/Index', [
             'submissions' => $submissions,
