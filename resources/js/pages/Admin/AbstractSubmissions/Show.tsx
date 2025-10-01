@@ -1,4 +1,4 @@
-import { Head, Link, router, useForm } from '@inertiajs/react';
+import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -14,7 +14,17 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbP
 import { useState } from 'react';
 import React from 'react';
 
-export default function Show({ submission }: { submission: AbstractSubmission }) {
+interface Props {
+    submission: AbstractSubmission;
+    filters?: {
+        status?: string;
+        search?: string;
+        per_page?: string | number;
+        page?: number;
+    };
+}
+
+export default function Show({ submission, filters }: Props) {
     const [status, setStatus] = useState<'pending' | 'approved' | 'rejected' | 'under_review'>(submission.status as 'pending' | 'approved' | 'rejected' | 'under_review');
     const [reviewerNotes, setReviewerNotes] = useState(submission.reviewer_notes || '');
     const [isProcessing, setIsProcessing] = useState(false);
@@ -36,7 +46,12 @@ export default function Show({ submission }: { submission: AbstractSubmission })
 
     const breadcrumbs = [
         { title: 'Dashboard', href: route('admin.dashboard') },
-        { title: 'Abstract Submissions', href: route('admin.abstract-submissions.index') },
+        { 
+            title: 'Abstract Submissions', 
+            href: filters && Object.keys(filters).length > 0 
+                ? route('admin.abstract-submissions.index', filters)
+                : route('admin.abstract-submissions.index')
+        },
         { title: submission.title, href: '#' },
     ];
 
@@ -172,12 +187,23 @@ export default function Show({ submission }: { submission: AbstractSubmission })
                 <div className="flex items-start justify-between">
                     <div className="space-y-1 flex-1 mr-4">
                         <div className="flex items-center gap-2">
-                            <Link href={route('admin.abstract-submissions.index')}>
-                                <Button variant="ghost" size="sm">
-                                    <ArrowLeft className="h-4 w-4 mr-2" />
-                                    Back
-                                </Button>
-                            </Link>
+                            <Button 
+                                variant="ghost" 
+                                size="sm"
+                                onClick={() => {
+                                    // Always use filters if available to preserve pagination state
+                                    if (filters && (filters.status || filters.search || filters.per_page || filters.page)) {
+                                        // Go back to index with preserved filters (including page number)
+                                        router.get(route('admin.abstract-submissions.index'), filters);
+                                    } else {
+                                        // Fallback to index without filters
+                                        router.get(route('admin.abstract-submissions.index'));
+                                    }
+                                }}
+                            >
+                                <ArrowLeft className="h-4 w-4 mr-2" />
+                                Back
+                            </Button>
                         </div>
                         <h1 className="text-2xl font-bold tracking-tight break-words">{submission.title}</h1>
                         <p className="text-muted-foreground">Submitted by {submission.user?.name}</p>

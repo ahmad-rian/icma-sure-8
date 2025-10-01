@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, useForm, router } from '@inertiajs/react';
 import AppSidebarLayout from '@/layouts/app/app-sidebar-layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,6 +13,12 @@ import { Country, User } from '@/types/abstract-submission';
 interface Props {
     countries: Country[];
     users: User[];
+    filters?: {
+        status?: string;
+        search?: string;
+        per_page?: string | number;
+        page?: number;
+    };
 }
 
 interface SubmissionFormData {
@@ -37,7 +43,7 @@ interface SubmissionFormData {
     [key: string]: any;
 }
 
-export default function Create({ countries, users }: Props) {
+export default function Create({ countries, users, filters }: Props) {
     const { data, setData, post, processing, errors } = useForm<SubmissionFormData>({
         title: '',
         abstract: '',
@@ -56,7 +62,12 @@ export default function Create({ countries, users }: Props) {
 
     const breadcrumbs = [
         { title: 'Dashboard', href: route('admin.dashboard') },
-        { title: 'Abstract Submissions', href: route('admin.abstract-submissions.index') },
+        { 
+            title: 'Abstract Submissions', 
+            href: filters && Object.keys(filters).length > 0 
+                ? route('admin.abstract-submissions.index', filters)
+                : route('admin.abstract-submissions.index')
+        },
         { title: 'Create New Submission', href: '#' },
     ];
 
@@ -98,12 +109,23 @@ export default function Create({ countries, users }: Props) {
                 {/* Header */}
                 <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center space-x-4">
-                        <Link href={route('admin.abstract-submissions.index')}>
-                            <Button variant="ghost" size="sm">
-                                <ArrowLeft className="mr-2 h-4 w-4" />
-                                Kembali
-                            </Button>
-                        </Link>
+                        <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => {
+                                // Always use filters if available to preserve pagination state
+                                if (filters && Object.keys(filters).length > 0) {
+                                    // Go back to index with preserved filters (including page number)
+                                    router.get(route('admin.abstract-submissions.index'), filters);
+                                } else {
+                                    // Fallback to index without filters
+                                    router.get(route('admin.abstract-submissions.index'));
+                                }
+                            }}
+                        >
+                            <ArrowLeft className="mr-2 h-4 w-4" />
+                            Kembali
+                        </Button>
                         <div>
                             <h1 className="text-3xl font-bold tracking-tight">Tambah Abstract Submission</h1>
                             <p className="text-muted-foreground">
@@ -399,16 +421,24 @@ export default function Create({ countries, users }: Props) {
 
                     {/* Actions */}
                     <div className="flex items-center justify-end gap-4 pt-6">
-                        <Link href={route('admin.abstract-submissions.index')}>
-                            <Button 
-                                type="button" 
-                                variant="outline"
-                                className="min-w-[100px]"
-                            >
-                                <ArrowLeft className="mr-2 h-4 w-4" />
-                                Batal
-                            </Button>
-                        </Link>
+                        <Button 
+                            type="button" 
+                            variant="outline"
+                            className="min-w-[100px]"
+                            onClick={() => {
+                                // Always use filters if available to preserve pagination state
+                                if (filters && Object.keys(filters).length > 0) {
+                                    // Go back to index with preserved filters (including page number)
+                                    router.get(route('admin.abstract-submissions.index'), filters);
+                                } else {
+                                    // Fallback to index without filters
+                                    router.get(route('admin.abstract-submissions.index'));
+                                }
+                            }}
+                        >
+                            <ArrowLeft className="mr-2 h-4 w-4" />
+                            Batal
+                        </Button>
                         <Button 
                             type="submit" 
                             disabled={processing}

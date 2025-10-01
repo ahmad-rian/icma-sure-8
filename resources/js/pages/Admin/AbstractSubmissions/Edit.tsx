@@ -15,6 +15,12 @@ interface Props {
     submission: AbstractSubmission;
     countries: Country[];
     users: UserType[];
+    filters?: {
+        status?: string;
+        search?: string;
+        per_page?: string | number;
+        page?: number;
+    };
 }
 
 interface SubmissionFormData {
@@ -41,11 +47,21 @@ interface SubmissionFormData {
     [key: string]: any;
 }
 
-export default function Edit({ submission, countries, users }: Props) {
+export default function Edit({ submission, countries, users, filters }: Props) {
     const breadcrumbs = [
         { label: 'Dashboard', href: route('admin.dashboard') },
-        { label: 'Abstract Submissions', href: route('admin.abstract-submissions.index') },
-        { label: submission.title, href: route('admin.abstract-submissions.show', submission.id) },
+        { 
+            label: 'Abstract Submissions', 
+            href: filters && Object.keys(filters).length > 0 
+                ? route('admin.abstract-submissions.index', filters)
+                : route('admin.abstract-submissions.index')
+        },
+        { 
+            label: submission.title, 
+            href: filters && Object.keys(filters).length > 0
+                ? route('admin.abstract-submissions.show', { id: submission.id, ...filters })
+                : route('admin.abstract-submissions.show', submission.id)
+        },
         { label: 'Edit', href: '#' }
     ];
 
@@ -177,7 +193,10 @@ export default function Edit({ submission, countries, users }: Props) {
                             Regenerate PDF
                         </Button>
                         
-                        <Link href={route('admin.abstract-submissions.show', submission.id)}>
+                        <Link href={filters && Object.keys(filters).length > 0
+                            ? route('admin.abstract-submissions.show', { id: submission.id, ...filters })
+                            : route('admin.abstract-submissions.show', submission.id)
+                        }>
                             <Button variant="outline">
                                 <ArrowLeft className="mr-2 h-4 w-4" />
                                 Back to Details

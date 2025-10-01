@@ -151,7 +151,7 @@ export default function Index({ submissions, stats, filters }: Props) {
         }
     };
 
-    const handleBulkAction = async (action: 'approve' | 'reject' | 'download' | 'export-excel' | 'export-detailed-excel') => {
+    const handleBulkAction = async (action: 'approve' | 'reject' | 'download' | 'export-excel' | 'export-detailed-excel' | 'export-payment-details') => {
         if (selectedSubmissions.length === 0) {
             return;
         }
@@ -248,6 +248,55 @@ export default function Index({ submissions, stats, filters }: Props) {
             } catch (error) {
                 console.error('Gagal export detailed Excel:', error);
                 const errorMessage = error instanceof Error ? error.message : 'Terjadi kesalahan saat export detailed Excel. Silakan coba lagi.';
+                alert(errorMessage);
+                setIsProcessing(false);
+            }
+            return;
+        }
+
+        if (action === 'export-payment-details') {
+            setIsProcessing(true);
+            try {
+                // Create form for file download
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = route('admin.abstract-submissions.export-payment-details');
+                form.style.display = 'none';
+                
+                // Add CSRF token - get fresh token from meta tag
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                if (!csrfToken) {
+                    throw new Error('CSRF token tidak ditemukan. Silakan refresh halaman.');
+                }
+                
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = '_token';
+                csrfInput.value = csrfToken;
+                form.appendChild(csrfInput);
+                
+                // Add submission IDs
+                selectedSubmissions.forEach(id => {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'submission_ids[]';
+                    input.value = id;
+                    form.appendChild(input);
+                });
+                
+                document.body.appendChild(form);
+                form.submit();
+                document.body.removeChild(form);
+                
+                // Clear selection after export
+                setTimeout(() => {
+                    setSelectedSubmissions([]);
+                    setIsProcessing(false);
+                }, 1000);
+                
+            } catch (error) {
+                console.error('Gagal export payment details:', error);
+                const errorMessage = error instanceof Error ? error.message : 'Terjadi kesalahan saat export payment details. Silakan coba lagi.';
                 alert(errorMessage);
                 setIsProcessing(false);
             }
@@ -538,7 +587,7 @@ export default function Index({ submissions, stats, filters }: Props) {
                     </div>
                     <div className="flex items-center gap-2">
                         <Button asChild>
-                            <Link href={route('admin.abstract-submissions.create')}>
+                            <Link href={route('admin.abstract-submissions.create', filters)}>
                                 <Plus className="mr-2 h-4 w-4" /> Add New Submission
                             </Link>
                         </Button>
@@ -811,6 +860,16 @@ export default function Index({ submissions, stats, filters }: Props) {
                                              <FileSpreadsheet className="mr-1 h-3 w-3" />
                                              Export Detailed
                                          </Button>
+                                         <Button 
+                                             onClick={() => handleBulkAction('export-payment-details')}
+                                             disabled={isProcessing}
+                                             size="sm"
+                                             variant="outline"
+                                             className="h-8 text-purple-600 hover:text-purple-700 hover:bg-purple-50 border-purple-200"
+                                         >
+                                             <FileSpreadsheet className="mr-1 h-3 w-3" />
+                                             Export Payment Details
+                                         </Button>
                                      </div>
                                  </div>
                             )}
@@ -859,9 +918,17 @@ export default function Index({ submissions, stats, filters }: Props) {
                                                     />
                                                 </TableCell>
                                                 <TableCell className="py-4">
-                                                    <div className="font-semibold text-gray-900 mb-1 leading-tight" title={submission.title}>
-                                                        {truncateText(submission.title, 80)}
-                                                    </div>
+                                                    <Link 
+                                                        href={route('admin.abstract-submissions.show', {
+                                                            id: submission.id,
+                                                            ...filters
+                                                        })}
+                                                        className="block"
+                                                    >
+                                                        <div className="font-semibold text-gray-900 mb-1 leading-tight hover:text-blue-600 transition-colors" title={submission.title}>
+                                                            {truncateText(submission.title, 80)}
+                                                        </div>
+                                                    </Link>
                                                 </TableCell>
                                                 <TableCell className="py-4">
                                                     <div className="space-y-1">
@@ -933,7 +1000,10 @@ export default function Index({ submissions, stats, filters }: Props) {
                                                         <DropdownMenuContent align="end" className="w-48">
                                                             <DropdownMenuItem asChild>
                                                                 <Link 
-                                                                    href={route('admin.abstract-submissions.show', submission.id)}
+                                                                    href={route('admin.abstract-submissions.show', {
+                                                                        id: submission.id,
+                                                                        ...filters
+                                                                    })}
                                                                     className="flex items-center w-full cursor-pointer"
                                                                 >
                                                                     <Eye className="mr-2 h-4 w-4" />
@@ -942,7 +1012,10 @@ export default function Index({ submissions, stats, filters }: Props) {
                                                             </DropdownMenuItem>
                                                             <DropdownMenuItem asChild>
                                                                 <Link 
-                                                                    href={route('admin.abstract-submissions.edit', submission.id)}
+                                                                    href={route('admin.abstract-submissions.edit', {
+                                                                        id: submission.id,
+                                                                        ...filters
+                                                                    })}
                                                                     className="flex items-center w-full cursor-pointer"
                                                                 >
                                                                     <Edit className="mr-2 h-4 w-4" />

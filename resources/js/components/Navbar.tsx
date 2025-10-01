@@ -57,6 +57,7 @@ const getNavigation = (auth?: AuthProps) => {
       dropdown: [
         { name: 'Abstract Template', href: '/download/abstract-template', isDownload: true },
         { name: 'Template For ICMA SURE Proceeding', href: '/download/icma-sure-proceeding', isDownload: true },
+        { name: 'Conference Schedule', href: '/assets/download/ICMA-SURE 8th Schedule.pdf', isDownload: true },
         { name: 'Registration Guide', href: 'https://youtube.com/watch?si=N5GrRh3AwPOP81HA&v=6kS_7XpLTfg&feature=youtu.be', isExternal: true },
         { name: 'Program And Abstract Book', href: 'https://drive.google.com/drive/folders/19-c9h0Cx89bRUhAqFcCu2toGnMuSB1om', isExternal: true },
         { name: 'Presenter Guidelines', href: '/presenter-guidelines' }

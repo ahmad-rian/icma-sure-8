@@ -229,14 +229,18 @@ class AbstractSubmissionController extends Controller
     /**
      * Show the form for creating a new abstract submission
      */
-    public function create(): Response
+    public function create(Request $request): Response
     {
         $users = User::with('profile.country')->get();
         $countries = Country::orderBy('name')->get();
 
+        // Get filters from request to preserve pagination state
+        $filters = $request->only(['status', 'search', 'per_page', 'page']);
+
         return Inertia::render('Admin/AbstractSubmissions/Create', [
             'users' => $users,
             'countries' => $countries,
+            'filters' => $filters,
         ]);
     }
 
@@ -309,7 +313,7 @@ class AbstractSubmissionController extends Controller
     /**
      * Display the specified abstract submission
      */
-    public function show(AbstractSubmission $submission): Response
+    public function show(Request $request, AbstractSubmission $submission): Response
     {
         $submission->load([
             'user.profile.country',
@@ -319,15 +323,19 @@ class AbstractSubmissionController extends Controller
             'reviewer'
         ]);
 
+        // Get filters from request to preserve pagination state
+        $filters = $request->only(['status', 'search', 'per_page', 'page']);
+
         return Inertia::render('Admin/AbstractSubmissions/Show', [
             'submission' => $submission,
+            'filters' => $filters,
         ]);
     }
 
     /**
      * Show the form for editing the specified abstract submission
      */
-    public function edit(AbstractSubmission $submission): Response
+    public function edit(Request $request, AbstractSubmission $submission): Response
     {
         $submission->load([
             'user.profile.country',
@@ -337,10 +345,14 @@ class AbstractSubmissionController extends Controller
         $users = User::with('profile.country')->get();
         $countries = Country::orderBy('name')->get();
 
+        // Get filters from request to preserve pagination state
+        $filters = $request->only(['status', 'search', 'per_page', 'page']);
+
         return Inertia::render('Admin/AbstractSubmissions/Edit', [
             'submission' => $submission,
             'users' => $users,
             'countries' => $countries,
+            'filters' => $filters,
         ]);
     }
 
@@ -793,6 +805,136 @@ class AbstractSubmissionController extends Controller
                 'trace' => $e->getTraceAsString()
             ]);
             return response()->json(['error' => 'Gagal mengexport data detailed ke Excel: ' . $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Export submissions with payment details and proof images
+     */
+    public function exportPaymentDetails(Request $request)
+    {
+        $request->validate([
+            'submission_ids' => 'required|array',
+            'submission_ids.*' => 'exists:abstract_submissions,id',
+        ]);
+
+        $submissionIds = $request->submission_ids;
+
+        // Generate filename with timestamp
+        $filename = 'payment_details_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
+
+        try {
+            // Get submissions with all related data
+            $submissions = AbstractSubmission::with([
+                'user.profile.country',
+                'contributors.country',
+                'country',
+                'payment',
+                'reviewer'
+            ])->whereIn('id', $submissionIds)->get();
+
+            // Create a new Spreadsheet
+            $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet();
+
+            // Set headers
+            $headers = [
+                'A1' => 'No',
+                'B1' => 'Title', 
+                'C1' => 'Author Name',
+                'D1' => 'Phone Number',
+                'E1' => 'Email',
+                'F1' => 'Country',
+                'G1' => 'Contributors Count',
+                'H1' => 'Amount to Pay (IDR)',
+                'I1' => 'Payment Status',
+                'J1' => 'Upload Date',
+                'K1' => 'Payment Proof Status',
+                'L1' => 'Payment Proof Path',
+                'M1' => 'Submission Status',
+                'N1' => 'Submitted Date'
+            ];
+
+            foreach ($headers as $cell => $header) {
+                $sheet->setCellValue($cell, $header);
+            }
+
+            // Style the header row
+            $headerStyle = [
+                'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
+                'fill' => ['fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID, 'startColor' => ['rgb' => '366092']],
+                'alignment' => ['horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER],
+                'borders' => ['allBorders' => ['borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN]]
+            ];
+            $sheet->getStyle('A1:N1')->applyFromArray($headerStyle);
+
+            // Fill data
+            $row = 2;
+            foreach ($submissions as $index => $submission) {
+                $contributorCount = $submission->contributors ? $submission->contributors->count() : 0;
+                $totalParticipants = 1 + $contributorCount; // Main author + contributors
+                $feePerParticipant = 150000; // IDR 150,000
+                $expectedAmount = $totalParticipants * $feePerParticipant;
+
+                $authorName = trim(($submission->author_first_name ?? '') . ' ' . ($submission->author_last_name ?? ''));
+                if (empty($authorName)) {
+                    $authorName = $submission->user->name ?? 'N/A';
+                }
+
+                $sheet->setCellValue('A' . $row, $index + 1);
+                $sheet->setCellValue('B' . $row, $submission->title);
+                $sheet->setCellValue('C' . $row, $authorName);
+                $sheet->setCellValue('D' . $row, $submission->author_phone_number ?? 'N/A');
+                $sheet->setCellValue('E' . $row, $submission->author_email ?? $submission->user->email);
+                $sheet->setCellValue('F' . $row, $submission->country->name ?? 'N/A');
+                $sheet->setCellValue('G' . $row, $contributorCount);
+                $sheet->setCellValue('H' . $row, 'Rp ' . number_format($expectedAmount, 0, ',', '.'));
+
+                // Payment details
+                if ($submission->payment) {
+                    $sheet->setCellValue('I' . $row, ucfirst($submission->payment->status));
+                    $sheet->setCellValue('J' . $row, $submission->payment->uploaded_at ? $submission->payment->uploaded_at->format('Y-m-d') : 'Not Uploaded');
+                    $sheet->setCellValue('K' . $row, $submission->payment->payment_proof ? 'Has Proof' : 'No Proof');
+                    $sheet->setCellValue('L' . $row, $submission->payment->payment_proof ?? 'N/A');
+                } else {
+                    $sheet->setCellValue('I' . $row, 'No Payment');
+                    $sheet->setCellValue('J' . $row, 'N/A');
+                    $sheet->setCellValue('K' . $row, 'No Proof');
+                    $sheet->setCellValue('L' . $row, 'N/A');
+                }
+
+                $sheet->setCellValue('M' . $row, ucfirst($submission->status));
+                $sheet->setCellValue('N' . $row, $submission->submitted_at->format('Y-m-d H:i'));
+
+                // Add borders to data rows
+                $sheet->getStyle('A' . $row . ':N' . $row)->applyFromArray([
+                    'borders' => ['allBorders' => ['borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN]]
+                ]);
+
+                $row++;
+            }
+
+            // Auto-resize columns
+            foreach (range('A', 'N') as $col) {
+                $sheet->getColumnDimension($col)->setAutoSize(true);
+            }
+
+            // Create writer and download
+            $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+            
+            return response()->streamDownload(function() use ($writer) {
+                $writer->save('php://output');
+            }, $filename, [
+                'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'Cache-Control' => 'max-age=0',
+                'Content-Disposition' => 'attachment; filename="' . $filename . '"'
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Export payment details failed: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
+            return response()->json(['error' => 'Gagal mengexport payment details: ' . $e->getMessage()], 500);
         }
     }
 
