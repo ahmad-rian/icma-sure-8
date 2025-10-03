@@ -13,7 +13,7 @@ const Welcome: React.FC = () => {
     {
       image: '/images/assets/prof-stella.webp',
       name: 'Prof. Stella Christie, A.B., Ph.D.',
-      title: 'Deputy Minister of Higher Education, Science and Technology of the Republic of Indonesia',
+      title: 'Vice Minister of Higher Education, Science and Technology of the Republic of Indonesia',
       country: 'Indonesia',
       status: 'Keynote Speaker',
       description: 'An academic and cognitive scientist from Medan, North Sumatra, Indonesia, who currently serves as Deputy Minister of Higher Education, Science and Technology. She earned her Bachelor\'s degree from Harvard University and her Ph.D. from Northwestern University in cognitive psychology.'
@@ -24,16 +24,16 @@ const Welcome: React.FC = () => {
     {
       image: '/images/assets/janos.jpeg',
       name: 'Dr. János Kovács',
-      title: ' full professor, deputy head of institute, head of the department',
+      title: 'University of Pecs',
       country: 'Hungary',
       status: 'University of Pecs',
     },
     {
       image: '/images/assets/linma.webp',
       name: 'Dr. Lin Ma',
-      title: 'FSE Head of International (Stud Recruit), FSE Research & Business Support Services',
-      country: 'Manchester, England',
-      status: 'Senior Lecturer, CE - Academic & Research ',
+      title: 'The University of Manchester',
+      country: 'United Kingdom',
+      status: 'The University of Manchester',
     },
     {
       image: '/images/assets/tuomo.jpeg', 
@@ -49,7 +49,6 @@ const Welcome: React.FC = () => {
       country: 'Thailand',
       status: 'Bhurapa University'
     },
-    
   ];
 
   // Updated stats based on TOR document
