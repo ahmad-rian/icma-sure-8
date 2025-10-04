@@ -16,7 +16,7 @@ const Welcome: React.FC = () => {
       title: 'Vice Minister of Higher Education, Science and Technology of the Republic of Indonesia',
       country: 'Indonesia',
       status: 'Keynote Speaker',
-      description: 'An academic and cognitive scientist from Medan, North Sumatra, Indonesia, who currently serves as Deputy Minister of Higher Education, Science and Technology. She earned her Bachelor\'s degree from Harvard University and her Ph.D. from Northwestern University in cognitive psychology.'
+      description: 'An academic and cognitive scientist from Medan, North Sumatra, Indonesia, who currently serves as Vice Minister of Higher Education, Science and Technology. She earned her Bachelor\'s degree from Harvard University and her Ph.D. from Northwestern University in cognitive psychology.'
     }
   ];      
 
